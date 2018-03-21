@@ -7,9 +7,9 @@ repositories {
 
 
 dependencies {
-	compile 'com.appliedrec:shared:2.0.5'
-	compile 'com.appliedrec:det-rec-lib:2.0.5'
-	compile 'com.appliedrec:verid:2.0.5'
+	compile 'com.appliedrec:shared:3.0.2'
+	compile 'com.appliedrec:det-rec-lib:3.0.2'
+	compile 'com.appliedrec:verid:3.0.2'
 	compile 'com.android.support:appcompat-v7:25.1.1'
 }
 

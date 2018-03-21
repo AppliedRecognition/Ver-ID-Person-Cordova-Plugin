@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<plugin id="com-appliedrec-plugins-verid" version="1.0.0" xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
+<plugin id="com-appliedrec-plugins-verid" version="2.0.0" xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
     <name>Ver-ID</name>
     <js-module name="Ver-ID" src="www/Ver-ID.js">
         <clobbers target="window.verid" />
@@ -13,10 +13,10 @@
                 <param name="android-package" value="com.appliedrec.plugin.VerIDPlugin" />
             </feature>
         </config-file>
-        <edit-config target="AndroidManifest.xml" target="/manifest/uses-sdk" mode="overwrite">
+        <edit-config target="AndroidManifest.xml" parent="/manifest/uses-sdk" mode="overwrite">
             <uses-sdk android:minSdkVersion="18" />
         </edit-config>
-        <edit-config target="AndroidManifest.xml" target="/manifest/uses-permission" mode="overwrite">
+        <edit-config target="AndroidManifest.xml" parent="/manifest/uses-permission" mode="overwrite">
             <uses-permission android:name="android.permission.CAMERA" />
         </edit-config>
         <source-file src="src/android/com/appliedrec/plugin/VerIDPlugin.java" target-dir="src/com/appliedrec/plugin" />

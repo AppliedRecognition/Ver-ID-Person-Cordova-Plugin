@@ -36,6 +36,7 @@ MY_EXTERN_C void destroyContextCPP();
 
 MY_EXTERN_C bool pollBackgroundProcessingByFaceIdCPP( long faceId, NSMutableArray *outFaces);
 MY_EXTERN_C int detectFacesWithDataCPP( CGImageRef image, int orientation, NSString *imageHash, InFace inFaces[], int inFacesCount, NSMutableArray *outFaces, int maxFacesToFind, bool antiSpoofing, bool trackFace, bool backgroundProcessing );
+MY_EXTERN_C int detectFacesWithImageBufferCPP(unsigned char * buffer, int width, int height, NSString *imageHash, InFace inFaces[], int inFacesCount, NSMutableArray *outFaces, int maxFacesToFind, bool antiSpoofing, bool trackFace, bool backgroundProcessing);
 MY_EXTERN_C int detectFacesWithDataReducedCPP( CGImageRef image, int orientation, NSString *imageHash, InFace inFaces[], int inFacesCount, NSMutableArray *outFaces, int maxFacesToFind, int crop_x, int crop_y, int crop_w, int crop_h, int templateExtractionType, bool antiSpoofing);
 MY_EXTERN_C void outputDebugImagesForFaceCPP(CGImageRef image, int orientation, FBFace *face, int faceWidth, NSString *path, NSString *baseName);
 MY_EXTERN_C int detectFacesWithDataWithTrickleCPP( CGImageRef image, int orientation, NSString *imageHash, InFace inFaces[], int inFacesCount, DetRecMessenger messenger, bool antiSpoofing );

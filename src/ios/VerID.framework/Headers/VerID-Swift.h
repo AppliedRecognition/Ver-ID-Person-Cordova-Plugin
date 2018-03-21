@@ -271,17 +271,19 @@ SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) VerID * _Non
 /// <code>unload()</code>
 /// \param apiSecret Ver-ID API secret. Overrides API secret set in your Info.plist file.
 ///
-/// \param callback Block to be executed when Ver-ID is loaded. The block’s error parameter will not be nil if the client app authentication fails.
+/// \param resourcesURL URL from which to download Ver-ID resources. Set to <code>nil</code> if you bundle the resources in the VerIDModels folder in your app.
 ///
-- (void)load:(NSString * _Nullable)apiSecret callback:(void (^ _Nullable)(BOOL, NSError * _Nullable))callback;
+/// \param callback Block to be executed when Ver-ID is loaded. The block’s <code>error</code> parameter will not be <code>nil</code> if the client app authentication fails.
+///
+- (void)load:(NSString * _Nullable)apiSecret resourcesURL:(NSURL * _Nullable)resourcesURL callback:(void (^ _Nullable)(BOOL, NSError * _Nullable))callback;
 /// Unload Ver-ID. Unload Ver-ID and release its resources. You must call <code>load()</code> or <code>loadAsync(_:)</code> again prior to calling any Ver-ID methods.
 /// seealso:
-/// <code>load(_:callback:)</code>
+/// <code>load(_:resourcesURL:callback:)</code>
 - (void)unload;
 /// Determine whether Ver-ID has been loaded.
 /// <code>true</code> if Ver-ID has been loaded and is ready to use.
 /// seealso:
-/// <code>load(_:callback:)</code>
+/// <code>load(_:resourcesURL:callback:)</code>
 @property (nonatomic, readonly) BOOL isLoaded;
 /// Authentication security level. Choose higher levels for stricter authentication or lower levels to be more forgiving.
 /// seealso:
@@ -423,6 +425,8 @@ SWIFT_CLASS("_TtC5VerID20VerIDSessionSettings")
 @property (nonatomic) NSInteger numberOfResultsToCollect;
 /// Time the user has to complete the session
 @property (nonatomic) NSTimeInterval expiryTime;
+/// Set this to record a video of the session
+@property (nonatomic, copy) NSURL * _Nullable videoURL;
 /// Constructor
 /// \param expiryTime Time the user has to complete the session
 ///
@@ -591,6 +595,13 @@ SWIFT_CLASS("_TtC5VerID19VerIDViewController")
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id <UIViewControllerTransitionCoordinator> _Nonnull)coordinator;
 - (void)viewWillDisappear:(BOOL)animated;
 - (void)prepareForSegue:(UIStoryboardSegue * _Nonnull)segue sender:(id _Nullable)sender;
+/// Called when the camera returns an image
+/// \param output output by which the image was collected
+///
+/// \param sampleBuffer image sample buffer
+///
+/// \param connection capture connection
+///
 - (void)captureOutput:(AVCaptureOutput * _Nonnull)output didOutputSampleBuffer:(CMSampleBufferRef _Nonnull)sampleBuffer fromConnection:(AVCaptureConnection * _Nonnull)connection;
 - (nonnull instancetype)initWithNibName:(NSString * _Nullable)nibNameOrNil bundle:(NSBundle * _Nullable)nibBundleOrNil OBJC_DESIGNATED_INITIALIZER;
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
@@ -686,6 +697,8 @@ SWIFT_CLASS("_TtC5VerID18VerIDSessionResult")
 - (NSArray<NSURL *> * _Nonnull)imageURLsWithBearing:(enum VerIDBearing)bearing SWIFT_WARN_UNUSED_RESULT;
 /// URLs of images collected in the session
 @property (nonatomic, readonly, copy) NSArray<NSURL *> * _Nonnull imageURLs;
+/// URL of a video of the session. Only collected if the corresponding session settings had <code>videoURL</code> set.
+@property (nonatomic, copy) NSURL * _Nullable videoURL;
 - (nonnull instancetype)init SWIFT_UNAVAILABLE;
 @end
 

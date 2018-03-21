@@ -257,7 +257,7 @@ veridPlugin.AuthenticationSessionSettings.prototype.constructor = veridPlugin.Au
  * @param {boolean} showResult Show the result of the session to the user before returning it to your app
  */
 veridPlugin.RegistrationSessionSettings = function(userId, livenessDetection, showGuide, showResult) {
-    SessionSettings.call(this);
+    veridPlugin.SessionSettings.call(this);
     this.userId = userId;
     if (livenessDetection) {
         this.livenessDetection = livenessDetection;

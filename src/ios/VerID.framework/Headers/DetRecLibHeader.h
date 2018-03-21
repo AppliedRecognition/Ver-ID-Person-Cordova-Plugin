@@ -11,7 +11,7 @@ extern float face_quality_threshold;
 extern float image_crop_area_multiplier;
 
 // external helper method
-extern void initialize_helper(NSString *configFileName, BOOL clear_database);
+extern void initialize_helper(NSString *configFileName, NSString *modelsDir, BOOL clear_database);
 
 @interface DetRecLib : NSObject
 

@@ -1,6 +1,6 @@
 {
   "name": "Ver-ID-Person-Plugin",
-  "version": "1.0",
+  "version": "2.0.0",
   "description": "Ver-ID Person Plugin for Cordova",
   "cordova": {
     "id": "com-appliedrec-plugins-verid",
@@ -14,5 +14,5 @@
     "cordova-android",
     "cordova-ios"
   ],
-  "author": "Applied Recognition, Inc.",
+  "author": "Applied Recognition, Inc."
 }

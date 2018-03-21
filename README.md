@@ -44,6 +44,12 @@ Ver-ID gives your users the ability to authenticate using their face.
 		<key>com.appliedrec.verid.apiSecret</key>
 		<string>[your API secret]</string>
 		~~~
+	- Download [VerIDModels.zip](https://dev.ver-id.com/resources/ios/3.0.1/VerIDModels.zip) and unzip it into a folder called **VerIDModels**.
+	- Select your app target in Xcode and navigate into the **Build Phases** tab.
+	- Expand the **Copy Bundle Resources** phase and click the **+** button to add a new resource.
+	- Click the **Add Other...** button on the bottom left, navigate to the **VerIDModels** folder and select it.
+	- In the dialog that comes up select **Create folder references**. You can keep the **Copy items if needed** check box unchecked.
+	- Click **Finish**.
 4. If your app includes Android platform:
 	- Ensure your app targets Android API level 18 or newer.
 	- Open your app's **AndroidManifest.xml** file and add the following tag in `<application>` replacing `[your API secret]` with the API secret your received in step 1:
@@ -53,6 +59,10 @@ Ver-ID gives your users the ability to authenticate using their face.
 		   android:name="com.appliedrec.verid.apiSecret" 
 		   android:value="[your API secret]" />
 		~~~
+	- Your application must use **Theme.AppCompat** theme (or its descendant).
+	- In your manifest's `<manifest>` element ensure that the `android:minSdkVersion` attribute of `<uses-sdk>` element is set to `"18"` or higher.
+	- Download [VerIDModels.zip](https://dev.ver-id.com/resources/android/3.0.2/VerIDModels.zip) and unzip it into a folder called **VerIDModels**.
+	- Move the folder into your Android app's **assets** folder. The **assets** folder path will be something like **app/src/main/assets**.
 
 ## Loading Ver-ID
 
@@ -60,115 +70,19 @@ Ver-ID is loaded implicitly with all API calls. The load operation may take up t
 
 You may also load Ver-ID using the `load` call if you are unable to specify your API secret in your app's plist or manifest file.
 
-~~~javascript
-var apiSecret = "..."; // Alternative way to set your Ver-ID API secret
-
-verid.load(apiSecret, function(){
-	// Ver-ID loaded successfully
-}, function(){
-	// Ver-ID failed to load
-});
-~~~
+<script src="https://gist.github.com/jakubdolejs/065f28a0b1d81e8669f720b28532452e.js"></script>
 	
-## Register User From Javascript
+## Register And Authenticate User From Javascript
 
 The Ver-ID Person plugin will be available in your script as a global variable `verid`.
 
-1. Create an instance of `verid.RegistrationSessionSettings` specifying an identifier for the user to register and how the user should be guided through the session.
-2. Call `verid.register` with the settings from step 1 and success and failure callbacks.
-3. Inspect the result of the callbacks.
-
-### Create the session settings
-Pass this bundle to the settings object:
-
-~~~javascript
-var userId = "..."; // String with an identifier for the user
-var settings = new verid.RegistrationSessionSettings(userId);
-
-settings.showGuide = true; // If you wish the plugin to guide the user through the registration process
-
-settings.showResult = true; // If you wish the plugin to show the result of the session to the user
-~~~
-
-### Set callback functions
-
-~~~javascript
-var successCallback = function(response) {
-	if (response.outcome == 0) {
-		// Success
-	}
-};
-
-var errorCallback = function() {
-	// Handle the failure
-};
-~~~
-
-### Run the registration session
-
-Run the registration session with the settings and callbacks:
-
-~~~javascript
-verid.register(settings, successCallback, errorCallback);
-~~~
-
-## Authenticate User From Javascript
-
-You must register user prior to authentication.
-
-### Create the session settings
-
-~~~javascript
-var settings = new verid.AuthenticationSessionSettings(userId);
-
-settings.showGuide = true; // If you wish the plugin to guide the user through the authentication process
-
-settings.showResult = true; // If you wish the plugin to show the result of the session to the user
-~~~
-
-### Set callback functions
-
-~~~javascript
-var successCallback = function(response) {
-	if (response.outcome == 0) {
-		// Success
-	}
-};
-
-var errorCallback = function() {
-	// Handle the failure
-};
-~~~
-
-### Run the authentication session
-
-Run the registration session with the settings and callbacks:
-
-~~~javascript
-verid.authenticate(settings, successCallback, errorCallback);
-~~~
+<script src="https://gist.github.com/jakubdolejs/940a84694b7eeae1c35f7fdeac6f8329.js"></script>
 
 ## Response Format
 
 The callback of a successful session will contain an object that represents the result of the session.
 
-~~~javascript
-{
-	"outcome": 0, // 0 = success
-	"faces": [
-		{
-			"x": 0.1, // The left coordinate of the face bounding box relative to the image width
-			"y": 0.3, // The top coordinate of the face bounding box relative to the image height
-			"width": 0.2, // The width of the face bounding box relative to the image width
-			"height": 0.5, // The height of the face bounding box relative to the image height
-			"template": "..." // Template used for face comparison (see below)
-		}
-	],
-	"images": {
-		"13423423432.png": "..." // Base64-encoded JPEG of the card image
-	}
-}
-~~~
+<script src="https://gist.github.com/jakubdolejs/28700017ae9f694af6d78c2c196e7be8.js"></script>
 
 ## Liveness Detection
 
@@ -176,26 +90,13 @@ In a liveness detection session the user is asked to asume a series of random po
 
 Liveness detection sessions follow he same format as registration and authentication.
 
-~~~javascript
-var settings = verid.LivenessDetectionSessionSettings();
-verid.captureLiveFace(settings, function(response) {
-	// Session finished
-	if (response.outcome == 0 && response.faces.length > 0) {
-		var faceTemplate = response.faces[0].template;
-		// You can use the above template to compare the detected face to faces from other sessions (see below)
-	}
-}, function() {
-	// Session failed
-});
-~~~
+<script src="https://gist.github.com/jakubdolejs/d023d9869b303fb2213914a5ea9e1721.js"></script>
 
 ## Comparing Faces
 
 After collecting two templates as outlined in the Liveness Detection section above run:
 
-~~~javascript
-var score = veridutils.compareFaceTemplates(template1, template2);
-~~~
+<script src="https://gist.github.com/jakubdolejs/e473286ceeae9ed82555ccc0530597c7.js"></script>
 
 The `score` variable will be a value between `0` and `1`:
 

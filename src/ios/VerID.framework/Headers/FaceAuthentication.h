@@ -31,51 +31,31 @@ typedef NS_ENUM(NSInteger, FaceAuthenticationSecurityLevel) {
 @interface FaceAuthentication : DetRecLib
 
 /**
- * Initializes the DetRecLib library for Ver-ID by preparing the database and loading/configuring
- * the context.
- *
- * *** You must call this method from this class to load appropriate settings for authentication ***
- *
- * @throws FileNotFoundException
- *             if the resource files cannot be found
- * @throws IOException
- *             if the resource files cannot be read or there are stream issues
- * @throws SQLiteException
- *             if there are problems with the JNI sqlite database
- * @throws OutOfMemoryError
- *             if cannot allocate memory
- * @throws Exception
- *             all other issues
- * @throws Error
- *             all other un-checked issues
+ Initializes the DetRecLib library for Ver-ID by preparing the database and loading/configuring
+ the context.
+
+ @param apiSecret API secret for the consumer app
+ @param modelPath Path to the models directory
+ @param error Pointer to error that will be non-null if the call fails
  */
-+ (void) initializeContext:(NSString *)apiSecret
-                     error:(NSError **)error;
++ (void) initializeContextWithAPISecret:(NSString *)apiSecret
+                              modelPath:(NSString *)modelPath
+                                  error:(NSError **)error;
 
 /**
- * Initializes the DetRecLib library for Ver-ID by preparing the database and loading/configuring
- * the context. If parameter passed is true, then database is cleared; otherwise
- * it remains untouched (or created if needed).
- *
- * *** You must call this method from this class to load appropriate settings for authentication ***
- *
- * @param clear_database
- *            if true, then database is cleared; otherwise it remains untouched
- *            (or created if needed)
- * @throws FileNotFoundException
- *             if the resource files cannot be found
- * @throws IOException
- *             if the resource files cannot be read or there are stream issues
- * @throws SQLiteException
- *             if there are problems with the JNI sqlite database
- * @throws OutOfMemoryError
- *             if cannot allocate memory
- * @throws Exception
- *             all other issues
- * @throws Error
- *             all other un-checked issues
+ Initializes the DetRecLib library for Ver-ID by preparing the database and loading/configuring
+ the context. If the clearDatabase parameter passed is true, then database is cleared; otherwise
+ it remains untouched (or created if needed).
+
+ @param apiSecret API secret for the consumer app
+ @param modelPath Path to the models directory
+ @param clearDatabase true to create a new database or false to keep one if it exists
+ @param error Pointer to error that will be non-null if the call fails
  */
-+ (void) initializeContextWithClearDatabase:(BOOL)clear_database;
++ (void) initializeContextWithAPISecret:(NSString *)apiSecret
+                              modelPath:(NSString *)modelPath
+                          clearDatabase:(BOOL)clearDatabase
+                                  error:(NSError **)error;
 
 /**
  * Start enrollment process for a new or existing subject. All face
@@ -593,6 +573,14 @@ typedef NS_ENUM(NSInteger, FaceAuthenticationSecurityLevel) {
                                                    forAntiSpoofing:(BOOL)antiSpoofing                                                                                                                            withRejectedFaces:(NSMutableArray<FBFace *> *)rejectedFaces
                                                              error:(NSError **)error;
 
++ (NSArray<FBFace *> *) detectFaceInImageBufferUsingBackgroundProcessing:(unsigned char *)buffer
+                                                               withWidth:(int)width
+                                                                  height:(int)height
+                                                         forAntiSpoofing:(BOOL)antiSpoofing
+                                                       withRejectedFaces:(NSMutableArray<FBFace *> *)rejectedFaces
+                                                                   error:(NSError **)error;
+
+
 /**
  * Detect faces in an image and return the largest that is being processed in the backround
  * for template extraction (if found). All
@@ -681,6 +669,11 @@ typedef NS_ENUM(NSInteger, FaceAuthenticationSecurityLevel) {
                        withRejectedFaces:(NSMutableArray<FBFace *> *)rejectedFaces
                                    error:(NSError **)error;
 
++ (NSArray<FBFace *> *) trackFaceUsingImageBuffer:(unsigned char *)buffer
+                                         withWidth:(int)width
+                                            height:(int)height
+                                 withRejectedFaces:(NSMutableArray<FBFace *> *)rejectedFaces
+                                             error:(NSError **)error;
 /**
  * Detect faces in an image and return the largest face suitable for recognition (if found). All
  * other faces which are rejected are returned in the rejectedFaces array.
@@ -712,6 +705,12 @@ typedef NS_ENUM(NSInteger, FaceAuthenticationSecurityLevel) {
                         withRejectedFaces:(NSMutableArray<FBFace *> *)rejectedFaces
                                     error:(NSError **)error;
 
++ (NSArray<FBFace *> *) detectFaceUsingImageBuffer:(unsigned char *)buffer
+                                         withWidth:(int)width
+                                            height:(int)height
+                                   forAntiSpoofing:(BOOL)antiSpoofing
+                                 withRejectedFaces:(NSMutableArray<FBFace *> *)rejectedFaces
+                                             error:(NSError **)error;
 /**
  * Detect faces in an image in a reduced fashion to speed up detection for anti-spoofing purposes.
  * If a face is found that is at least trackable (has the landmark coordinates and pose estimates),
