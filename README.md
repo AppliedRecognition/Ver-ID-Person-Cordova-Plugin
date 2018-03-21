@@ -70,19 +70,91 @@ Ver-ID is loaded implicitly with all API calls. The load operation may take up t
 
 You may also load Ver-ID using the `load` call if you are unable to specify your API secret in your app's plist or manifest file.
 
-<script src="https://gist.github.com/jakubdolejs/065f28a0b1d81e8669f720b28532452e.js"></script>
+~~~javascript
+var apiSecret = "..."; // Alternative way to set your Ver-ID API secret
+
+verid.load(apiSecret, function(){
+  // Ver-ID loaded successfully
+  // You can now run registration, authentication or liveness detection
+}, function(){
+  // Ver-ID failed to load
+});
+~~~
 	
 ## Register And Authenticate User From Javascript
 
 The Ver-ID Person plugin will be available in your script as a global variable `verid`.
 
-<script src="https://gist.github.com/jakubdolejs/940a84694b7eeae1c35f7fdeac6f8329.js"></script>
+~~~javascript
+var userId = "myUserId"; // String with an identifier for the user
+
+// Registration
+function register() {
+  var settings = new verid.RegistrationSessionSettings(userId);
+  settings.showGuide = true; // If you wish the plugin to guide the user through the registration process
+  settings.showResult = true; // If you wish the plugin to show the result of the session to the user
+
+  verid.register(settings, function(response) {
+    if (response.outcome == 0) {
+      // User registered
+      
+      // Run an authentication session
+      authenticate();
+      
+    }
+  }, function() {
+    // Handle the failure
+  });
+}
+
+// Authentication
+function authenticate() {
+  var settings = new verid.AuthenticationSessionSettings(userId);
+  settings.showGuide = true; // If you wish the plugin to guide the user through the authentication process
+  settings.showResult = true; // If you wish the plugin to show the result of the session to the user
+  
+  verid.authenticate(settings, function(response) {
+    if (response.outcome == 0) {
+      // User authenticated
+    }
+  }, function() {
+    // Handle the failure
+  });
+}
+
+// Load Ver-ID before running registration or authentication
+verid.load(function(){
+	// Ver-ID loaded successfully
+  
+  // Run a registration session  
+  register();
+  
+}, function(){
+	// Ver-ID failed to load
+});
+~~~
 
 ## Response Format
 
 The callback of a successful session will contain an object that represents the result of the session.
 
-<script src="https://gist.github.com/jakubdolejs/28700017ae9f694af6d78c2c196e7be8.js"></script>
+~~~javascript
+{
+    "outcome": 0, // 0 = success
+    "faces": [
+        {
+            "x": 0.1, // The left coordinate of the face bounding box relative to the image width
+            "y": 0.3, // The top coordinate of the face bounding box relative to the image height
+            "width": 0.2, // The width of the face bounding box relative to the image width
+            "height": 0.5, // The height of the face bounding box relative to the image height
+            "template": "..." // Template used for face comparison (see below)
+        }
+    ],
+    "images": {
+        "13423423432.png": "..." // Base64-encoded JPEG of the card image
+    }
+}
+~~~
 
 ## Liveness Detection
 
@@ -90,13 +162,34 @@ In a liveness detection session the user is asked to asume a series of random po
 
 Liveness detection sessions follow he same format as registration and authentication.
 
-<script src="https://gist.github.com/jakubdolejs/d023d9869b303fb2213914a5ea9e1721.js"></script>
+~~~javascript
+// Load Ver-ID before running liveness detection
+verid.load(function(){
+	// Ver-ID loaded successfully
+  
+  // Run a liveness detection session  
+  var settings = verid.LivenessDetectionSessionSettings();
+  verid.captureLiveFace(settings, function(response) {
+    // Session finished
+    if (response.outcome == 0 && response.faces.length > 0) {
+      var faceTemplate = response.faces[0].template;
+      // You can use the above template to compare the detected face to faces from other sessions (see below)
+    }
+  }, function() {
+    // Session failed
+  });  
+}, function(){
+	// Ver-ID failed to load  
+});
+~~~
 
 ## Comparing Faces
 
 After collecting two templates as outlined in the Liveness Detection section above run:
 
-<script src="https://gist.github.com/jakubdolejs/e473286ceeae9ed82555ccc0530597c7.js"></script>
+~~~javascript
+var score = veridutils.compareFaceTemplates(template1, template2);
+~~~
 
 The `score` variable will be a value between `0` and `1`:
 
