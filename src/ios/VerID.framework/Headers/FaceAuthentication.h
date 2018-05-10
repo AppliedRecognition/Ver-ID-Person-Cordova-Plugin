@@ -11,7 +11,6 @@
 
 #import <Foundation/Foundation.h>
 #import <Photos/Photos.h>
-#import <CommonCrypto/CommonCrypto.h>
 #import <CoreImage/CoreImage.h>
 
 #import "DetRecLibHeader.h"
@@ -1028,8 +1027,6 @@ typedef NS_ENUM(NSInteger, FaceAuthenticationSecurityLevel) {
                       withDirPath:(NSString *)path
                      withBaseName:(NSString *)baseName
                             error:(NSError **)error;
-
-+ (NSString *) hmacSha256:(NSString *)message secret:(NSString *)secret;
 
 /**
  *  Indicates whether the client app has authenticated for the use of the Ver-ID API.

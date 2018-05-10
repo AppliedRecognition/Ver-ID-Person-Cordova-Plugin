@@ -1,8 +1,8 @@
 framework module VerID {
-    umbrella header "VerID.h"
-    header "/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/usr/include/CommonCrypto/CommonCrypto.h"
-    export *
-    module * { export * }
+  umbrella header "VerID.h"
+
+  export *
+  module * { export * }
 }
 
 module VerID.Swift {
