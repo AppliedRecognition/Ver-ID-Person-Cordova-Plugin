@@ -230,6 +230,7 @@ public class VerIDPlugin extends CordovaPlugin {
                     return;
                 }
                 mCallbackContext = callbackContext;
+                cordova.setActivityResultCallback(this);
                 activity.startActivityForResult(intent, requestCode);
             }
         });
