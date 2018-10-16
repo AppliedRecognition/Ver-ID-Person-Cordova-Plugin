@@ -97,6 +97,74 @@ typedef NS_ENUM(NSInteger, FaceAuthenticationSecurityLevel) {
                                        error:(NSError **)error;
 
 /**
+ * Get a data object of bytes representing the serialized recognition template/signature
+ * for the face object. If the face does not exist or does not have a template
+ * because it may be unsuitable for recognition, an error is returned.
+ *
+ * @param face
+ *            FBFace object previously obtained from detection call.
+ *            This object must not have been previously destroyed, otherwise
+ *            exception will be thrown.
+ *            Also, this face has to be suitable for recognition, otherwise
+ *            exception will be thrown.
+ * @param error
+ *             an address to NSError pointer. Will save error here
+ *             if method returns nil, unless error pointer is nil.
+ * @return data object of bytes representing the binary face template.
+ *         If nil, error occured.
+ */
++ (NSData *) getBinaryTemplateForFace:(FBFace *)face
+                                       error:(NSError **)error;
+
+/**
+ * Create a new face object from the serialized recognition template/signature.
+ * This always creates a new face, regardless if a duplicate template exists.
+ * If you want to first check that face does not exist or fetch an existing
+ * face, call getFBFacesFromBinaryTemplate.
+ *
+ * If the serialized template is incorrect or contains errors that cannot be
+ * converted to a valid face object, an error is returned.
+ *
+ * @param binaryTemplate
+ *            Binary template as NSData that was returned from a previous
+ *            call to getBinaryTemplateForFace. It may have been
+ *            forwarded to a server for template centralization, but
+ *            must be converted exactly as the original data for it to
+ *            be valid.
+ *            If data object contains errors, an exception will be thrown.
+ * @param error
+ *             an address to NSError pointer. Will save error here
+ *             if method returns nil, unless error pointer is nil.
+ * @return an FBFace object representing the face template.
+ *         If nil, error occured.
+ */
++ (FBFace *) createFBFaceFromBinaryTemplate:(NSData *)binaryTemplate
+                                      error:(NSError **)error;
+
+/**
+ * Fetches possible exising face objects matching the serialized recognition
+ * template/signature. If no matching templates exist, returns an empty
+ * array. Otherwise, one or more (since we don't enforce uniqueness) matching
+ * faces are returned in array.
+ *
+ * If there are problems, most likely with database, an error is returned.
+ *
+ * @param binaryTemplate
+ *            Binary template as NSData that was returned from a previous
+ *            call to getBinaryTemplateForFace. It may have been
+ *            forwarded to a server for template centralization. This
+ *            call uses a hash for lookup and does not enforce integrity
+ *            of the template - whether it's a valid template.
+ * @param error
+ *             an address to NSError pointer. Will save error here
+ *             if method returns nil, unless error pointer is nil.
+ * @return an array of FBFace objects matching the face template.
+ *         If nil, error occured.
+ */
++ (NSArray<FBFace *> *) getFBFacesFromBinaryTemplate:(NSData *)binaryTemplate
+                                               error:(NSError **)error;
+
+/**
  * Add a face to the enrollment templates for a given subject. Approximate
  * eye coordinates are needed to select face for extraction in a given image.
  *
@@ -862,6 +930,20 @@ typedef NS_ENUM(NSInteger, FaceAuthenticationSecurityLevel) {
                             withOrientation:(int)orientation
                                       error:(NSError **)error;
 
++ (NSArray<FBFace *> *) detectFacesInIDCardUsingBackgroundProcessing:(CGImageRef )image
+                                                     withOrientation:(int)orientation
+                                                               error:(NSError **)error;
+
++ (NSArray<FBFace *> *) detectFacesInIDCardInImageBuffer:(unsigned char *)buffer
+                                                  withWidth:(int)width
+                                                     height:(int)height
+                                                      error:(NSError **)error;
+
++ (NSArray<FBFace *> *) detectFacesInIDCardUsingBackgroundProcessingInImageBuffer:(unsigned char *)buffer
+                                                                          withWidth:(int)width
+                                                                             height:(int)height
+                                                                              error:(NSError **)error;
+
 /**
  * Discard a face obtained from detection. *** All valid faces returned from detection must
  * either be added to subject (and not discarded), or discarded, regardless if they are
@@ -914,6 +996,20 @@ typedef NS_ENUM(NSInteger, FaceAuthenticationSecurityLevel) {
  *         If nil, an error occured.
  */
 + (NSArray<NSString *> *) getEnrolledSubjects:(NSError **)error;
+
+/**
+ * Returns array of all face registered for a given subject.
+ *
+ * @param subjectId
+ *            a unique identifier string for subject.
+ * @param error
+ *             an address to NSError pointer. Will save error here
+ *             if method returns false, unless error pointer is nil.
+ * @return an array of FBFace objects for each registered face for subject id in DB.
+ *         If nil, an error occured.
+ */
++ (NSArray<FBFace *> *) getRegisteredFacesForSubject:(NSString *)subjectId
+                                               error:(NSError **)error;
 
 /**
  * Delete all subject ids passed in the array.

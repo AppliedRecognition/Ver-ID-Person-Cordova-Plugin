@@ -1,0 +1,30 @@
+
+/* Class = "UIBarButtonItem"; title = "Back"; ObjectID = "1Ly-k3-4Di"; */
+"1Ly-k3-4Di.title" = "Retour";
+
+/* Class = "UIBarButtonItem"; title = "Continue"; ObjectID = "4aE-ec-0SR"; */
+"4aE-ec-0SR.title" = "Continuer";
+
+/* Class = "UITextView"; text = "Ver-ID uses patented technology to detect a live face and to prevent spoofing. The app will capture images of your face in different poses."; ObjectID = "Dwo-M7-RuW"; */
+"Dwo-M7-RuW.text" = "Ver-ID utilise des techniques brevetées pour détecter un visage vivant et empêcher les mystifications. L’application capturera les images de votre visage en différentes poses.";
+
+/* Class = "UILabel"; text = "Camera access denied"; ObjectID = "IUq-eW-wgX"; */
+"IUq-eW-wgX.text" = "Accès à la caméra refusé";
+
+/* Class = "UITextView"; text = "Processing faces. Please wait."; ObjectID = "JJb-XJ-TRD"; */
+"JJb-XJ-TRD.text" = "En cours de traitement des visages. Veuillez patienter.";
+
+/* Class = "UILabel"; text = "Preparing face detection"; ObjectID = "O0k-Qd-W3z"; */
+"O0k-Qd-W3z.text" = "En cours de préparation de la détection de visages";
+
+/* Class = "UIButton"; normalTitle = "Cancel"; ObjectID = "Qdx-xo-WWA"; */
+"Qdx-xo-WWA.normalTitle" = "Annuler";
+
+/* Class = "UINavigationItem"; title = "Processing"; ObjectID = "WQW-Un-cvr"; */
+"WQW-Un-cvr.title" = "En cours de traitement";
+
+/* Class = "UINavigationItem"; title = "Liveness"; ObjectID = "k8T-h3-juS"; */
+"k8T-h3-juS.title" = "Activité";
+
+/* Class = "UINavigationItem"; title = "Liveness Detection"; ObjectID = "uot-vQ-x1B"; */
+"uot-vQ-x1B.title" = "Détection de l’activité";

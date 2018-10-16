@@ -1,0 +1,21 @@
+
+/* Class = "UINavigationItem"; title = "Processing"; ObjectID = "FBC-bd-Iwl"; */
+"FBC-bd-Iwl.title" = "En cours de traitement";
+
+/* Class = "UITextView"; text = "Processing faces. Please wait."; ObjectID = "K1y-Em-EVh"; */
+"K1y-Em-EVh.text" = "En cours de traitement des visages. Veuillez patienter.";
+
+/* Class = "UILabel"; text = "Camera access denied"; ObjectID = "dbl-cq-4bo"; */
+"dbl-cq-4bo.text" = "Accès à la caméra refusé";
+
+/* Class = "UINavigationItem"; title = "Authentication"; ObjectID = "kq4-Wr-Oxr"; */
+"kq4-Wr-Oxr.title" = "Authentification";
+
+/* Class = "UIBarButtonItem"; title = "Back"; ObjectID = "mXY-Tn-rBg"; */
+"mXY-Tn-rBg.title" = "Retour";
+
+/* Class = "UILabel"; text = "Preparing face detection"; ObjectID = "tC6-UM-cTd"; */
+"tC6-UM-cTd.text" = "En cours de préparation de la détection de visages";
+
+/* Class = "UIButton"; normalTitle = "Cancel"; ObjectID = "zt3-a5-qU5"; */
+"zt3-a5-qU5.normalTitle" = "Annuler";

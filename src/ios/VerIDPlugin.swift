@@ -46,7 +46,7 @@ import VerID
     }
     
     @objc public func deleteUser(_ command: CDVInvokedUrlCommand) {
-        if let userId = command.arguments?.flatMap({ ($0 as? [String:String])?["userId"] }).first {
+        if let userId = command.arguments?.compactMap({ ($0 as? [String:String])?["userId"] }).first {
             commandDelegate.run {
                 VerID.shared.deregisterUser(userId)
                 let result = CDVPluginResult(status: CDVCommandStatus_OK)
@@ -72,7 +72,7 @@ import VerID
                 var images: [String] = []
                 var faces: [[String:Any]] = []
                 for (face, imageURL) in result.faceImages(withBearing: .straight) {
-                    if let imageData = try? Data(contentsOf: imageURL), let image = UIImage(data: imageData), let jpeg = UIImageJPEGRepresentation(image, 0.95) {
+                    if let imageData = try? Data(contentsOf: imageURL), let image = UIImage(data: imageData), let jpeg = image.jpegData(compressionQuality: 0.95) {
                         images.append(jpeg.base64EncodedString())
                         var faceObj: [String:Any] = [:]
                         faceObj["x"] = face.bounds.minX
@@ -163,7 +163,7 @@ import VerID
     }
     
     func loadVerID(_ command: CDVInvokedUrlCommand, callback: @escaping () -> Void) {
-        let apiSecret = command.arguments?.flatMap({ ($0 as? [String:String])?["apiSecret"] }).first
+        let apiSecret = command.arguments?.compactMap({ ($0 as? [String:String])?["apiSecret"] }).first
         if !VerID.shared.isLoaded {
             VerID.shared.load(apiSecret) { (success, error) in
                 if error == nil && success {

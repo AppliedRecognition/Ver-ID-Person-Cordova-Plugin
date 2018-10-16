@@ -37,12 +37,12 @@ struct FaceAuthenticationResults {
 typedef struct FaceAuthenticationResults FaceAuthenticationResults;
  */
 
-@interface FBFace : NSObject
+@interface FBFace : NSObject <NSCoding>
 
 /**
- * Get possible suggestion for face. If null, then face does not have a suggestion.
+ * Get possible suggestion for face. If null or empty, then face does not have a suggestion.
  *
- * @return suggestion for face, null if no suggestion
+ * @return suggestion for face, null or empty if no suggestion
  */
 - (NSString *) getSuggestion;
 
@@ -268,6 +268,10 @@ typedef struct FaceAuthenticationResults FaceAuthenticationResults;
 - (void) setMouth:(CGPoint)mouth_coordinates;
 
 - (void) setEyesGaze:(CGPoint)eyes_gaze;
+
+- (id) initWithCoder:(NSCoder *)aDecoder;
+
+- (void) encodeWithCoder:(NSCoder *)aCoder;
 
 @end
 
