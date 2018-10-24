@@ -44,7 +44,7 @@ Ver-ID gives your users the ability to authenticate using their face.
 		<key>com.appliedrec.verid.apiSecret</key>
 		<string>[your API secret]</string>
 		~~~
-	- Download [VerIDModels.zip](https://dev.ver-id.com/resources/ios/3.0.1/VerIDModels.zip) and unzip it into a folder called **VerIDModels**.
+	- Download the **[VerIDModels](https://github.com/AppliedRecognition/Ver-ID-iOS-Sample/tree/master/VerIDModels)** folder into the Xcode project's directory.
 	- Select your app target in Xcode and navigate into the **Build Phases** tab.
 	- Expand the **Copy Bundle Resources** phase and click the **+** button to add a new resource.
 	- Click the **Add Other...** button on the bottom left, navigate to the **VerIDModels** folder and select it.
@@ -61,8 +61,7 @@ Ver-ID gives your users the ability to authenticate using their face.
 		~~~
 	- Your application must use **Theme.AppCompat** theme (or its descendant).
 	- In your manifest's `<manifest>` element ensure that the `android:minSdkVersion` attribute of `<uses-sdk>` element is set to `"18"` or higher.
-	- Download [VerIDModels.zip](https://dev.ver-id.com/resources/android/3.0.2/VerIDModels.zip) and unzip it into a folder called **VerIDModels**.
-	- Move the folder into your Android app's **assets** folder. The **assets** folder path will be something like **app/src/main/assets**.
+	- Download [VerIDModels.zip](https://dev.ver-id.com/resources/android/3.0.2/VerIDModels.zip) and copy it into your Android app's **assets** folder. The **assets** folder path will be something like **app/src/main/assets**.
 
 ## Loading Ver-ID
 
