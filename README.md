@@ -61,7 +61,7 @@ Ver-ID gives your users the ability to authenticate using their face.
 		~~~
 	- Your application must use **Theme.AppCompat** theme (or its descendant).
 	- In your manifest's `<manifest>` element ensure that the `android:minSdkVersion` attribute of `<uses-sdk>` element is set to `"18"` or higher.
-	- Download [VerIDModels.zip](https://dev.ver-id.com/resources/android/3.0.2/VerIDModels.zip) and copy it into your Android app's **assets** folder. The **assets** folder path will be something like **app/src/main/assets**.
+	- Download [VerIDModels.zip](https://github.com/AppliedRecognition/Ver-ID-Android-Sample/blob/master/src/main/assets/VerIDModels.zip) and copy it into your Android app's **assets** folder. The **assets** folder path will be something like **app/src/main/assets**.
 
 ## Loading Ver-ID
 
