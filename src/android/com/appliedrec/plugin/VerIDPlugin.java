@@ -10,36 +10,29 @@ import android.os.Bundle;
 import android.util.Base64;
 import android.util.Base64OutputStream;
 
-import com.appliedrec.detreclib.detection.IFace;
 import com.appliedrec.detreclib.util.TemplateUtil;
 import com.appliedrec.ver_id.VerID;
 import com.appliedrec.ver_id.VerIDAuthenticationIntent;
-import com.appliedrec.ver_id.VerIDIntent;
 import com.appliedrec.ver_id.VerIDLivenessDetectionIntent;
 import com.appliedrec.ver_id.VerIDRegistrationIntent;
-import com.appliedrec.ver_id.model.RecognitionFace;
-import com.appliedrec.ver_id.model.VerIDFaceDetectionResult;
+import com.appliedrec.ver_id.model.VerIDFace;
 import com.appliedrec.ver_id.model.VerIDUser;
 import com.appliedrec.ver_id.session.VerIDAuthenticationSessionSettings;
 import com.appliedrec.ver_id.session.VerIDLivenessDetectionSessionSettings;
 import com.appliedrec.ver_id.session.VerIDRegistrationSessionSettings;
-import com.appliedrec.ver_id.session.VerIDSession;
 import com.appliedrec.ver_id.session.VerIDSessionResult;
 import com.appliedrec.ver_id.ui.VerIDActivity;
 
-import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CallbackContext;
+import org.apache.cordova.CordovaPlugin;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URI;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -161,52 +154,64 @@ public class VerIDPlugin extends CordovaPlugin {
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+    public void onActivityResult(int requestCode, int resultCode, final Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
         if (mCallbackContext != null && (requestCode == REQUEST_CODE_REGISTER || requestCode == REQUEST_CODE_AUTHENTICATE || requestCode == REQUEST_CODE_DETECT_LIVENESS)) {
             if (resultCode == Activity.RESULT_OK && intent != null) {
-                VerIDSessionResult result = intent.getParcelableExtra(VerIDActivity.EXTRA_SESSION_RESULT);
-                HashMap<IFace, Uri> faceImages = result.getFaceImages(VerID.Bearing.STRAIGHT);
-                JSONObject response = new JSONObject();
-                try {
-                    response.put("outcome", result.outcome.ordinal());
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                Iterator<Map.Entry<IFace, Uri>> faceImageIterator = faceImages.entrySet().iterator();
-                JSONArray jsonFaces = new JSONArray();
-                JSONArray jsonImages = new JSONArray();
-                while (faceImageIterator.hasNext()) {
-                    Map.Entry<IFace, Uri> entry = faceImageIterator.next();
-                    IFace face = entry.getKey();
-                    try {
-                        PointF imageSize = getImageSize(entry.getValue());
-                        String base64jpeg = imageUriToBase64String(entry.getValue());
-                        JSONObject jsonFace = new JSONObject();
-                        jsonFace.put("x", face.getBounds().left / imageSize.x);
-                        jsonFace.put("y", face.getBounds().top / imageSize.y);
-                        jsonFace.put("width", face.getBounds().width() / imageSize.x);
-                        jsonFace.put("height", face.getBounds().height() / imageSize.y);
-                        if (face instanceof RecognitionFace && face.hasExtractedTemplate()) {
-                            jsonFace.put("template", ((RecognitionFace) face).getTemplateString());
+                cordova.getThreadPool().execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        VerIDSessionResult result = intent.getParcelableExtra(VerIDActivity.EXTRA_SESSION_RESULT);
+                        HashMap<VerIDFace, Uri> faceImages = result.getFaceImages(VerID.Bearing.STRAIGHT);
+                        JSONObject response = new JSONObject();
+                        try {
+                            response.put("outcome", result.outcome.ordinal());
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
-                        jsonFaces.put(jsonFace);
-                        jsonImages.put(base64jpeg);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                        Iterator<Map.Entry<VerIDFace, Uri>> faceImageIterator = faceImages.entrySet().iterator();
+                        JSONArray jsonFaces = new JSONArray();
+                        JSONArray jsonImages = new JSONArray();
+                        while (faceImageIterator.hasNext()) {
+                            Map.Entry<VerIDFace, Uri> entry = faceImageIterator.next();
+                            VerIDFace face = entry.getKey();
+                            try {
+                                PointF imageSize = getImageSize(entry.getValue());
+                                String base64jpeg = imageUriToBase64String(entry.getValue());
+                                JSONObject jsonFace = new JSONObject();
+                                jsonFace.put("x", face.getBounds().left / imageSize.x);
+                                jsonFace.put("y", face.getBounds().top / imageSize.y);
+                                jsonFace.put("width", face.getBounds().width() / imageSize.x);
+                                jsonFace.put("height", face.getBounds().height() / imageSize.y);
+                                if (face.getFaceTemplate() != null) {
+                                    jsonFace.put("template", TemplateUtil.floatArrayToBase64(face.getFaceTemplate().getComparisonTemplate()));
+                                }
+                                jsonFaces.put(jsonFace);
+                                jsonImages.put(base64jpeg);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            } catch (FileNotFoundException e) {
+                                e.printStackTrace();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        try {
+                            response.put("faces", jsonFaces);
+                            response.put("images", jsonImages);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        cordova.getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                mCallbackContext.success(response);
+                            }
+                        });
                     }
-                }
-                try {
-                    response.put("faces", jsonFaces);
-                    response.put("images", jsonImages);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                mCallbackContext.success(response);
+                });
             } else {
                 mCallbackContext.error("");
             }
@@ -230,7 +235,7 @@ public class VerIDPlugin extends CordovaPlugin {
                     return;
                 }
                 mCallbackContext = callbackContext;
-                cordova.setActivityResultCallback(this);
+                cordova.setActivityResultCallback(VerIDPlugin.this);
                 activity.startActivityForResult(intent, requestCode);
             }
         });
