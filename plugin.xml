@@ -7,6 +7,7 @@
     <js-module name="Ver-ID-Utils" src="www/utils.js">
         <clobbers target="window.veridutils" />
     </js-module>
+
     <platform name="android">
         <config-file target="config.xml" parent="/*">
             <feature name="VerIDPlugin">
@@ -21,7 +22,9 @@
         </edit-config>
         <source-file src="src/android/com/appliedrec/plugin/VerIDPlugin.java" target-dir="src/com/appliedrec/plugin" />
         <framework src="src/android/verid.gradle" custom="true" type="gradleReference" />
+        <resource-file src="VerIDModels" target="assets/VerIDModels" />
     </platform>
+
     <platform name="ios">
         <config-file target="config.xml" parent="/*">
             <feature name="VerIDPlugin">
@@ -30,6 +33,7 @@
             </feature>
         </config-file>
         <source-file src="src/ios/VerIDPlugin.swift" />
+        <resource-file src="VerIDModels"/>
         <framework src="src/ios/VerID.framework" custom="true" embed="true" />
     </platform>
 </plugin>
