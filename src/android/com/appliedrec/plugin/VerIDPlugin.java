@@ -208,14 +208,27 @@ public class VerIDPlugin extends CordovaPlugin {
                             @Override
                             public void run() {
                                 mCallbackContext.success(response);
+                                mCallbackContext = null;
                             }
                         });
                     }
                 });
             } else {
-                mCallbackContext.error("");
+                try {
+                    final JSONObject response = new JSONObject();
+                    if (resultCode == Activity.RESULT_CANCELED) {
+                        response.put("outcome", VerIDSessionResult.Outcome.CANCEL);
+                        mCallbackContext.success(response);
+                    } else {
+                        response.put("outcome", resultCode);
+                        mCallbackContext.error(response);
+                    }
+                } catch (JSONException e) {
+                    mCallbackContext.error("ERROR:" + e.toString());
+                }
+
+                mCallbackContext = null;
             }
-            mCallbackContext = null;
         }
     }
 
