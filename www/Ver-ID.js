@@ -4,6 +4,15 @@ var exec = require('cordova/exec');
 
 var PLUGIN_NAME = "VerIDPlugin";
 
+
+function flatten(obj) {
+    var result = Object.create(obj);
+    for (var key in result) {
+        result[key] = result[key];
+    }
+    return result;
+}
+
 var veridPlugin = {
     /**
      * Load Ver-ID
@@ -36,6 +45,7 @@ var veridPlugin = {
      * @param {function} errorCallback Function to be called if the registration session fails.
      */
     register: function(settings, callback, errorCallback) {
+        settings = flatten(settings);
         exec(callback, errorCallback, PLUGIN_NAME, "registerUser", [{"settings":settings}]);
     },
 
@@ -46,6 +56,7 @@ var veridPlugin = {
      * @param {function} errorCallback Function to be called if the session fails.
      */
     authenticate: function(settings, callback, errorCallback) {
+        settings = flatten(settings);
         exec(callback, errorCallback, PLUGIN_NAME, "authenticate", [{"settings":settings}]);
     },
 
@@ -56,6 +67,7 @@ var veridPlugin = {
      * @param {function} errorCallback Function to be called if the session fails.
      */
     captureLiveFace: function(settings, callback, errorCallback) {
+        settings = flatten(settings);
         exec(callback, errorCallback, PLUGIN_NAME, "captureLiveFace", [{"settings":settings}]);
     },
 
