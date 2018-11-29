@@ -4,6 +4,15 @@ var exec = require('cordova/exec');
 
 var PLUGIN_NAME = "VerIDPlugin";
 
+
+function flatten(obj) {
+    var result = Object.create(obj);
+    for (var key in result) {
+        result[key] = result[key];
+    }
+    return result;
+}
+
 var veridPlugin = {
     /**
      * Load Ver-ID
@@ -36,6 +45,7 @@ var veridPlugin = {
      * @param {function} errorCallback Function to be called if the registration session fails.
      */
     register: function(settings, callback, errorCallback) {
+        settings = flatten(settings);
         exec(callback, errorCallback, PLUGIN_NAME, "registerUser", [{"settings":settings}]);
     },
 
@@ -46,6 +56,7 @@ var veridPlugin = {
      * @param {function} errorCallback Function to be called if the session fails.
      */
     authenticate: function(settings, callback, errorCallback) {
+        settings = flatten(settings);
         exec(callback, errorCallback, PLUGIN_NAME, "authenticate", [{"settings":settings}]);
     },
 
@@ -56,6 +67,7 @@ var veridPlugin = {
      * @param {function} errorCallback Function to be called if the session fails.
      */
     captureLiveFace: function(settings, callback, errorCallback) {
+        settings = flatten(settings);
         exec(callback, errorCallback, PLUGIN_NAME, "captureLiveFace", [{"settings":settings}]);
     },
 
@@ -94,15 +106,15 @@ var veridPlugin = {
  * @property {number} LEFT_UP Looking left and up
  */
 veridPlugin.Bearing = {
-    STRAIGHT: 0,
-    UP: 1,
-    RIGHT_UP: 2,
-    RIGHT: 3,
-    RIGHT_DOWN: 4,
-    DOWN: 5,
-    LEFT_DOWN: 6,
-    LEFT: 7,
-    LEFT_UP: 8
+    STRAIGHT: 'STRAIGHT',
+    UP: 'UP',
+    RIGHT_UP: 'RIGHT_UP',
+    RIGHT: 'RIGHT',
+    RIGHT_DOWN: 'RIGHT_DOWN',
+    DOWN: 'DOWN',
+    LEFT_DOWN: 'LEFT_DOWN',
+    LEFT: 'LEFT',
+    LEFT_UP: 'LEFT_UP'
 };
 /**
  * Constants representing liveness detection settings
@@ -113,9 +125,9 @@ veridPlugin.Bearing = {
  * @property {number} STRICT Strict liveness detection (requires the user to register additional bearings)
  */
 veridPlugin.LivenessDetection = {
-    NONE: 0,
-    REGULAR: 1,
-    STRICT: 2
+    NONE: "NONE",
+    REGULAR: "REGULAR",
+    STRICT: "STRICT"
 };
 
 /**
@@ -212,7 +224,7 @@ veridPlugin.LivenessDetectionSessionSettings.prototype = Object.create(veridPlug
 veridPlugin.LivenessDetectionSessionSettings.prototype.constructor = veridPlugin.LivenessDetectionSessionSettings;
 
 /**
- * @classdesc Authentication session settings 
+ * @classdesc Authentication session settings
  * @class
  * @augments veridPlugin.LivenessDetectionSessionSettings
  * @inheritdoc

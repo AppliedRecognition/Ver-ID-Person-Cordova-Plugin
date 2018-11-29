@@ -163,7 +163,7 @@ public class VerIDPlugin extends CordovaPlugin {
                     public void run() {
                         VerIDSessionResult result = intent.getParcelableExtra(VerIDActivity.EXTRA_SESSION_RESULT);
                         HashMap<VerIDFace, Uri> faceImages = result.getFaceImages(VerID.Bearing.STRAIGHT);
-                        JSONObject response = new JSONObject();
+                        final JSONObject response = new JSONObject();
                         try {
                             response.put("outcome", result.outcome.ordinal());
                         } catch (JSONException e) {
@@ -208,14 +208,27 @@ public class VerIDPlugin extends CordovaPlugin {
                             @Override
                             public void run() {
                                 mCallbackContext.success(response);
+                                mCallbackContext = null;
                             }
                         });
                     }
                 });
             } else {
-                mCallbackContext.error("");
+                try {
+                    final JSONObject response = new JSONObject();
+                    if (resultCode == Activity.RESULT_CANCELED) {
+                        response.put("outcome", VerIDSessionResult.Outcome.CANCEL);
+                        mCallbackContext.success(response);
+                    } else {
+                        response.put("outcome", resultCode);
+                        mCallbackContext.error(response);
+                    }
+                } catch (JSONException e) {
+                    mCallbackContext.error("ERROR:" + e.toString());
+                }
+
+                mCallbackContext = null;
             }
-            mCallbackContext = null;
         }
     }
 
@@ -226,6 +239,8 @@ public class VerIDPlugin extends CordovaPlugin {
     }
 
     protected void loadVerIDAndStartActivity(JSONArray args, final CallbackContext callbackContext, final Intent intent, final int requestCode) {
+        cordova.setActivityResultCallback(this);
+
         loadVerIDAndRun(args, callbackContext, new Runnable() {
             @Override
             public void run() {
@@ -235,7 +250,6 @@ public class VerIDPlugin extends CordovaPlugin {
                     return;
                 }
                 mCallbackContext = callbackContext;
-                cordova.setActivityResultCallback(VerIDPlugin.this);
                 activity.startActivityForResult(intent, requestCode);
             }
         });
