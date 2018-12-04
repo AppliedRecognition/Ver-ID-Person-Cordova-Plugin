@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Home</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Home</h1>
+
+    
+
+
+
+    
+
+
+    <h3> </h3>
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+    <section>
+        <article><h1>Ver-ID Person Plugin for Cordova</h1><h2>Introduction</h2><p>Ver-ID gives your users the ability to authenticate using their face.</p>
+<h2>Adding Ver-ID Person Plugin to Your Cordova App</h2><ol>
+<li><a href="https://dev.ver-id.com/admin/register">Request an API secret</a> for your app.</li>
+<li><p>Install the plugin.</p>
+<pre class="prettyprint source lang-bash"><code> cordova plugin add https://github.com/AppliedRecognition/Ver-ID-Person-Cordova-Plugin.git</code></pre></li>
+<li><p>If your app includes iOS platform:</p>
+<ul>
+<li>Open Cordova app's iOS project in Xcode.</li>
+<li>Ensure the project's deployment target is iOS 11 or newer.</li>
+<li>In build settings specify Swift version as 4.2.</li>
+<li>Open your app's <strong>Info.plist</strong> file and and ensure it contains an entry for <code>NSCameraUsageDescription</code>.</li>
+<li><p>Still in the <strong>Info.plist</strong> file add the following entry, substituting <code>[your API secret]</code> for the API secret obtained after registration in step 1:</p>
+<pre class="prettyprint source lang-xml"><code>  &lt;key>com.appliedrec.verid.apiSecret&lt;/key>
+  &lt;string>[your API secret]&lt;/string></code></pre></li>
+</ul>
+</li>
+<li><p>If your app includes Android platform:</p>
+<ul>
+<li>Ensure your app targets Android API level 18 or newer.</li>
+<li><p>Open your app's <strong>AndroidManifest.xml</strong> file and add the following tag in <code>&lt;application&gt;</code> replacing <code>[your API secret]</code> with the API secret your received in step 1:</p>
+<pre class="prettyprint source lang-xml"><code>  &lt;meta-data 
+     android:name=&quot;com.appliedrec.verid.apiSecret&quot; 
+     android:value=&quot;[your API secret]&quot; /></code></pre></li>
+<li>Your application must use <strong>Theme.AppCompat</strong> theme (or its descendant).</li>
+<li>In your manifest's <code>&lt;manifest&gt;</code> element ensure that the <code>android:minSdkVersion</code> attribute of <code>&lt;uses-sdk&gt;</code> element is set to <code>&quot;18&quot;</code> or higher.</li>
+</ul>
+</li>
+</ol>
+<h2>Loading Ver-ID</h2><p>Ver-ID is loaded implicitly with all API calls. The load operation may take up to a couple of seconds. You may wish to load Ver-ID before calling the API if you want to minimise the delay between issuing the API call and the Ver-ID Credentials user interface appearing.</p>
+<p>You may also load Ver-ID using the <code>load</code> call if you are unable to specify your API secret in your app's plist or manifest file.</p>
+<pre class="prettyprint source lang-javascript"><code>verid.load(function() {
+    // Ver-ID loaded successfully
+    // You can now run registration, authentication or liveness detection
+}, function() {
+    // Ver-ID failed to load
+});</code></pre><p>Or if you prefer to specify the API secret in your code instead of your app's manifest or plist:</p>
+<pre class="prettyprint source lang-javascript"><code>var apiSecret = &quot;...&quot;; // Alternative way to set your Ver-ID API secret
+
+verid.load(apiSecret, function(){
+    // Ver-ID loaded successfully
+    // You can now run registration, authentication or liveness detection
+}, function(){
+    // Ver-ID failed to load
+});</code></pre><h2>Register and Authenticate User From Javascript</h2><p>The Ver-ID Person plugin module will be available in your script as a global variable <code>verid</code>.</p>
+<pre class="prettyprint source lang-javascript"><code>var userId = &quot;myUserId&quot;; // String with an identifier for the user
+
+// Registration
+function register() {
+    var settings = new verid.RegistrationSessionSettings(userId);
+    settings.showResult = true; // If you wish the plugin to show the result of the session to the user
+
+    verid.register(settings, function(response) {
+        if (response.outcome == verid.SessionOutcome.SUCCESS) {
+            // User registered
+            // Run an authentication session
+            authenticate();
+        }
+    }, function() {
+        // Handle the failure
+    });
+}
+
+// Authentication
+function authenticate() {
+    var settings = new verid.AuthenticationSessionSettings(userId);
+    settings.showResult = true; // If you wish the plugin to show the result of the session to the user
+
+    verid.authenticate(settings, function(response) {
+        if (response.outcome == verid.SessionOutcome.SUCCESS) {
+            // User authenticated
+        }
+    }, function() {
+            // Handle the failure
+    });
+}
+
+// Load Ver-ID before running registration or authentication
+verid.load(function(){
+    // Ver-ID loaded successfully
+    // Run a registration session
+    register();  
+}, function(){
+    // Ver-ID failed to load
+});</code></pre><h2>Liveness Detection</h2><p>In a liveness detection session the user is asked to asume a series of random poses in front of the camera.</p>
+<p>Liveness detection sessions follow he same format as registration and authentication.</p>
+<h3>Extracting face templates for face comparison</h3><pre class="prettyprint source lang-javascript"><code>// Load Ver-ID before running liveness detection
+verid.load(function(){
+    // Ver-ID loaded successfully  
+    // Run a liveness detection session  
+    var settings = verid.LivenessDetectionSessionSettings();
+    settings.includeFaceTemplatesInResult = true;
+    verid.captureLiveFace(settings, function(response) {
+        // Session finished
+        if (response.outcome == verid.SessionOutcome.SUCCESS) {            
+            var faceTemplates = response.getFaceComparisonTemplates(verid.Bearing.STRAIGHT);
+            // You can use the above templates to compare the detected face to faces from other sessions (see Comparing Faces section below)
+        }
+    }, function() {
+        // Session failed
+    });
+}, function(){
+    // Ver-ID failed to load  
+});</code></pre><h3>Face detection session without asking for poses</h3><pre class="prettyprint source lang-javascript"><code>// Load Ver-ID before running liveness detection
+verid.load(function(){
+    // Ver-ID loaded successfully  
+    // Run a liveness detection session  
+    var settings = verid.LivenessDetectionSessionSettings();
+    // We only want to collect one result
+    settings.numberOfResultsToCollect = 1;
+    // Ask the user to assume only one bearing (straight)
+    settings.bearings = [verid.Bearing.STRAIGHT];
+    verid.captureLiveFace(settings, function(response) {
+        // Session finished
+    }, function() {
+        // Session failed
+    });
+}, function(){
+    // Ver-ID failed to load  
+});</code></pre><h3>Liveness detection session defining the bearings (poses) the user may be asked to assume</h3><pre class="prettyprint source lang-javascript"><code>// Load Ver-ID before running liveness detection
+verid.load(function(){
+    // Ver-ID loaded successfully  
+    // Run a liveness detection session  
+    var settings = verid.LivenessDetectionSessionSettings();
+    // The user will be asked to look straight at the camera and then either left or right
+    settings.bearings = [verid.Bearing.STRAIGHT, verid.Bearing.LEFT, verid.Bearing.RIGHT];
+    verid.captureLiveFace(settings, function(response) {
+        // Session finished
+    }, function() {
+        // Session failed
+    });
+}, function(){
+    // Ver-ID failed to load  
+});</code></pre><h2>Session Response Format</h2><p>The callback of a successful session will contain <a href="./module-verid.SessionResult.html">an object</a> that represents the result of the session.</p>
+<h2>Comparing Faces</h2><p>After collecting two templates as outlined in the Liveness Detection section above run:</p>
+<pre class="prettyprint source lang-javascript"><code>var score = veridutils.compareFaceTemplates(template1, template2);</code></pre><p>The <code>score</code> variable will be a value between <code>0</code> and <code>1</code>:</p>
+<ul>
+<li><code>0</code> no similarity between the two face templates </li>
+<li><code>1</code> templates are identical</li>
+</ul>
+<h2>Module API Reference</h2><ul>
+<li><a href="./module-verid.html">Ver-ID</a></li>
+</ul></article>
+    </section>
+
+
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-verid.html">verid</a></li></ul><h3>Classes</h3><ul><li><a href="module-verid.AuthenticationSessionSettings.html">AuthenticationSessionSettings</a></li><li><a href="module-verid.LivenessDetectionSessionSettings.html">LivenessDetectionSessionSettings</a></li><li><a href="module-verid.RegistrationSessionSettings.html">RegistrationSessionSettings</a></li><li><a href="module-verid.SessionResult.html">SessionResult</a></li><li><a href="module-verid.SessionSettings.html">SessionSettings</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Tue Dec 04 2018 10:40:38 GMT+0000 (GMT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
