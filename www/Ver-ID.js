@@ -20,7 +20,7 @@ function decodeResultAndIssueCallback(callback) {
 function decodeSessionResultAndIssueCallback(callback) {
     return function(response) {
         var result = JSON.parse(response);
-        callback(new VerIDSessionResult(result));
+        callback(new module.exports.SessionResult(result));
     }
 }
 
