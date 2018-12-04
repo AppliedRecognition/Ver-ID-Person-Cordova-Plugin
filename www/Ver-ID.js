@@ -1,322 +1,435 @@
 // Plugin
 
-var exec = require('cordova/exec');
+var exec;
+try {
+    exec = require('cordova/exec');
+} catch (error) {
+    exec = function(callback, errorCallback, pluginName, command, parameters) {
+
+    };
+}
 
 var PLUGIN_NAME = "VerIDPlugin";
 
-
-function flatten(obj) {
-    var result = Object.create(obj);
-    for (var key in result) {
-        result[key] = result[key];
+function decodeResultAndIssueCallback(callback) {
+    return function(params) {
+        callback(JSON.parse(params));
     }
-    return result;
 }
 
-var veridPlugin = {
-    /**
-     * Load Ver-ID
-     * @param {string} [apiSecret] API secret obtained at https://dev.ver-id.com/admin/register. If you omit this parameter you must specify the API secret in your app's Info.plist file (iOS) or manifest.xml (Android).
-     * @param {function} callback Function to be called when the Ver-ID load operation finishes. The callback has a boolean parameter `success` indicating the success of the load operation.
-     * @param {function} errorCallback Function to be called if the load operation fails.
-     */
-    load: function(apiSecret, callback, errorCallback) {
-        var options = [];
-        if (apiSecret && (typeof apiSecret === "string")) {
-            options.push({"apiSecret":apiSecret});
-        } else if (apiSecret && (typeof apiSecret === "function")) {
-            callback = apiSecret;
-        }
-        exec(callback, errorCallback, PLUGIN_NAME, "load", options);
-    },
-
-    /**
-     * Unload Ver-ID
-     * Call this function to free resources when your app no longer requires Ver-ID.
-     */
-    unload: function() {
-        exec(null, null, PLUGIN_NAME, "unload", []);
-    },
-
-    /**
-     * Register user
-     * @param {RegistrationSessionSettings} settings An instance of RegistrationSessionSettings or null to use default settings.
-     * @param {function} callback Function to be called if the registration session finishes.
-     * @param {function} errorCallback Function to be called if the registration session fails.
-     */
-    register: function(settings, callback, errorCallback) {
-        settings = flatten(settings);
-        exec(callback, errorCallback, PLUGIN_NAME, "registerUser", [{"settings":settings}]);
-    },
-
-    /**
-     * Authenticate user
-     * @param {AuthenticationSessionSettings} settings An instance of AuthenticationSessionSettings or null to use default settings. With the default settings the session will not use anti-spoofing.
-     * @param {function} callback Function to be called if the authentication session completes.
-     * @param {function} errorCallback Function to be called if the session fails.
-     */
-    authenticate: function(settings, callback, errorCallback) {
-        settings = flatten(settings);
-        exec(callback, errorCallback, PLUGIN_NAME, "authenticate", [{"settings":settings}]);
-    },
-
-    /**
-     * Capture live face
-     * @param {LivenessDetectionSessionSettings} settings An instance of LivenessDetectionSessionSettings or null to use default settings.
-     * @param {function} callback Function to be called if the liveness detection session completes.
-     * @param {function} errorCallback Function to be called if the session fails.
-     */
-    captureLiveFace: function(settings, callback, errorCallback) {
-        settings = flatten(settings);
-        exec(callback, errorCallback, PLUGIN_NAME, "captureLiveFace", [{"settings":settings}]);
-    },
-
-    /**
-     * Retrieve a list of registered users
-     * @param {function} callback Function to be called if the opration succeeds. The response will be an array of objects with a string member "userId" and an array member "bearings" with int members corresponding to the user's registered bearings as defined by the Bearing constants.
-     * @param {function} errorCallback Function to be called if the operation fails.
-     */
-    getRegisteredUsers: function(callback, errorCallback) {
-        exec(callback, errorCallback, PLUGIN_NAME, "getRegisteredUsers", []);
-    },
-
-    /**
-     * Delete a registered user
-     * @param {string} userId The id of the user to delete.
-     * @param {function} callback Function to be called if the operation succeeds.
-     * @param {function} errorCallback Function to be called if the operation fails.
-     */
-    deleteUser: function(userId, callback, errorCallback) {
-        exec(callback, errorCallback, PLUGIN_NAME, "deleteUser", [{"userId": userId}]);
+function decodeSessionResultAndIssueCallback(callback) {
+    return function(response) {
+        var result = JSON.parse(response);
+        callback(new VerIDSessionResult(result));
     }
-};
+}
+
+/** @module verid */
+/**
+ * Load Ver-ID
+ * @param {string} [apiSecret] API secret obtained at {@linkplain https://dev.ver-id.com/admin/register}. If you omit this parameter you must specify the API secret in your app's Info.plist file (iOS) or manifest.xml (Android).
+ * @param {function} callback Function to be called when the Ver-ID load operation finishes
+ * @param {function} errorCallback Function to be called if the load operation fails
+ */
+module.exports.load = function(apiSecret, callback, errorCallback) {
+    var options = [];
+    if (apiSecret && (typeof apiSecret === "string")) {
+        options.push({"apiSecret":apiSecret});
+    } else if (apiSecret && (typeof apiSecret === "function")) {
+        errorCallback = callback;
+        callback = apiSecret;
+    }
+    exec(callback, errorCallback, PLUGIN_NAME, "load", options);
+}
+
+/**
+ * Unload Ver-ID
+ * Call this function to free resources when your app no longer requires Ver-ID
+ */
+module.exports.unload = function() {
+    exec(null, null, PLUGIN_NAME, "unload", []);
+}
+
+/**
+ * Register user
+ * @param {module:verid.RegistrationSessionSettings} [settings] An instance of {@linkcode module:verid.RegistrationSessionSettings RegistrationSessionSettings}
+ * @param {module:verid.SessionCallback} callback Function to be called if the registration session finishes
+ * @param {function} errorCallback Function to be called if the registration session fails
+ */
+module.exports.register = function(settings, callback, errorCallback) {
+    if (settings && (typeof settings === "function")) {
+        errorCallback = callback;
+        callback = settings;
+        settings = new module.exports.RegistrationSessionSettings();
+    }
+    settings = JSON.stringify(settings);
+    exec(decodeSessionResultAndIssueCallback(callback), errorCallback, PLUGIN_NAME, "registerUser", [{"settings":settings}]);
+}
+
+/**
+ * Authenticate user
+ * @param {module:verid.AuthenticationSessionSettings} [settings] An instance of {@linkcode module:verid.AuthenticationSessionSettings AuthenticationSessionSettings}
+ * @param {module:verid.SessionCallback} callback Function to be called if the authentication session completes
+ * @param {function} errorCallback Function to be called if the session fails
+ */
+module.exports.authenticate = function(settings, callback, errorCallback) {
+    if (settings && (typeof settings === "function")) {
+        errorCallback = callback;
+        callback = settings;
+        settings = new module.exports.AuthenticationSessionSettings();
+    }
+    settings = JSON.stringify(settings);
+    exec(decodeSessionResultAndIssueCallback(callback), errorCallback, PLUGIN_NAME, "authenticate", [{"settings":settings}]);
+}
+
+/**
+ * Capture live face
+ * @param {module:verid.LivenessDetectionSessionSettings} [settings] An instance of {@linkcode module:verid.LivenessDetectionSessionSettings LivenessDetectionSessionSettings}
+ * @param {module:verid.SessionCallback} callback Function to be called if the liveness detection session completes
+ * @param {function} errorCallback Function to be called if the session fails
+ */
+module.exports.captureLiveFace = function(settings, callback, errorCallback) {
+    if (settings && (typeof settings === "function")) {
+        errorCallback = callback;
+        callback = settings;
+        settings = new module.exports.LivenessDetectionSessionSettings();
+    }
+    settings = JSON.stringify(settings);
+    exec(decodeSessionResultAndIssueCallback(callback), errorCallback, PLUGIN_NAME, "captureLiveFace", [{"settings":settings}]);
+}
+
+/**
+ * Retrieve a list of registered users
+ * @param {module:verid.UserCallback} callback Function to be called if the opration succeeds. The response will be an array of objects with a string member "userId" and an array member "bearings" with int members corresponding to the user's registered bearings as defined by the Bearing constants.
+ * @param {function} errorCallback Function to be called if the operation fails.
+ */
+module.exports.getRegisteredUsers = function(callback, errorCallback) {
+    exec(decodeResultAndIssueCallback(callback), errorCallback, PLUGIN_NAME, "getRegisteredUsers", []);
+}
+
+/**
+ * @callback module:verid.UserCallback
+ * @param {Array.<module:verid.User>} users - Registered users
+ */
+
+/**
+ * Delete a registered user
+ * @function
+ * @param {string} userId The id of the user to delete.
+ * @param {function} callback Function to be called if the operation succeeds.
+ * @param {function} errorCallback Function to be called if the operation fails.
+ */
+module.exports.deleteUser = function(userId, callback, errorCallback) {
+    exec(callback, errorCallback, PLUGIN_NAME, "deleteUser", [{"userId": userId}]);
+}
 
 /**
  * Constants representing the bearing of a face looking at the camera
  * @readonly
- * @enum {number}
- * @property {number} STRAIGHT Facing the camera straight on
- * @property {number} UP Looking up
- * @property {number} RIGHT_UP Looking right and up
- * @property {number} RIGHT Looking right
- * @property {number} RIGHT_DOWN Looking right and down
- * @property {number} DOWN Looking down
- * @property {number} LEFT_DOWN Looking left and down
- * @property {number} LEFT Looking left
- * @property {number} LEFT_UP Looking left and up
+ * @enum {string}
  */
-veridPlugin.Bearing = {
+module.exports.Bearing = {
+    /** Facing the camera straight on */
     STRAIGHT: 'STRAIGHT',
+    /** Looking up */
     UP: 'UP',
+    /** Looking right and up */
     RIGHT_UP: 'RIGHT_UP',
+    /** Looking right */
     RIGHT: 'RIGHT',
+    /** Looking right and down */
     RIGHT_DOWN: 'RIGHT_DOWN',
+    /** Looking down */
     DOWN: 'DOWN',
+    /** Looking left and down */
     LEFT_DOWN: 'LEFT_DOWN',
+    /** Looking left */
     LEFT: 'LEFT',
+    /** Looking left and up */
     LEFT_UP: 'LEFT_UP'
 };
 /**
  * Constants representing liveness detection settings
  * @readonly
- * @enum {number}
- * @property {number} NONE No liveness detection
- * @property {number} REGULAR Regular liveness detection
- * @property {number} STRICT Strict liveness detection (requires the user to register additional bearings)
+ * @enum {string}
  */
-veridPlugin.LivenessDetection = {
+module.exports.LivenessDetection = {
+    /** No liveness detection */
     NONE: "NONE",
+    /** Regular liveness detection */
     REGULAR: "REGULAR",
+    /** Strict liveness detection (requires the user to register additional bearings) */
     STRICT: "STRICT"
+};
+
+/**
+ * Constants representing the outcome of a Ver-ID session
+ * @readonly
+ * @enum {string}
+ */
+module.exports.SessionOutcome = {
+    /** The session succeeded in registering or authenticating the user. */
+    "SUCCESS": "SUCCESS",
+    /** The session failed because it didn't gather enough valid images before it timed out. */
+    "FAIL_NUMBER_OF_RESULTS": "FAIL_NUMBER_OF_RESULTS",
+    /** The session failed. */
+    "UNKNOWN_FAILURE": "UNKNOWN_FAILURE",
+    /** The session was cancelled by the user. */
+    "CANCEL": "CANCEL",
+    /** The session failed because it failed the anti-spoofing challenge. */
+    "FAIL_ANTI_SPOOFING_CHALLENGE": "FAIL_ANTI_SPOOFING_CHALLENGE",
+    /** The session is waiting for images and the outcome is yet inconclusive. */
+    "WAITING": "WAITING",
+    /** The session failed because the app hasn't authenticated to use the Ver-ID API. Only applies to the demo version of the Ver-ID library. */
+    "FAIL_HOST_AUTHENTICATION": "FAIL_HOST_AUTHENTICATION",
+    /** Failed because of an exception thrown by the face detection and recognition library. */
+    "DET_REC_LIB_FAILURE": "DET_REC_LIB_FAILURE",
+    /** Face was detected but the user moved away from the camera. */
+    "FACE_LOST": "FACE_LOST",
+    /** User passed liveness detection but the face cannot be authenticated. */
+    "NOT_AUTHENTICATED": "NOT_AUTHENTICATED",
+    /** The session finished collecting faces and it's processing them. */
+    "PROCESSING": "PROCESSING"
 };
 
 /**
  * @classdesc Base class for session settings
  * @class
- * @param {number} [expiryTime=30] Seconds before the session expires
- * @param {number} [numberOfResultsToCollect=1] Number of results (face images) to collect before the session returns
- */
-veridPlugin.SessionSettings = function(expiryTime, numberOfResultsToCollect) {
-    if (expiryTime) {
-        this.expiryTime = expiryTime;
-    }
-    if (numberOfResultsToCollect) {
-        this.numberOfResultsToCollect = numberOfResultsToCollect;
-    }
-};
-/**
  * @property {number} expiryTime Seconds before the session expires
  * @property {number} numberOfResultsToCollect Number of results (face images) to collect before the session returns
- * @property {boolean} showGuide Show a session guide to the user before the face image collection begins
- * @property {boolean} showResult Show the result of the session to the user before returning it to your app
+ * @property {boolean} showResult Whether to show the result of the session to the user before returning it to your app
+ * @property {boolean} includeFaceTemplatesInResult Set to `true` if you plan using the result for face comparison. This is always set to `true` on authentication and registration sessions.
  */
-veridPlugin.SessionSettings.prototype = {
-    expiryTime: 30,
-    numberOfResultsToCollect: 1,
-    showGuide: false,
-    showResult: false
+module.exports.SessionSettings = function() {
+    this.expiryTime = 30;
+    this.numberOfResultsToCollect = 1;
+    this.showResult = false;
+    this.includeFaceTemplatesInResult = false;
 };
 
 /**
  * @classdesc Liveness detection session settings
  * @class
  * @param {number} [numberOfResultsToCollect=2] Number of results (face images) to collect before the session returns
- * @augments veridPlugin.SessionSettings
+ * @augments module:verid.SessionSettings
  * @inheritdoc
+ * @property {Array<module:verid.Bearing>} bearings Possible bearings the user may be prompted to assume during liveness detection
  */
-veridPlugin.LivenessDetectionSessionSettings = function(numberOfResultsToCollect) {
-    veridPlugin.SessionSettings.call(this);
+module.exports.LivenessDetectionSessionSettings = function(numberOfResultsToCollect) {
+    module.exports.SessionSettings.call(this);
     if (typeof numberOfResultsToCollect === "number") {
         this.numberOfResultsToCollect = Math.max(1, Math.round(numberOfResultsToCollect));
     } else {
         this.numberOfResultsToCollect = 2;
     }
+    this.bearings = [module.exports.Bearing.STRAIGHT, module.exports.Bearing.LEFT, module.exports.Bearing.LEFT_UP, module.exports.Bearing.RIGHT_UP, module.exports.Bearing.RIGHT];
 };
-/**
- * @property {Array} bearings The user will be prompted to assume one or more of these bearings
- * @property {number} segmentDuration The minimum duration of each segment where the user is asked to assume a bearing
- * @property {boolean} includeFaceTemplatesInResult Set to `true` if you plan using the result for face comparison
- */
-veridPlugin.LivenessDetectionSessionSettings.prototype = Object.create(veridPlugin.SessionSettings.prototype, {
-    expiryTime: {
-        value: 30,
-        enumerable: true,
-        configurable: true,
-        writable: true
-    },
-    numberOfResultsToCollect: {
-        value: 2,
-        configurable: true,
-        enumerable: true,
-        writable: true
-    },
-    showGuide: {
-        value: false,
-        enumerable: true,
-        configurable: true,
-        writable: true
-    },
-    showResult: {
-        value: false,
-        enumerable: true,
-        configurable: true,
-        writable: true
-    },
-    bearings: {
-        value: [veridPlugin.Bearing.STRAIGHT, veridPlugin.Bearing.LEFT, veridPlugin.Bearing.LEFT_UP, veridPlugin.Bearing.RIGHT_UP, veridPlugin.Bearing.RIGHT],
-        enumerable: true,
-        configurable: true,
-        writable: true
-    },
-    segmentDuration: {
-        value: 3,
-        enumerable: true,
-        configurable: true,
-        writable: true
-    },
-    includeFaceTemplatesInResult: {
-        value: false,
-        enumerable: true,
-        configurable: true,
-        writable: true
-    }
-});
-veridPlugin.LivenessDetectionSessionSettings.prototype.constructor = veridPlugin.LivenessDetectionSessionSettings;
 
 /**
  * @classdesc Authentication session settings
  * @class
- * @augments veridPlugin.LivenessDetectionSessionSettings
+ * @augments module:verid.LivenessDetectionSessionSettings
  * @inheritdoc
- * @param {string} userId The ID of the user to authenticate (must be previously registered)
- * @param {veridPlugin.LivenessDetection} livenessDetection Liveness detection settings
- */
-veridPlugin.AuthenticationSessionSettings = function(userId, livenessDetection) {
-    veridPlugin.LivenessDetectionSessionSettings.call(this);
-    this.userId = userId;
-    if (livenessDetection) {
-        this.livenessDetection = livenessDetection;
-    }
-};
-/**
+ * @param {string} [userId=default] The ID of the user to authenticate (must be previously registered)
+ * @param {module:verid.LivenessDetection} [livenessDetection=module:verid.LivenessDetection.REGULAR] Liveness detection settings
  * @property {string} userId The ID of the user to authenticate (must be previously registered)
- * @property {veridPlugin.LivenessDetection} livenessDetection Liveness detection settings
+ * @property {module:verid.LivenessDetection} livenessDetection Liveness detection settings
  */
-veridPlugin.AuthenticationSessionSettings.prototype = Object.create(veridPlugin.LivenessDetectionSessionSettings.prototype, {
-    userId: {
-        value: 'default',
-        enumerable: true,
-        configurable: true,
-        writable: true
-    },
-    livenessDetection: {
-        value: veridPlugin.LivenessDetection.REGULAR,
-        enumerable: true,
-        configurable: true,
-        writable: true
-    }
-});
-veridPlugin.AuthenticationSessionSettings.prototype.constructor = veridPlugin.AuthenticationSessionSettings;
+module.exports.AuthenticationSessionSettings = function(userId, livenessDetection) {
+    module.exports.LivenessDetectionSessionSettings.call(this);
+    this.userId = userId || "default";
+    this.livenessDetection = livenessDetection || module.exports.LivenessDetection.REGULAR;
+    this.includeFaceTemplatesInResult = true;
+};
 
 /**
  * @classdesc Registration session settings
  * @class
- * @augments SessionSettings
+ * @augments module:verid.SessionSettings
  * @inheritdoc
- * @param {string} userId The ID of the user to register
- * @param {veridPlugin.LivenessDetection} livenessDetection Liveness detection settings
- * @param {boolean} showGuide Show a session guide to the user before the face image collection begins
- * @param {boolean} showResult Show the result of the session to the user before returning it to your app
- */
-veridPlugin.RegistrationSessionSettings = function(userId, livenessDetection, showGuide, showResult) {
-    veridPlugin.SessionSettings.call(this);
-    this.userId = userId;
-    if (livenessDetection) {
-        this.livenessDetection = livenessDetection;
-    }
-    if (this.livenessDetection == veridPlugin.LivenessDetection.STRICT) {
-        this.bearingsToRegister = [veridPlugin.Bearing.STRAIGHT, veridPlugin.Bearing.LEFT, veridPlugin.Bearing.LEFT_UP, veridPlugin.Bearing.UP, veridPlugin.Bearing.RIGHT_UP, veridPlugin.Bearing.RIGHT];
-    }
-    if (typeof(showGuide) !== "undefined") {
-        this.showGuide = showGuide;
-    }
-    if (typeof(showResult) !== 'undefined') {
-        this.showResult = showResult;
-    }
-    this.numberOfResultsToCollect = 3;
-};
-/**
+ * @param {string} [userId=default] The ID of the user to register
+ * @param {module:verid.LivenessDetection} [livenessDetection=module:verid.LivenessDetection.REGULAR] Liveness detection settings
  * @property {string} userId The ID of the user to register
- * @property {veridPlugin.LivenessDetection} livenessDetection Liveness detection settings
- * @property {Array} bearingsToRegister Face bearings to register in this session
+ * @property {module:verid.LivenessDetection} livenessDetection Liveness detection settings
+ * @property {Array<module:verid.Bearing>} bearingsToRegister Face bearings to register in this session
  * @property {boolean} appendIfUserExists Append the registered faces to a user with the same ID if one exists
  */
-veridPlugin.RegistrationSessionSettings.prototype = Object.create(veridPlugin.SessionSettings.prototype, {
-    userId: {
-        value: 'default',
-        enumerable: true,
-        configurable: true,
-        writable: true
-    },
-    livenessDetection: {
-        value: veridPlugin.LivenessDetection.REGULAR,
-        enumerable: true,
-        configurable: true,
-        writable: true
-    },
-    bearingsToRegister: {
-        value: [veridPlugin.Bearing.STRAIGHT],
-        enumerable: true,
-        configurable: true,
-        writable: true
-    },
-    appendIfUserExists: {
-        value: false,
-        enumerable: true,
-        configurable: true,
-        writable: true
+module.exports.RegistrationSessionSettings = function(userId, livenessDetection) {
+    module.exports.SessionSettings.call(this);
+    this.userId = userId || "default";
+    this.livenessDetection = livenessDetection || module.exports.LivenessDetection.REGULAR;
+    if (this.livenessDetection == module.exports.LivenessDetection.STRICT) {
+        this.bearingsToRegister = [module.exports.Bearing.STRAIGHT, module.exports.Bearing.LEFT, module.exports.Bearing.LEFT_UP, module.exports.Bearing.UP, module.exports.Bearing.RIGHT_UP, module.exports.Bearing.RIGHT];
+    } else {
+        this.bearingsToRegister = [module.exports.Bearing.STRAIGHT];
     }
-});
-veridPlugin.RegistrationSessionSettings.prototype.constructor = veridPlugin.RegistrationSessionSettings;
+    this.numberOfResultsToCollect = 3;
+    this.appendIfUserExists = true;
+    this.includeFaceTemplatesInResult = true;
+};
 
-module.exports = veridPlugin;
+/**
+ * @classdesc Session result
+ * @class
+ * @param {Object} json JSON object received from the API call
+ * @property {module:verid.SessionOutcome} outcome Outcome of the session
+ * @property {module:verid.Face} [face] Detected face
+ * @property {string} [image] Data URI scheme image in which the face was detected
+ * @property {Object.<string,module:verid.Bearing>} users Users recognized or registered in the faces
+ * @property {Array.<module:verid.SessionResult>} constituentResults Array of results that constitute the final result – the app collects 1 or more results before the session finishes
+ */
+module.exports.SessionResult = function(json) {
+    this.outcome = json.outcome;
+    this.users = json.users || [];
+    this.face = json.face;
+    this.image = json.image;
+    this.constituentResults = [];
+    if (json.constituentResults) {
+        for (var i in json.constituentResults) {
+            this.constituentResults.push(new module.exports.SessionResult(json.constituentResults[i]));
+        }
+    }
+}
+
+/**
+ * Get faces captured in the session
+ * @param {module:verid.Bearing} [bearing] Limit the faces to the given bearing
+ */
+module.exports.SessionResult.prototype.getFaces = function(bearing) {
+    var faces = [];
+    if (this.face && (!bearing || this.face.bearing == bearing)) {
+        faces.push(this.face);
+    }
+    for (var i in this.constituentResults) {
+        faces = faces.concat(this.constituentResults[i].getFaces(bearing));
+    }
+    return faces;
+}
+
+
+/**
+ * Get images captured in the session
+ * @param {module:verid.Bearing} [bearing] Limit to images with faces of the given bearing
+ * @example var sessionResult; // Received in a session callback
+ * var images = sessionResult.getImages(verid.Bearing.STRAIGHT);
+ * if (images.length > 0) {
+ *    // The images are encoded using data URI scheme, e.g., "data:image/jpeg;base64,imagedatahere"
+ *    // You can pass this value directly to a Javascript image element
+ *    document.getElementById("image").src = images[0];
+ * }
+ */
+module.exports.SessionResult.prototype.getImages = function(bearing) {
+    var images = [];
+    if (this.image && (!bearing || !this.face || this.face.bearing == bearing)) {
+        images.push(this.image);
+    }
+    for (var i in this.constituentResults) {
+        images = images.concat(this.constituentResults[i].getImages(bearing));
+    }
+    return images;
+}
+
+/**
+ * Get face templates that can be used in comparison functions
+ * @param {module:verid.Bearing} [bearing] Limit to templates extracted from faces with the given bearing
+ */
+module.exports.SessionResult.prototype.getFaceComparisonTemplates = function(bearing) {
+    return this.getFaces(bearing).filter(function(face) {
+        return face.hasOwnProperty("comparisonTemplate") && face.comparisonTemplate != null;
+    }).map(function(face) {
+        return face.comparisonTemplate;
+    });
+}
+
+/**
+ * Get face and image pairs captured in the session
+ * @param {module:verid.Bearing} [bearing] Limit to entries with faces of the given bearing
+ */
+module.exports.SessionResult.prototype.getFaceImages = function(bearing) {
+    var faceImages = [];
+    if (this.face && this.image && (!bearing || this.face.bearing == bearing)) {
+        faceImages.push({"face": this.face, "image": this.image});
+    }
+    for (var i in this.constituentResults) {
+        faceImages = faceImages.concat(this.constituentResults[i].getFaceImages(bearing));
+    }
+    return faceImages;
+}
+
+/**
+ * @typedef {Object} module:verid.FaceTemplate
+ * @property {number} version Version of the template model
+ * @property {string} data Base 64 encoded binary representation of the face
+ */
+
+/**
+ * @typedef {Object} module:verid.Face
+ * @property {number} x Distance in pixels from the left edge of the image
+ * @property {number} y Distance in pixels from the top edge of the image
+ * @property {number} width Width of the face in pixels
+ * @property {number} height Height of the face in pixels
+ * @property {module:verid.Bearing} bearing Bearing of the face
+ * @property {module:verid.FaceTemplate} [faceTemplate] Face template in portable format
+ * @property {string} [comparisonTemplate] Face template that can be used for face comparison functions
+ */
+
+ /**
+  * @typedef {Object} module:verid.User
+  * @property {string} userId User ID
+  * @property {Array.<module:verid.Bearing>} bearings Registered (face bearings)[#verid.Bearing]
+  */
+
+/**
+ * @callback module:verid.SessionCallback
+ * @param {module:verid.SessionResult} result - Result of the session
+ */
+
+/**
+ * Compare face templates
+ * @param {string} t1 Base 64 encoded face comparison template
+ * @param {string} t2 Base 64 encoded face comparison template
+ * @returns {number} Score between 0.0 and 1.0 indicating the similarity between the two templates: 0 = different, 1 = same
+ */
+module.exports.compareFaceTemplates = function(t1, t2) {
+    t1 = base64ToFloat32Array(t1);
+    t2 = base64ToFloat32Array(t2);
+    return get_score_between_templates_with_unit_norms(t1, t2);
+}
+
+function base64ToFloat32Array(base64) {
+    var buffer = new Buffer(base64, "base64");
+    var bytes = new Uint8Array(buffer.length);
+    var dataView = new DataView(bytes.buffer);
+    for (var i=0; i<dataView.byteLength; i++) {
+        dataView.setUint8(i, buffer[i]);
+    }
+    var floats = [];
+    for (var i=0; i<dataView.byteLength; i+=4) {
+        floats.push(dataView.getFloat32(i));
+    }
+    return floats;
+}
+
+function inner_product(v1, v2) {
+    var sum = 0;
+    for (var i = 0; i < v1.length; i++) {
+        sum += v1[i] * v2[i];
+    }    
+    return Math.max(Math.min(sum, 1), 0);
+}
+
+function get_norm(v1) {
+    return Math.sqrt(inner_product(v1, v1));
+}
+
+function get_score_between_templates_with_specified_norms(v1, v1_norm, v2, v2_norm) {
+    return inner_product(v1, v2) / (v1_norm * v2_norm);
+}
+
+function get_score_between_templates_with_unit_norms(v1, v2) {
+    return inner_product(v1, v2);
+}
+
+function get_score_between_templates(v1, v2) {
+    return get_score_between_templates_with_specified_norms(v1, v2, get_norm(v1), get_norm(v2));
+}

@@ -14,5 +14,12 @@
     "cordova-android",
     "cordova-ios"
   ],
-  "author": "Applied Recognition, Inc."
+  "author": "Applied Recognition, Inc.",
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^5.2.0"
+  },
+  "scripts": {
+    "test": "./node_modules/.bin/mocha --reporter spec"
+  }
 }

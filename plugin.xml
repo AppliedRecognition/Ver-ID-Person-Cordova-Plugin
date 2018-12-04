@@ -1,11 +1,8 @@
 <?xml version='1.0' encoding='utf-8'?>
-<plugin id="com-appliedrec-plugins-verid" version="2.0.0" xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
+<plugin id="com-appliedrec-plugins-verid" version="3.0.0" xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
     <name>Ver-ID</name>
     <js-module name="Ver-ID" src="www/Ver-ID.js">
         <clobbers target="window.verid" />
-    </js-module>
-    <js-module name="Ver-ID-Utils" src="www/utils.js">
-        <clobbers target="window.veridutils" />
     </js-module>
 
     <platform name="android">
@@ -21,8 +18,8 @@
             <uses-permission android:name="android.permission.CAMERA" />
         </edit-config>
         <source-file src="src/android/com/appliedrec/plugin/VerIDPlugin.java" target-dir="src/com/appliedrec/plugin" />
-        <framework src="src/android/verid.gradle" custom="true" type="gradleReference" />
-        <resource-file src="VerIDModels" target="assets/VerIDModels" />
+        <framework src="src/android/verid.gradle" custom="true" type="gradleReference"/>
+        <resource-file src="VerIDModels.zip" target="assets/VerIDModels.zip" />
     </platform>
 
     <platform name="ios">
@@ -33,7 +30,7 @@
             </feature>
         </config-file>
         <source-file src="src/ios/VerIDPlugin.swift" />
-        <resource-file src="VerIDModels"/>
-        <framework src="src/ios/VerID.framework" custom="true" embed="true" />
+        <resource-file src="VerIDModels.zip"/>
+        <framework src="Ver-ID" type="podspec" spec="~> 3.4" />
     </platform>
 </plugin>
