@@ -30,17 +30,14 @@ import VerID
     
     @objc public func getRegisteredUsers(_ command: CDVInvokedUrlCommand) {
         commandDelegate.run {
-            if let users: [VerIDUser] = try? VerID.shared.registeredVerIDUsers() {
-//                let messageUsers: [[String:Any]] = users.map { ["userId":$0.userId,"bearings":$0.bearingsArray] }
-//                let message: [AnyHashable: Any] = ["users": messageUsers]
-                let result = CDVPluginResult(status: CDVCommandStatus_OK, messageAs: users)
-                DispatchQueue.main.async {
-                    self.commandDelegate.send(result, callbackId: command.callbackId)
-                }
-            } else {
+            guard let users = try? VerID.shared.registeredVerIDUsers(), let usersJson = try? JSONEncoder().encode(users) else {
                 DispatchQueue.main.async {
                     self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR), callbackId: command.callbackId)
                 }
+            }
+            let result = CDVPluginResult(status: CDVCommandStatus_OK, messageAs: usersJson)
+            DispatchQueue.main.async {
+                self.commandDelegate.send(result, callbackId: command.callbackId)
             }
         }
     }
@@ -67,32 +64,15 @@ import VerID
         }
         self.veridSessionCallbackId = nil
         self.commandDelegate.run {
-            var message: [String:Any] = [:]
-            if !result.images.isEmpty {
-                var images: [String] = []
-                var faces: [[String:Any]] = []
-                for (face, imageURL) in result.faceImages(withBearing: .straight) {
-                    if let imageData = try? Data(contentsOf: imageURL), let image = UIImage(data: imageData), let jpeg = image.jpegData(compressionQuality: 0.95) {
-                        images.append(jpeg.base64EncodedString())
-                        var faceObj: [String:Any] = [:]
-                        faceObj["x"] = face.bounds.minX
-                        faceObj["y"] = face.bounds.minY
-                        faceObj["width"] = face.bounds.width
-                        faceObj["height"] = face.bounds.height
-                        if let template = face.template?.map({ NSNumber(value: $0) }) {
-                            faceObj["template"] = TemplateUtil.float32ArrayToBase64(template)
-                        }
-                        faces.append(faceObj)
-                    }
+            do {
+                let message = try JSONEncoder().encode(result)
+                DispatchQueue.main.async {
+                    self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_OK, messageAs: message), callbackId: callbackId)
                 }
-                if !images.isEmpty {
-                    message["images"] = images
-                    message["faces"] = faces
+            } catch {
+                DispatchQueue.main.async {
+                    self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR), callbackId: callbackId)
                 }
-            }
-            message["outcome"] = result.outcome.rawValue
-            DispatchQueue.main.async {
-                self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_OK, messageAs: message), callbackId: callbackId)
             }
         }
     }
@@ -101,26 +81,18 @@ import VerID
     // MARK: - Session helpers
     
     private func createSettings<T: VerIDSessionSettings>(_ args: [Any]?) -> T {
-        guard let jsonSettings = args?.flatMap({ ($0 as? [String:[String:Any]])?["settings"] }).first else {
+        guard let string = args?.compactMap({ ($0 as? [String:String])?["settings"] }).first, let data = string.data(using: .utf8) else {
             NSLog("Unable to parse settings")
             return self.defaultSettings()
         }
-        guard let encoded = try? JSONSerialization.data(withJSONObject: jsonSettings, options: .init(rawValue: 0)) else {
-            NSLog("Unable to encode settings as JSON")
+        do {
+            let settings = try JSONDecoder().decode(T, from: data)
+            NSLog("Decoded settings %@ from %@", String(describing: T.self), string)
+            return settings
+        } catch {
+            NSLog("Unable to decode settings from %@: %@", string, error.localizedDescription)
             return self.defaultSettings()
         }
-        guard let decoded = try? JSONDecoder().decode(T.self, from: encoded) else {
-            if let str = String(data: encoded, encoding: .utf8) {
-                NSLog("Unable to decode settings from JSON: %@", str)
-            } else {
-                NSLog("Unable to decode settings from JSON")
-            }
-            return self.defaultSettings()
-        }
-        if let str = String(data: encoded, encoding: .utf8) {
-            NSLog("Decoded settings %@ from JSON: %@", String(describing: T.self), str)
-        }
-        return decoded
     }
     
     private func defaultSettings<T: VerIDSessionSettings>() -> T {

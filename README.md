@@ -13,6 +13,7 @@ Ver-ID gives your users the ability to authenticate using their face.
     cordova plugin add https://github.com/AppliedRecognition/Ver-ID-Person-Cordova-Plugin.git
     ~~~ 
 3. If your app includes iOS platform:
+    - Navigate to **platforms/ios** and open the **Podfile** in a text editor. Add `use_frameworks!` in the target that's using the Ver-ID pod.
     - Open Cordova app's iOS project in Xcode.
     - Ensure the project's deployment target is iOS 11 or newer.
     - In build settings specify Swift version as 4.2.
@@ -23,6 +24,8 @@ Ver-ID gives your users the ability to authenticate using their face.
         <key>com.appliedrec.verid.apiSecret</key>
         <string>[your API secret]</string>
         ~~~
+    - Select your app target and click on the **Build Settings** tab. Under **Build Options** ensure **Enable Bitcode** is set to **No**.
+    - Under **Build Settings** set **Swift Language Version** to **4.2**.
 4. If your app includes Android platform:
     - Ensure your app targets Android API level 18 or newer.
     - Open your app's **AndroidManifest.xml** file and add the following tag in `<application>` replacing `[your API secret]` with the API secret your received in step 1:
@@ -33,7 +36,13 @@ Ver-ID gives your users the ability to authenticate using their face.
            android:value="[your API secret]" />
         ~~~
     - Your application must use **Theme.AppCompat** theme (or its descendant).
-    - In your manifest's `<manifest>` element ensure that the `android:minSdkVersion` attribute of `<uses-sdk>` element is set to `"18"` or higher.
+    - Open your application's **build.gradle** file and under **android/defaultConfig** add:
+    	
+        ~~~groovy
+        multiDexEnabled true
+        renderscriptTargetApi 14
+        renderscriptSupportModeEnabled true
+        ~~~
 
 ## Loading Ver-ID
 

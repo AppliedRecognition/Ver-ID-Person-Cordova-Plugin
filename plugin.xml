@@ -19,7 +19,7 @@
         </edit-config>
         <source-file src="src/android/com/appliedrec/plugin/VerIDPlugin.java" target-dir="src/com/appliedrec/plugin" />
         <framework src="src/android/verid.gradle" custom="true" type="gradleReference"/>
-        <resource-file src="VerIDModels.zip" target="assets/VerIDModels.zip" />
+        <resource-file src="VerIDModels" target="assets/VerIDModels" />
     </platform>
 
     <platform name="ios">
@@ -30,7 +30,7 @@
             </feature>
         </config-file>
         <source-file src="src/ios/VerIDPlugin.swift" />
-        <resource-file src="VerIDModels.zip"/>
+        <resource-file src="VerIDModels"/>
         <framework src="Ver-ID" type="podspec" spec="~> 3.4" />
     </platform>
 </plugin>
