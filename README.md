@@ -205,4 +205,4 @@ The `score` variable will be a value between `0` and `1`:
 
 ## Module API Reference
 
- - [Ver-ID](./module-verid.html)
+ - [Ver-ID](https://appliedrecognition.github.io/Ver-ID-Person-Cordova-Plugin/module-verid.html)
