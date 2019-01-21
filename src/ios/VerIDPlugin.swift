@@ -80,19 +80,14 @@ import VerID
     
     // MARK: - Session helpers
     
-    private func createSettings<T: VerIDSessionSettings>(_ args: [Any]?) -> T {
+    private func createSettings<T: VerIDSessionSettings>(_ args: [Any]?) throws -> T {
         guard let string = args?.compactMap({ ($0 as? [String:String])?["settings"] }).first, let data = string.data(using: .utf8) else {
             NSLog("Unable to parse settings")
-            return self.defaultSettings()
+            throw VerIDPluginError.parsingError
         }
-        do {
-            let settings = try JSONDecoder().decode(T, from: data)
-            NSLog("Decoded settings %@ from %@", String(describing: T.self), string)
-            return settings
-        } catch {
-            NSLog("Unable to decode settings from %@: %@", string, error.localizedDescription)
-            return self.defaultSettings()
-        }
+        let settings = try JSONDecoder().decode(T, from: data)
+        NSLog("Decoded settings %@ from %@", String(describing: T.self), string)
+        return settings
     }
     
     private func defaultSettings<T: VerIDSessionSettings>() -> T {
@@ -115,18 +110,23 @@ import VerID
         }
         self.loadVerID(command) {
             let veridSession: VerIDSession
-            switch type {
-            case is VerIDRegistrationSession.Type:
-                let regSessionSettings: VerIDRegistrationSessionSettings = self.createSettings(command.arguments)
-                veridSession = VerIDRegistrationSession(settings: regSessionSettings)
-            case is VerIDAuthenticationSession.Type:
-                let authSessionSettings: VerIDAuthenticationSessionSettings = self.createSettings(command.arguments)
-                veridSession = VerIDAuthenticationSession(settings: authSessionSettings)
-            case is VerIDLivenessDetectionSession.Type:
-                let livenessSessionSettings: VerIDLivenessDetectionSessionSettings = self.createSettings(command.arguments)
-                veridSession = VerIDLivenessDetectionSession(settings: livenessSessionSettings)
-            default:
-                veridSession = VerIDSession()
+            do {
+                switch type {
+                case is VerIDRegistrationSession.Type:
+                    let regSessionSettings: VerIDRegistrationSessionSettings = try self.createSettings(command.arguments)
+                    veridSession = VerIDRegistrationSession(settings: regSessionSettings)
+                case is VerIDAuthenticationSession.Type:
+                    let authSessionSettings: VerIDAuthenticationSessionSettings = try self.createSettings(command.arguments)
+                    veridSession = VerIDAuthenticationSession(settings: authSessionSettings)
+                case is VerIDLivenessDetectionSession.Type:
+                    let livenessSessionSettings: VerIDLivenessDetectionSessionSettings = try self.createSettings(command.arguments)
+                    veridSession = VerIDLivenessDetectionSession(settings: livenessSessionSettings)
+                default:
+                    veridSession = VerIDSession()
+                }
+            } catch {
+                 self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR), callbackId: command.callbackId)
+                 return
             }
             self.veridSessionCallbackId = command.callbackId
             veridSession.delegate = self
@@ -148,4 +148,8 @@ import VerID
             callback()
         }
     }
+}
+
+public enum VerIDPluginError: Int, Error {
+    case parsingError
 }
