@@ -178,8 +178,6 @@ module.exports.SessionOutcome = {
     "CANCEL": "CANCEL",
     /** The session failed because it failed the anti-spoofing challenge. */
     "FAIL_ANTI_SPOOFING_CHALLENGE": "FAIL_ANTI_SPOOFING_CHALLENGE",
-    /** The session is waiting for images and the outcome is yet inconclusive. */
-    "WAITING": "WAITING",
     /** The session failed because the app hasn't authenticated to use the Ver-ID API. Only applies to the demo version of the Ver-ID library. */
     "FAIL_HOST_AUTHENTICATION": "FAIL_HOST_AUTHENTICATION",
     /** Failed because of an exception thrown by the face detection and recognition library. */
@@ -187,9 +185,7 @@ module.exports.SessionOutcome = {
     /** Face was detected but the user moved away from the camera. */
     "FACE_LOST": "FACE_LOST",
     /** User passed liveness detection but the face cannot be authenticated. */
-    "NOT_AUTHENTICATED": "NOT_AUTHENTICATED",
-    /** The session finished collecting faces and it's processing them. */
-    "PROCESSING": "PROCESSING"
+    "NOT_AUTHENTICATED": "NOT_AUTHENTICATED"
 };
 
 /**
@@ -280,9 +276,9 @@ module.exports.RegistrationSessionSettings = function(userId, livenessDetection)
  */
 module.exports.SessionResult = function(json) {
     this.outcome = json.outcome;
-    this.users = json.users || [];
     this.face = json.face;
     this.image = json.image;
+    this.bearing = json.bearing;
     this.constituentResults = [];
     if (json.constituentResults) {
         for (var i in json.constituentResults) {
@@ -297,7 +293,7 @@ module.exports.SessionResult = function(json) {
  */
 module.exports.SessionResult.prototype.getFaces = function(bearing) {
     var faces = [];
-    if (this.face && (!bearing || this.face.bearing == bearing)) {
+    if (this.face && (!bearing || this.bearing == bearing)) {
         faces.push(this.face);
     }
     for (var i in this.constituentResults) {
@@ -320,7 +316,7 @@ module.exports.SessionResult.prototype.getFaces = function(bearing) {
  */
 module.exports.SessionResult.prototype.getImages = function(bearing) {
     var images = [];
-    if (this.image && (!bearing || !this.face || this.face.bearing == bearing)) {
+    if (this.image && (!bearing || !this.face || this.bearing == bearing)) {
         images.push(this.image);
     }
     for (var i in this.constituentResults) {
@@ -347,7 +343,7 @@ module.exports.SessionResult.prototype.getFaceComparisonTemplates = function(bea
  */
 module.exports.SessionResult.prototype.getFaceImages = function(bearing) {
     var faceImages = [];
-    if (this.face && this.image && (!bearing || this.face.bearing == bearing)) {
+    if (this.face && this.image && (!bearing || this.bearing == bearing)) {
         faceImages.push({"face": this.face, "image": this.image});
     }
     for (var i in this.constituentResults) {
