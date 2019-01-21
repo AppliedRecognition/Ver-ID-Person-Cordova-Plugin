@@ -30,14 +30,19 @@ import VerID
     
     @objc public func getRegisteredUsers(_ command: CDVInvokedUrlCommand) {
         commandDelegate.run {
-            guard let users = try? VerID.shared.registeredVerIDUsers(), let usersJson = try? JSONEncoder().encode(users) else {
-                DispatchQueue.main.async {
-                    self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR), callbackId: command.callbackId)
+            do {
+                let users = try VerID.shared.registeredVerIDUsers()
+                if let usersString = String(data: try JSONEncoder().encode(users), encoding: .utf8) {
+                    DispatchQueue.main.async {
+                        let result = CDVPluginResult(status: CDVCommandStatus_OK, messageAs: usersString)
+                        self.commandDelegate.send(result, callbackId: command.callbackId)
+                    }
+                    return
                 }
+            } catch {
             }
-            let result = CDVPluginResult(status: CDVCommandStatus_OK, messageAs: usersJson)
             DispatchQueue.main.async {
-                self.commandDelegate.send(result, callbackId: command.callbackId)
+                self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR), callbackId: command.callbackId)
             }
         }
     }
@@ -65,14 +70,16 @@ import VerID
         self.veridSessionCallbackId = nil
         self.commandDelegate.run {
             do {
-                let message = try JSONEncoder().encode(result)
-                DispatchQueue.main.async {
-                    self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_OK, messageAs: message), callbackId: callbackId)
+                if let message = String(data: try JSONEncoder().encode(result), encoding: .utf8) {
+                    DispatchQueue.main.async {
+                        self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_OK, messageAs: message), callbackId: callbackId)
+                    }
+                    return
                 }
             } catch {
-                DispatchQueue.main.async {
-                    self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR), callbackId: callbackId)
-                }
+            }
+            DispatchQueue.main.async {
+                self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR), callbackId: callbackId)
             }
         }
     }
@@ -85,7 +92,7 @@ import VerID
             NSLog("Unable to parse settings")
             throw VerIDPluginError.parsingError
         }
-        let settings = try JSONDecoder().decode(T, from: data)
+        let settings = try JSONDecoder().decode(T.self, from: data)
         NSLog("Decoded settings %@ from %@", String(describing: T.self), string)
         return settings
     }
@@ -125,8 +132,8 @@ import VerID
                     veridSession = VerIDSession()
                 }
             } catch {
-                 self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR), callbackId: command.callbackId)
-                 return
+                self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR), callbackId: command.callbackId)
+                return
             }
             self.veridSessionCallbackId = command.callbackId
             veridSession.delegate = self
