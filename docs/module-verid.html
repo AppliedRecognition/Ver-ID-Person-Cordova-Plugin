@@ -721,29 +721,6 @@
 
         <tr>
             
-                <td class="name"><code>WAITING</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">The session is waiting for images and the outcome is yet inconclusive.</td>
-        </tr>
-
-    
-
-        <tr>
-            
                 <td class="name"><code>FAIL_HOST_AUTHENTICATION</code></td>
             
 
@@ -830,29 +807,6 @@
             
 
             <td class="description last">User passed liveness detection but the face cannot be authenticated.</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>PROCESSING</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">The session finished collecting faces and it's processing them.</td>
         </tr>
 
     
@@ -1461,7 +1415,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Ver-ID.js.html">Ver-ID.js</a>, <a href="Ver-ID.js.html#line393">line 393</a>
+        <a href="Ver-ID.js.html">Ver-ID.js</a>, <a href="Ver-ID.js.html#line391">line 391</a>
     </li></ul></dd>
     
 
@@ -2528,13 +2482,13 @@ Call this function to free resources when your app no longer requires Ver-ID
 
         <tr>
             
-                <td class="name"><code>bearing</code></td>
+                <td class="name"><code>yaw</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type"><a href="module-verid.html#.Bearing">module:verid.Bearing</a></span>
+<span class="param-type">number</span>
 
 
             
@@ -2550,7 +2504,65 @@ Call this function to free resources when your app no longer requires Ver-ID
 
             
 
-            <td class="description last">Bearing of the face</td>
+            <td class="description last">Yaw angle of the face in degrees</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>pitch</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">Pitch angle of the face in degrees</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>roll</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">Roll angle of the face in degrees</td>
         </tr>
 
     
@@ -2651,7 +2663,7 @@ Call this function to free resources when your app no longer requires Ver-ID
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Ver-ID.js.html">Ver-ID.js</a>, <a href="Ver-ID.js.html#line365">line 365</a>
+        <a href="Ver-ID.js.html">Ver-ID.js</a>, <a href="Ver-ID.js.html#line361">line 361</a>
     </li></ul></dd>
     
 
@@ -2794,7 +2806,7 @@ Call this function to free resources when your app no longer requires Ver-ID
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Ver-ID.js.html">Ver-ID.js</a>, <a href="Ver-ID.js.html#line359">line 359</a>
+        <a href="Ver-ID.js.html">Ver-ID.js</a>, <a href="Ver-ID.js.html#line355">line 355</a>
     </li></ul></dd>
     
 
@@ -2913,7 +2925,7 @@ Call this function to free resources when your app no longer requires Ver-ID
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Ver-ID.js.html">Ver-ID.js</a>, <a href="Ver-ID.js.html#line382">line 382</a>
+        <a href="Ver-ID.js.html">Ver-ID.js</a>, <a href="Ver-ID.js.html#line380">line 380</a>
     </li></ul></dd>
     
 
@@ -3068,7 +3080,7 @@ Call this function to free resources when your app no longer requires Ver-ID
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Ver-ID.js.html">Ver-ID.js</a>, <a href="Ver-ID.js.html#line376">line 376</a>
+        <a href="Ver-ID.js.html">Ver-ID.js</a>, <a href="Ver-ID.js.html#line374">line 374</a>
     </li></ul></dd>
     
 
@@ -3235,7 +3247,7 @@ Call this function to free resources when your app no longer requires Ver-ID
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Tue Dec 04 2018 18:04:55 GMT+0000 (GMT)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Mon Jan 21 2019 14:25:25 GMT+0000 (Greenwich Mean Time)
 </footer>
 
 <script> prettyPrint(); </script>

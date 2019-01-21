@@ -270,8 +270,8 @@ module.exports.RegistrationSessionSettings = function(userId, livenessDetection)
  * @param {Object} json JSON object received from the API call
  * @property {module:verid.SessionOutcome} outcome Outcome of the session
  * @property {module:verid.Face} [face] Detected face
+ * @property {module:verid.Bearing} [bearing] Bearing of the detected face
  * @property {string} [image] Data URI scheme image in which the face was detected
- * @property {Object.<string,module:verid.Bearing>} users Users recognized or registered in the faces
  * @property {Array.<module:verid.SessionResult>} constituentResults Array of results that constitute the final result – the app collects 1 or more results before the session finishes
  */
 module.exports.SessionResult = function(json) {
@@ -364,7 +364,9 @@ module.exports.SessionResult.prototype.getFaceImages = function(bearing) {
  * @property {number} y Distance in pixels from the top edge of the image
  * @property {number} width Width of the face in pixels
  * @property {number} height Height of the face in pixels
- * @property {module:verid.Bearing} bearing Bearing of the face
+ * @property {number} yaw Yaw angle of the face in degrees
+ * @property {number} pitch Pitch angle of the face in degrees
+ * @property {number} roll Roll angle of the face in degrees
  * @property {module:verid.FaceTemplate} [faceTemplate] Face template in portable format
  * @property {string} [comparisonTemplate] Face template that can be used for face comparison functions
  */
