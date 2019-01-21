@@ -190,6 +190,7 @@ module.exports.SessionOutcome = {
 
 /**
  * @classdesc Base class for session settings
+ * [JSON schema]{@link https://dev.ver-id.com/schemas/verid/registration_settings.json#/definitions/sessionSettings}
  * @class
  * @property {number} expiryTime Seconds before the session expires
  * @property {number} numberOfResultsToCollect Number of results (face images) to collect before the session returns
@@ -205,6 +206,7 @@ module.exports.SessionSettings = function() {
 
 /**
  * @classdesc Liveness detection session settings
+ * [JSON schema]{@link https://dev.ver-id.com/schemas/verid/liveness_detection_settings.json}
  * @class
  * @param {number} [numberOfResultsToCollect=2] Number of results (face images) to collect before the session returns
  * @augments module:verid.SessionSettings
@@ -223,6 +225,7 @@ module.exports.LivenessDetectionSessionSettings = function(numberOfResultsToColl
 
 /**
  * @classdesc Authentication session settings
+ * [JSON schema]{@link https://dev.ver-id.com/schemas/verid/authentication_settings.json}
  * @class
  * @augments module:verid.LivenessDetectionSessionSettings
  * @inheritdoc
@@ -240,6 +243,7 @@ module.exports.AuthenticationSessionSettings = function(userId, livenessDetectio
 
 /**
  * @classdesc Registration session settings
+ * [JSON schema]{@link https://dev.ver-id.com/schemas/verid/registration_settings.json}
  * @class
  * @augments module:verid.SessionSettings
  * @inheritdoc
@@ -266,6 +270,7 @@ module.exports.RegistrationSessionSettings = function(userId, livenessDetection)
 
 /**
  * @classdesc Session result
+ * [JSON schema]{@link https://dev.ver-id.com/schemas/verid/session_result.json}
  * @class
  * @param {Object} json JSON object received from the API call
  * @property {module:verid.SessionOutcome} outcome Outcome of the session
@@ -331,9 +336,9 @@ module.exports.SessionResult.prototype.getImages = function(bearing) {
  */
 module.exports.SessionResult.prototype.getFaceComparisonTemplates = function(bearing) {
     return this.getFaces(bearing).filter(function(face) {
-        return face.hasOwnProperty("comparisonTemplate") && face.comparisonTemplate != null;
+        return face.hasOwnProperty("faceTemplate") && face.faceTemplate != null;
     }).map(function(face) {
-        return face.comparisonTemplate;
+        return face.faceTemplate;
     });
 }
 
@@ -353,12 +358,14 @@ module.exports.SessionResult.prototype.getFaceImages = function(bearing) {
 }
 
 /**
+ * [JSON schema]{@link https://dev.ver-id.com/schemas/verid/root.json#/definitions/faceTemplate}
  * @typedef {Object} module:verid.FaceTemplate
  * @property {number} version Version of the template model
  * @property {string} data Base 64 encoded binary representation of the face
  */
 
 /**
+ * [JSON schema]{@link https://dev.ver-id.com/schemas/verid/root.json#/definitions/face}
  * @typedef {Object} module:verid.Face
  * @property {number} x Distance in pixels from the left edge of the image
  * @property {number} y Distance in pixels from the top edge of the image
@@ -368,7 +375,6 @@ module.exports.SessionResult.prototype.getFaceImages = function(bearing) {
  * @property {number} pitch Pitch angle of the face in degrees
  * @property {number} roll Roll angle of the face in degrees
  * @property {module:verid.FaceTemplate} [faceTemplate] Face template in portable format
- * @property {string} [comparisonTemplate] Face template that can be used for face comparison functions
  */
 
  /**
@@ -384,50 +390,13 @@ module.exports.SessionResult.prototype.getFaceImages = function(bearing) {
 
 /**
  * Compare face templates
- * @param {string} t1 Base 64 encoded face comparison template
- * @param {string} t2 Base 64 encoded face comparison template
- * @returns {number} Score between 0.0 and 1.0 indicating the similarity between the two templates: 0 = different, 1 = same
+ * @param {module.verid.FaceTemplate} template1 Face template to compare to the other template
+ * @param {module.verid.FaceTemplate} template2 Face template to compare to the first template
+ * @returns {number} Score between 0.0 and 1.0 indicating the similarity between the two templates: 0 = different, 1 = very similar
  */
-module.exports.compareFaceTemplates = function(t1, t2) {
-    t1 = base64ToFloat32Array(t1);
-    t2 = base64ToFloat32Array(t2);
-    return get_score_between_templates_with_unit_norms(t1, t2);
-}
-
-function base64ToFloat32Array(base64) {
-    var buffer = new Buffer(base64, "base64");
-    var bytes = new Uint8Array(buffer.length);
-    var dataView = new DataView(bytes.buffer);
-    for (var i=0; i<dataView.byteLength; i++) {
-        dataView.setUint8(i, buffer[i]);
-    }
-    var floats = [];
-    for (var i=0; i<dataView.byteLength; i+=4) {
-        floats.push(dataView.getFloat32(i));
-    }
-    return floats;
-}
-
-function inner_product(v1, v2) {
-    var sum = 0;
-    for (var i = 0; i < v1.length; i++) {
-        sum += v1[i] * v2[i];
-    }    
-    return Math.max(Math.min(sum, 1), 0);
-}
-
-function get_norm(v1) {
-    return Math.sqrt(inner_product(v1, v1));
-}
-
-function get_score_between_templates_with_specified_norms(v1, v1_norm, v2, v2_norm) {
-    return inner_product(v1, v2) / (v1_norm * v2_norm);
-}
-
-function get_score_between_templates_with_unit_norms(v1, v2) {
-    return inner_product(v1, v2);
-}
-
-function get_score_between_templates(v1, v2) {
-    return get_score_between_templates_with_specified_norms(v1, v2, get_norm(v1), get_norm(v2));
+module.exports.compareFaceTemplates = function(template1, template2, callback, errorCallback) {
+    var t1 = JSON.stringify(template1);
+    var t2 = JSON.stringify(template2);
+    var options = [{"template1":t1},{"template2":t2}];
+    exec(callback, errorCallback, PLUGIN_NAME, "compareFaceTemplates", options);
 }

@@ -60,6 +60,30 @@ import VerID
             self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR), callbackId: command.callbackId)
         }
     }
+
+    @objc public func compareFaceTemplates(_ command: CDVInvokedUrlCommand) {
+        if let t1 = command.arguments?.compactMap({ ($0 as? [String:String])?["template1"] }).first?.data(using: .utf8), let t2 = command.arguments?.compactMap({ ($0 as? [String:String])?["template2"] }).first?.data(using: .utf8) {
+            commandDelegate.run {
+                do {
+                    let template1 = try JSONDecoder().decode(FaceTemplate.self, from: t1)
+                    let template2 = try JSONDecoder().decode(FaceTemplate.self, from: t2)
+                    let score = try FaceUtil.compareFaceTemplate(template1, to: template2).floatValue
+                    DispatchQueue.main.async {
+                        let message: [String:Any] = ["score":score];
+                        self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_OK, messageAs: message), callbackId: command.callbackId)
+                    }
+                } catch {
+                    DispatchQueue.main.async {
+                        self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR), callbackId: command.callbackId)
+                    }
+                }
+            }
+        } else {
+            DispatchQueue.main.async {
+                self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR), callbackId: command.callbackId)
+            }
+        }
+    }
     
     // MARK: - VerID Session Delegate
     

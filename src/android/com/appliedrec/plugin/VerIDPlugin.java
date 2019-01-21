@@ -20,6 +20,7 @@ import com.appliedrec.ver_id.session.VerIDRegistrationSessionSettings;
 import com.appliedrec.ver_id.session.VerIDSessionResult;
 import com.appliedrec.ver_id.session.VerIDSessionSettings;
 import com.appliedrec.ver_id.ui.VerIDActivity;
+import com.appliedrec.ver_id.util.FaceUtil;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -180,6 +181,43 @@ public class VerIDPlugin extends CordovaPlugin {
                 callbackContext.error("User id must not be null");
             }
             return true;
+        } else if ("compareFaceTemplates".equals(action)) {
+            String t1 = getArg(args, "template1", String.class);
+            String t2 = getArg(args, "template2", String.class);
+            Gson gson = new Gson();
+            FaceTemplate faceTemplate1 = gson.fromJson(t1, FaceTemplate.class);
+            FaceTemplate faceTemplate2 = gson.fromJson(t2, FaceTemplate.class);
+            loadVerIDAndRun(args, callbackContext, new Runnable() {
+                @Override
+                public void run() {
+                    cordova.getThreadPool().execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                VerIDFace face1 = new VerIDFace(faceTemplate1);
+                                VerIDFace face2 = new VerIDFace(faceTemplate2);
+                                final float score = FaceUtil.compareFaces(face1, face2);
+                                final JSONObject response = new JSONObject();
+                                response.put("score", score);
+                                cordova.getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        callbackContext.success(response);
+                                    }
+                                });
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                cordova.getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        callbackContext.error(e.getLocalizedMessage());
+                                    }
+                                });
+                            }
+                        }
+                    });
+                }
+            });
         }
         return false;
     }
