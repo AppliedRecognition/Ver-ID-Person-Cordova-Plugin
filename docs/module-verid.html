@@ -1291,7 +1291,7 @@
     
 
     
-    <h4 class="name" id=".compareFaceTemplates"><span class="type-signature">(static) </span>compareFaceTemplates<span class="signature">(t1, t2)</span><span class="type-signature"> &rarr; {number}</span></h4>
+    <h4 class="name" id=".compareFaceTemplates"><span class="type-signature">(static) </span>compareFaceTemplates<span class="signature">(template1, template2)</span><span class="type-signature"> &rarr; {number}</span></h4>
     
 
     
@@ -1335,13 +1335,13 @@
 
         <tr>
             
-                <td class="name"><code>t1</code></td>
+                <td class="name"><code>template1</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">module.verid.FaceTemplate</span>
 
 
             
@@ -1351,20 +1351,20 @@
 
             
 
-            <td class="description last">Base 64 encoded face comparison template</td>
+            <td class="description last">Face template to compare to the other template</td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>t2</code></td>
+                <td class="name"><code>template2</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">module.verid.FaceTemplate</span>
 
 
             
@@ -1374,7 +1374,7 @@
 
             
 
-            <td class="description last">Base 64 encoded face comparison template</td>
+            <td class="description last">Face template to compare to the first template</td>
         </tr>
 
     
@@ -1415,7 +1415,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Ver-ID.js.html">Ver-ID.js</a>, <a href="Ver-ID.js.html#line391">line 391</a>
+        <a href="Ver-ID.js.html">Ver-ID.js</a>, <a href="Ver-ID.js.html#line397">line 397</a>
     </li></ul></dd>
     
 
@@ -1442,7 +1442,7 @@
 
         
 <div class="param-desc">
-    Score between 0.0 and 1.0 indicating the similarity between the two templates: 0 = different, 1 = same
+    Score between 0.0 and 1.0 indicating the similarity between the two templates: 0 = different, 1 = very similar
 </div>
 
 
@@ -2322,6 +2322,10 @@ Call this function to free resources when your app no longer requires Ver-ID
 
 
 
+<div class="description">
+    <a href="https://dev.ver-id.com/schemas/verid/root.json#/definitions/face">JSON schema</a>
+</div>
+
 
 
     <h5>Type:</h5>
@@ -2597,37 +2601,6 @@ Call this function to free resources when your app no longer requires Ver-ID
         </tr>
 
     
-
-        <tr>
-            
-                <td class="name"><code>comparisonTemplate</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last">Face template that can be used for face comparison functions</td>
-        </tr>
-
-    
     </tbody>
 </table>
 
@@ -2663,7 +2636,7 @@ Call this function to free resources when your app no longer requires Ver-ID
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Ver-ID.js.html">Ver-ID.js</a>, <a href="Ver-ID.js.html#line361">line 361</a>
+        <a href="Ver-ID.js.html">Ver-ID.js</a>, <a href="Ver-ID.js.html#line367">line 367</a>
     </li></ul></dd>
     
 
@@ -2685,6 +2658,10 @@ Call this function to free resources when your app no longer requires Ver-ID
 
 
 
+
+<div class="description">
+    <a href="https://dev.ver-id.com/schemas/verid/root.json#/definitions/faceTemplate">JSON schema</a>
+</div>
 
 
 
@@ -2806,7 +2783,7 @@ Call this function to free resources when your app no longer requires Ver-ID
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Ver-ID.js.html">Ver-ID.js</a>, <a href="Ver-ID.js.html#line355">line 355</a>
+        <a href="Ver-ID.js.html">Ver-ID.js</a>, <a href="Ver-ID.js.html#line360">line 360</a>
     </li></ul></dd>
     
 
@@ -2925,7 +2902,7 @@ Call this function to free resources when your app no longer requires Ver-ID
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Ver-ID.js.html">Ver-ID.js</a>, <a href="Ver-ID.js.html#line380">line 380</a>
+        <a href="Ver-ID.js.html">Ver-ID.js</a>, <a href="Ver-ID.js.html#line386">line 386</a>
     </li></ul></dd>
     
 
@@ -3080,7 +3057,7 @@ Call this function to free resources when your app no longer requires Ver-ID
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Ver-ID.js.html">Ver-ID.js</a>, <a href="Ver-ID.js.html#line374">line 374</a>
+        <a href="Ver-ID.js.html">Ver-ID.js</a>, <a href="Ver-ID.js.html#line380">line 380</a>
     </li></ul></dd>
     
 
@@ -3247,7 +3224,7 @@ Call this function to free resources when your app no longer requires Ver-ID
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Mon Jan 21 2019 14:25:25 GMT+0000 (Greenwich Mean Time)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Mon Jan 21 2019 18:55:11 GMT+0000 (Greenwich Mean Time)
 </footer>
 
 <script> prettyPrint(); </script>
