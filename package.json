@@ -1,0 +1,93 @@
+{
+  "name": "ver-id-cordova-plugin",
+  "version": "3.1.0",
+  "description": "## Introduction",
+  "cordova": {
+    "id": "com-appliedrec-plugins-verid",
+    "platforms": [
+      "android",
+      "ios"
+    ]
+  },
+  "dependencies": {
+    "balanced-match": "undefined1.0.0",
+    "assertion-error": "undefined1.1.0",
+    "brace-expansion": "undefined1.1.11",
+    "browser-stdout": "undefined1.3.1",
+    "check-error": "undefined1.0.2",
+    "chai": "undefined4.2.0",
+    "commander": "undefined2.15.1",
+    "concat-map": "undefined0.0.1",
+    "debug": "undefined3.1.0",
+    "deep-eql": "undefined3.0.1",
+    "diff": "undefined3.5.0",
+    "escape-string-regexp": "undefined1.0.5",
+    "fs.realpath": "undefined1.0.0",
+    "get-func-name": "undefined2.0.0",
+    "glob": "undefined7.1.2",
+    "growl": "undefined1.10.5",
+    "has-flag": "undefined3.0.0",
+    "he": "undefined1.1.1",
+    "inflight": "undefined1.0.6",
+    "inherits": "undefined2.0.3",
+    "minimatch": "undefined3.0.4",
+    "minimist": "undefined0.0.8",
+    "mkdirp": "undefined0.5.1",
+    "ms": "undefined2.0.0",
+    "once": "undefined1.4.0",
+    "path-is-absolute": "undefined1.0.1",
+    "pathval": "undefined1.1.0",
+    "supports-color": "undefined5.4.0",
+    "type-detect": "undefined4.0.8",
+    "wrappy": "undefined1.0.2",
+    "mocha": "undefined5.2.0"
+  },
+  "devDependencies": {
+    "assertion-error": "undefined1.1.0",
+    "balanced-match": "undefined1.0.0",
+    "brace-expansion": "undefined1.1.11",
+    "browser-stdout": "undefined1.3.1",
+    "chai": "undefined4.2.0",
+    "check-error": "undefined1.0.2",
+    "commander": "undefined2.15.1",
+    "concat-map": "undefined0.0.1",
+    "debug": "undefined3.1.0",
+    "deep-eql": "undefined3.0.1",
+    "diff": "undefined3.5.0",
+    "escape-string-regexp": "undefined1.0.5",
+    "fs.realpath": "undefined1.0.0",
+    "get-func-name": "undefined2.0.0",
+    "glob": "undefined7.1.2",
+    "has-flag": "undefined3.0.0",
+    "growl": "undefined1.10.5",
+    "he": "undefined1.1.1",
+    "inflight": "undefined1.0.6",
+    "inherits": "undefined2.0.3",
+    "minimatch": "undefined3.0.4",
+    "minimist": "undefined0.0.8",
+    "mkdirp": "undefined0.5.1",
+    "ms": "undefined2.0.0",
+    "once": "undefined1.4.0",
+    "path-is-absolute": "undefined1.0.1",
+    "pathval": "undefined1.1.0",
+    "supports-color": "undefined5.4.0",
+    "type-detect": "undefined4.0.8",
+    "wrappy": "undefined1.0.2",
+    "mocha": "undefined5.2.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AppliedRecognition/Ver-ID-Person-Cordova-Plugin.git"
+  },
+  "keywords": [
+    "ecosystem:cordova",
+    "cordova-android",
+    "cordova-ios"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AppliedRecognition/Ver-ID-Person-Cordova-Plugin/issues"
+  },
+  "homepage": "https://github.com/AppliedRecognition/Ver-ID-Person-Cordova-Plugin#readme"
+}
