@@ -7,16 +7,22 @@ Ver-ID gives your users the ability to authenticate using their face.
 ## Adding Ver-ID Person Plugin to Your Cordova App
 
 1. [Request an API secret](https://dev.ver-id.com/admin/register) for your app.
-1. Install the plugin.
+1. Clone the plugin Git repo into your file system:
 
     ~~~bash
-    cordova plugin add https://github.com/AppliedRecognition/Ver-ID-Person-Cordova-Plugin.git
-    ~~~ 
-3. If your app includes iOS platform:
+    git clone --recurse-submodules https://github.com/AppliedRecognition/Ver-ID-Person-Cordova-Plugin.git
+    ~~~
+1. Navigate to your Cordova project directory and install the plugin substituting `path/to/plugin` with the path of the plugin you checked out in the previous step:
+
+	~~~bash
+	cordova plugin add path/to/plugin
+	~~~
+1. If your app includes iOS platform:
     - Navigate to **platforms/ios** and open the **Podfile** in a text editor. Add `use_frameworks!` in the target that's using the Ver-ID pod.
-    - Open Cordova app's iOS project in Xcode.
+    - Set the platform to iOS 11: `platform :ios, '11.0'`
+    - Run `pod install` to update the project.
+    - Open Cordova app's iOS work space in Xcode.
     - Ensure the project's deployment target is iOS 11 or newer.
-    - In build settings specify Swift version as 4.2.
     - Open your app's **Info.plist** file and and ensure it contains an entry for `NSCameraUsageDescription`.
     - Still in the **Info.plist** file add the following entry, substituting `[your API secret]` for the API secret obtained after registration in step 1:
 
@@ -27,7 +33,7 @@ Ver-ID gives your users the ability to authenticate using their face.
     - Select your app target and click on the **Build Settings** tab. Under **Build Options** ensure **Enable Bitcode** is set to **No**.
     - Under **Build Settings** set **Swift Language Version** to **4.2**.
 4. If your app includes Android platform:
-    - Ensure your app targets Android API level 18 or newer.
+    - Ensure your app targets Android API level 14 or newer.
     - Open your app's **AndroidManifest.xml** file and add the following tag in `<application>` replacing `[your API secret]` with the API secret your received in step 1:
 
         ~~~xml
@@ -39,16 +45,15 @@ Ver-ID gives your users the ability to authenticate using their face.
     - Open your application's **build.gradle** file and under **android/defaultConfig** add:
     	
         ~~~groovy
-        multiDexEnabled true
         renderscriptTargetApi 14
         renderscriptSupportModeEnabled true
         ~~~
 
 ## Loading Ver-ID
 
-Ver-ID is loaded implicitly with all API calls. The load operation may take up to a couple of seconds. You may wish to load Ver-ID before calling the API if you want to minimise the delay between issuing the API call and the Ver-ID Credentials user interface appearing.
+Ver-ID must be loaded before you can run face detection sessions or compare faces.
 
-You may also load Ver-ID using the `load` call if you are unable to specify your API secret in your app's plist or manifest file.
+The load operation may take up to a few of seconds. Load Ver-ID using the `load` call:
 
 ~~~javascript
 verid.load(function() {
@@ -58,7 +63,7 @@ verid.load(function() {
     // Ver-ID failed to load
 });
 ~~~
-Or if you prefer to specify the API secret in your code instead of your app's manifest or plist:
+If you prefer, you can to specify the API secret in your code instead of your app's manifest or plist:
 
 ~~~javascript
 var apiSecret = "..."; // Alternative way to set your Ver-ID API secret
@@ -188,21 +193,24 @@ verid.load(function(){
 
 ## Session Response Format
 
-The callback of a successful session will contain [an object](./module-verid.SessionResult.html) that represents the result of the session.
+The callback of a successful session will contain [an object](https://appliedrecognition.github.io/Ver-ID-Person-Cordova-Plugin/module-verid.SessionResult.html) that represents the result of the session.
 
 ## Comparing Faces
 
 After collecting two templates as outlined in the Liveness Detection section above run:
 
 ~~~javascript
-var score = veridutils.compareFaceTemplates(template1, template2);
+verid.compareFaceTemplates(template1, template2, function(response) {
+	var score = response.score;
+	// score is a value between 0.0 and 1.0.
+	// 0.0 = the face templates are completely different
+	// 1.0 = the face templates are very similar
+}, function() {
+	// Face comparison failed
+});
 ~~~
-
-The `score` variable will be a value between `0` and `1`:
-
- - `0` no similarity between the two face templates 
- - `1` templates are identical
 
 ## Module API Reference
 
  - [Ver-ID](https://appliedrecognition.github.io/Ver-ID-Person-Cordova-Plugin/module-verid.html)
+ 
