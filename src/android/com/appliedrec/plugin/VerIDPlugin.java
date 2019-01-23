@@ -243,7 +243,7 @@ public class VerIDPlugin extends CordovaPlugin {
                                     throw new Exception("Invalid image argument");
                                 }
                                 dataIndex += 7;
-                                if (dataIndex < image.length()) {
+                                if (dataIndex >= image.length()) {
                                     throw new Exception("Invalid image length");
                                 }
                                 ByteArrayInputStream inputStream = new ByteArrayInputStream(image.substring(dataIndex).getBytes("UTF-8"));

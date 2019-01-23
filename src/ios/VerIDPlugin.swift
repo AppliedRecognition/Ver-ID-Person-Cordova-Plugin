@@ -92,10 +92,11 @@ import VerID
                     guard let imageString = command.arguments?.compactMap({ ($0 as? [String:String])?["image"] }).first else {
                         throw VerIDPluginError.invalidArgument
                     }
-                    guard imageString.starts(with: "data:image/"), let mimeTypeEndIndex = imageString.firstIndex(of: ";"), let dataIndex = imageString.firstIndex(of: ",") else {
+                    guard imageString.starts(with: "data:image/"), let mimeTypeEndIndex = imageString.firstIndex(of: ";"), let commaIndex = imageString.firstIndex(of: ",") else {
                         throw VerIDPluginError.invalidArgument
                     }
-                    guard String(imageString[mimeTypeEndIndex..<imageString.index(mimeTypeEndIndex, offsetBy: 6)]) == "base64" else {
+                    let dataIndex = imageString.index(commaIndex, offsetBy: 1)
+                    guard String(imageString[mimeTypeEndIndex..<imageString.index(mimeTypeEndIndex, offsetBy: 7)]) == ";base64" else {
                         throw VerIDPluginError.invalidArgument
                     }
                     guard let data = Data(base64Encoded: String(imageString[dataIndex...])) else {
