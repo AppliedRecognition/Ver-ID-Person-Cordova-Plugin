@@ -85,6 +85,41 @@ import VerID
         }
     }
     
+    @objc public func detectFaceInImage(_ command: CDVInvokedUrlCommand) {
+        self.loadVerID(command) {
+            self.commandDelegate.run(inBackground: {
+                do {
+                    guard let imageString = command.arguments?.compactMap({ ($0 as? [String:String])?["image"] }).first else {
+                        throw VerIDPluginError.invalidArgument
+                    }
+                    guard imageString.starts(with: "data:image/"), let mimeTypeEndIndex = imageString.firstIndex(of: ";"), let dataIndex = imageString.firstIndex(of: ",") else {
+                        throw VerIDPluginError.invalidArgument
+                    }
+                    guard String(imageString[mimeTypeEndIndex..<imageString.index(mimeTypeEndIndex, offsetBy: 6)]) == "base64" else {
+                        throw VerIDPluginError.invalidArgument
+                    }
+                    guard let data = Data(base64Encoded: String(imageString[dataIndex...])) else {
+                        throw VerIDPluginError.invalidArgument
+                    }
+                    guard let image = UIImage(data: data) else {
+                        throw VerIDPluginError.invalidArgument
+                    }
+                    let face = try VerID.shared.detectFaceInImage(image, keepForRecognition: true)
+                    guard let encodedFace = String(data: try JSONEncoder().encode(face), encoding: .utf8) else {
+                        throw VerIDPluginError.encodingError
+                    }
+                    DispatchQueue.main.async {
+                        self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_OK, messageAs: encodedFace), callbackId: command.callbackId)
+                    }
+                } catch {
+                    DispatchQueue.main.async {
+                        self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: error.localizedDescription), callbackId: command.callbackId)
+                    }
+                }
+            })
+        }
+    }
+    
     // MARK: - VerID Session Delegate
     
     public func session(_ session: VerIDSession, didFinishWithResult result: VerIDSessionResult) {
@@ -182,5 +217,5 @@ import VerID
 }
 
 public enum VerIDPluginError: Int, Error {
-    case parsingError
+    case parsingError, invalidArgument, encodingError
 }

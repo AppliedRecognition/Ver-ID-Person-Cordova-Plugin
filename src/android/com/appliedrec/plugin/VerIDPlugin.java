@@ -2,9 +2,12 @@ package com.appliedrec.plugin;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Base64;
+import android.util.Base64InputStream;
 
 import com.appliedrec.detreclib.util.TemplateUtil;
 import com.appliedrec.ver_id.VerID;
@@ -34,6 +37,7 @@ import com.google.gson.JsonSerializer;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
+import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -184,9 +188,6 @@ public class VerIDPlugin extends CordovaPlugin {
         } else if ("compareFaceTemplates".equals(action)) {
             String t1 = getArg(args, "template1", String.class);
             String t2 = getArg(args, "template2", String.class);
-            Gson gson = new Gson();
-            FaceTemplate faceTemplate1 = gson.fromJson(t1, FaceTemplate.class);
-            FaceTemplate faceTemplate2 = gson.fromJson(t2, FaceTemplate.class);
             loadVerIDAndRun(args, callbackContext, new Runnable() {
                 @Override
                 public void run() {
@@ -194,6 +195,9 @@ public class VerIDPlugin extends CordovaPlugin {
                         @Override
                         public void run() {
                             try {
+                                Gson gson = new Gson();
+                                FaceTemplate faceTemplate1 = gson.fromJson(t1, FaceTemplate.class);
+                                FaceTemplate faceTemplate2 = gson.fromJson(t2, FaceTemplate.class);
                                 VerIDFace face1 = new VerIDFace(faceTemplate1);
                                 VerIDFace face2 = new VerIDFace(faceTemplate2);
                                 final float score = FaceUtil.compareFaces(face1, face2);
@@ -218,6 +222,58 @@ public class VerIDPlugin extends CordovaPlugin {
                     });
                 }
             });
+            return true;
+        } else if ("detectFaceInImage".equals(action)) {
+            String image = getArg(args, "image", String.class);
+            loadVerIDAndRun(args, callbackContext, new Runnable() {
+                @Override
+                public void run() {
+                    cordova.getThreadPool().execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                if (image == null) {
+                                    throw new Exception("Image argument is null");
+                                }
+                                if (!image.startsWith("data:image/")) {
+                                    throw new Exception("Invalid image argument");
+                                }
+                                int dataIndex = image.indexOf("base64,");
+                                if (dataIndex == -1) {
+                                    throw new Exception("Invalid image argument");
+                                }
+                                dataIndex += 7;
+                                if (dataIndex < image.length()) {
+                                    throw new Exception("Invalid image length");
+                                }
+                                ByteArrayInputStream inputStream = new ByteArrayInputStream(image.substring(dataIndex).getBytes("UTF-8"));
+                                Base64InputStream base64InputStream = new Base64InputStream(inputStream, Base64.NO_WRAP);
+                                Bitmap bitmap = BitmapFactory.decodeStream(base64InputStream);
+                                if (bitmap == null) {
+                                    throw new Exception("Bitmap decoding error");
+                                }
+                                VerIDFace face = VerID.shared.detectFaceInImage(bitmap, true, false);
+                                Gson gson = new Gson();
+                                final String encodedFace = gson.toJson(face);
+                                cordova.getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        callbackContext.success(encodedFace);
+                                    }
+                                });
+                            } catch (final Exception e) {
+                                cordova.getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        callbackContext.error(e.getLocalizedMessage());
+                                    }
+                                });
+                            }
+                        }
+                    });
+                }
+            });
+            return true;
         }
         return false;
     }
