@@ -24,6 +24,9 @@
     </platform>
 
     <platform name="ios">
+        <hook type="before_plugin_install" src="hooks/platformversion.js" />
+        <hook type="before_plugin_install" src="hooks/swiftversion.js" />
+        <hook type="before_plugin_install" src="hooks/copypodsetup.js" />
         <config-file target="config.xml" parent="/*">
             <feature name="VerIDPlugin">
                 <param name="ios-package" value="VerIDPlugin" />
