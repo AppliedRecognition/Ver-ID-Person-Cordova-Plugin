@@ -210,6 +210,44 @@ verid.compareFaceTemplates(template1, template2, function(response) {
 });
 ~~~
 
+## Detecting Faces In Images
+
+As of version 4.1.0 the API lets your app detect a face in an image it supplies. The image must be supplied using [data URI scheme](https://en.wikipedia.org/wiki/Data_URI_scheme).
+
+See the [`Face`](https://appliedrecognition.github.io/Ver-ID-Person-Cordova-Plugin/module-verid.html#~Face) type documentation for the properties of the returned face. You can pass the face's `faceTemplate` to the [`compareFaceTemplates `](https://appliedrecognition.github.io/Ver-ID-Person-Cordova-Plugin/module-verid.html#.compareFaceTemplates) function.
+
+~~~javascript
+// Create an image object
+var image = new Image();
+// Set load callback
+image.onload = function() {
+	// Create a canvas element
+	var canvas = document.createElement("canvas");
+	// Set the canvas width to match the width of the image
+	canvas.width = image.width;
+	// Set the height width to match the height of the image
+	canvas.height = image.height;
+	// Get the canvas 2D context
+	var ctx = canvas.getContext("2d");
+	// Draw the image on the canvas
+	ctx.drawImage(image, 0, 0);
+	// Get the image data URI as JPEG at 0.95 quality
+	var uri = canvas.toDataURL("image/jpeg", 0.95);
+	// Use Ver-ID to detect a face in the image
+	verid.detectFaceInImage(uri, function(face) {
+	    // Face detected
+	}, function(error) {
+	    // Face detection failed
+});
+}
+// Set error callback
+image.onerror = function() {
+    console.log("Error loading image");
+}
+// Set the image source (change img/test.jpg to your image location)
+image.src = "img/test.jpg";
+~~~
+
 ## Module API Reference
 
  - [Ver-ID](https://appliedrecognition.github.io/Ver-ID-Person-Cordova-Plugin/module-verid.html)
