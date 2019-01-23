@@ -53,6 +53,44 @@ function decodeSessionResultAndIssueCallback(callback) {
 }
 
 /** @module verid */
+
+
+/**
+ * [JSON schema]{@link https://dev.ver-id.com/schemas/verid/root.json#/definitions/faceTemplate}
+ * @typedef {Object} FaceTemplate
+ * @property {integer} version Version of the template model
+ * @property {string} data Base 64 encoded binary representation of the face
+ */
+
+/**
+ * [JSON schema]{@link https://dev.ver-id.com/schemas/verid/root.json#/definitions/face}
+ * @typedef {Object} Face
+ * @property {number} x Distance in pixels from the left edge of the image
+ * @property {number} y Distance in pixels from the top edge of the image
+ * @property {number} width Width of the face in pixels
+ * @property {number} height Height of the face in pixels
+ * @property {number} yaw Yaw angle of the face in degrees
+ * @property {number} pitch Pitch angle of the face in degrees
+ * @property {number} roll Roll angle of the face in degrees
+ * @property {module:verid~FaceTemplate} [faceTemplate] Face template in portable format
+ */
+
+ /**
+  * @typedef {Object} User
+  * @property {string} userId User ID
+  * @property {Array.&lt;module:verid.Bearing>} bearings Registered (face bearings)[#verid.Bearing]
+  */
+
+/**
+ * @callback SessionCallback
+ * @param {module:verid.SessionResult} result - Result of the session
+ */
+
+/**
+ * @callback UserCallback
+ * @param {Array.&lt;module:verid~User>} users - Registered users
+ */
+
 /**
  * Load Ver-ID
  * @param {string} [apiSecret] API secret obtained at {@linkplain https://dev.ver-id.com/admin/register}. If you omit this parameter you must specify the API secret in your app's Info.plist file (iOS) or manifest.xml (Android).
@@ -81,7 +119,7 @@ module.exports.unload = function() {
 /**
  * Register user
  * @param {module:verid.RegistrationSessionSettings} [settings] An instance of {@linkcode module:verid.RegistrationSessionSettings RegistrationSessionSettings}
- * @param {module:verid.SessionCallback} callback Function to be called if the registration session finishes
+ * @param {module:verid~SessionCallback} callback Function to be called if the registration session finishes
  * @param {function} errorCallback Function to be called if the registration session fails
  */
 module.exports.register = function(settings, callback, errorCallback) {
@@ -97,7 +135,7 @@ module.exports.register = function(settings, callback, errorCallback) {
 /**
  * Authenticate user
  * @param {module:verid.AuthenticationSessionSettings} [settings] An instance of {@linkcode module:verid.AuthenticationSessionSettings AuthenticationSessionSettings}
- * @param {module:verid.SessionCallback} callback Function to be called if the authentication session completes
+ * @param {module:verid~SessionCallback} callback Function to be called if the authentication session completes
  * @param {function} errorCallback Function to be called if the session fails
  */
 module.exports.authenticate = function(settings, callback, errorCallback) {
@@ -113,7 +151,7 @@ module.exports.authenticate = function(settings, callback, errorCallback) {
 /**
  * Capture live face
  * @param {module:verid.LivenessDetectionSessionSettings} [settings] An instance of {@linkcode module:verid.LivenessDetectionSessionSettings LivenessDetectionSessionSettings}
- * @param {module:verid.SessionCallback} callback Function to be called if the liveness detection session completes
+ * @param {module:verid~SessionCallback} callback Function to be called if the liveness detection session completes
  * @param {function} errorCallback Function to be called if the session fails
  */
 module.exports.captureLiveFace = function(settings, callback, errorCallback) {
@@ -128,17 +166,12 @@ module.exports.captureLiveFace = function(settings, callback, errorCallback) {
 
 /**
  * Retrieve a list of registered users
- * @param {module:verid.UserCallback} callback Function to be called if the opration succeeds. The response will be an array of objects with a string member "userId" and an array member "bearings" with int members corresponding to the user's registered bearings as defined by the Bearing constants.
+ * @param {module:verid~UserCallback} callback Function to be called if the opration succeeds. The response will be an array of objects with a string member "userId" and an array member "bearings" with int members corresponding to the user's registered bearings as defined by the Bearing constants.
  * @param {function} errorCallback Function to be called if the operation fails.
  */
 module.exports.getRegisteredUsers = function(callback, errorCallback) {
     exec(decodeResultAndIssueCallback(callback), errorCallback, PLUGIN_NAME, "getRegisteredUsers", []);
 }
-
-/**
- * @callback module:verid.UserCallback
- * @param {Array.&lt;module:verid.User>} users - Registered users
- */
 
 /**
  * Delete a registered user
@@ -302,7 +335,7 @@ module.exports.RegistrationSessionSettings = function(userId, livenessDetection)
  * @class
  * @param {Object} json JSON object received from the API call
  * @property {module:verid.SessionOutcome} outcome Outcome of the session
- * @property {module:verid.Face} [face] Detected face
+ * @property {module:verid~Face} [face] Detected face
  * @property {module:verid.Bearing} [bearing] Bearing of the detected face
  * @property {string} [image] Data URI scheme image in which the face was detected
  * @property {Array.&lt;module:verid.SessionResult>} constituentResults Array of results that constitute the final result – the app collects 1 or more results before the session finishes
@@ -386,40 +419,9 @@ module.exports.SessionResult.prototype.getFaceImages = function(bearing) {
 }
 
 /**
- * [JSON schema]{@link https://dev.ver-id.com/schemas/verid/root.json#/definitions/faceTemplate}
- * @typedef {Object} module:verid.FaceTemplate
- * @property {number} version Version of the template model
- * @property {string} data Base 64 encoded binary representation of the face
- */
-
-/**
- * [JSON schema]{@link https://dev.ver-id.com/schemas/verid/root.json#/definitions/face}
- * @typedef {Object} module:verid.Face
- * @property {number} x Distance in pixels from the left edge of the image
- * @property {number} y Distance in pixels from the top edge of the image
- * @property {number} width Width of the face in pixels
- * @property {number} height Height of the face in pixels
- * @property {number} yaw Yaw angle of the face in degrees
- * @property {number} pitch Pitch angle of the face in degrees
- * @property {number} roll Roll angle of the face in degrees
- * @property {module:verid.FaceTemplate} [faceTemplate] Face template in portable format
- */
-
- /**
-  * @typedef {Object} module:verid.User
-  * @property {string} userId User ID
-  * @property {Array.&lt;module:verid.Bearing>} bearings Registered (face bearings)[#verid.Bearing]
-  */
-
-/**
- * @callback module:verid.SessionCallback
- * @param {module:verid.SessionResult} result - Result of the session
- */
-
-/**
  * Compare face templates
- * @param {module.verid.FaceTemplate} template1 Face template to compare to the other template
- * @param {module.verid.FaceTemplate} template2 Face template to compare to the first template
+ * @param {module:verid~FaceTemplate} template1 Face template to compare to the other template
+ * @param {module:verid~FaceTemplate} template2 Face template to compare to the first template
  * @returns {number} Score between 0.0 and 1.0 indicating the similarity between the two templates: 0 = different, 1 = very similar
  */
 module.exports.compareFaceTemplates = function(template1, template2, callback, errorCallback) {
@@ -427,6 +429,29 @@ module.exports.compareFaceTemplates = function(template1, template2, callback, e
     var t2 = JSON.stringify(template2);
     var options = [{"template1":t1},{"template2":t2}];
     exec(callback, errorCallback, PLUGIN_NAME, "compareFaceTemplates", options);
+}
+
+/**
+ * Called when face is detected in image 
+ * @callback DetectFaceCallback
+ * @param {module:verid~Face} face Detected face
+ */
+
+/**
+ * Detect face in image
+ * @param {string} image Data URL scheme image, e.g. data:image/jpeg;base64,encodedImageData
+ * @param {module:verid~DetectFaceCallback} callback Callback when face is detected
+ * @param {function} errorCallback Error callback
+ */
+module.exports.detectFaceInImage = function(image, callback, errorCallback) {
+    exec(function(encodedFace) {
+        if (encodedFace) {
+            var face = JSON.parse(encodedFace);
+            callback(face);
+        } else {
+            errorCallback("Received null face");
+        }
+    }, errorCallback, PLUGIN_NAME, "detectFaceInImage", [{"image":image}]);
 }</code></pre>
         </article>
     </section>
@@ -443,7 +468,7 @@ module.exports.compareFaceTemplates = function(template1, template2, callback, e
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Mon Jan 21 2019 18:55:11 GMT+0000 (Greenwich Mean Time)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Jan 23 2019 10:58:29 GMT+0000 (Greenwich Mean Time)
 </footer>
 
 <script> prettyPrint(); </script>

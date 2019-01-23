@@ -19,7 +19,7 @@ Ver-ID gives your users the ability to authenticate using their face.
 	~~~
 1. If your app includes iOS platform:
     - Navigate to **platforms/ios** and open the **Podfile** in a text editor. Add `use_frameworks!` in the target that's using the Ver-ID pod.
-    - Set the platform to iOS 11: `platform :ios, '11.0'`
+    - Set the platform to iOS 11: `platform :ios, '11.0'`.
     - Run `pod install` to update the project.
     - Open Cordova app's iOS work space in Xcode.
     - Ensure the project's deployment target is iOS 11 or newer.
