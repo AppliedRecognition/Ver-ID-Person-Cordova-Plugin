@@ -22,7 +22,6 @@ module.exports = function(context) {
                 return;
             }
             var pattern = /platform\s+:ios,\s+[\"\'](\d+)(\.\d+)*[\"\']/ig;
-            var dataUpdated = false;
             data = data.replace(pattern, function(match, iosMajor) {
                 if (parseInt(iosMajor) < 11) {
                     dataUpdated = true;

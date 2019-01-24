@@ -18,11 +18,10 @@ Ver-ID gives your users the ability to authenticate using their face.
 	cordova plugin add path/to/plugin
 	~~~
 1. If your app includes iOS platform:
-    - Navigate to **platforms/ios** and open the **Podfile** in a text editor. Add `use_frameworks!` in the target that's using the Ver-ID pod.
-    - Set the platform to iOS 11: `platform :ios, '11.0'`.
-    - Run `pod install` to update the project.
+    - Navigate to **platforms/ios** and open the **Podfile** in a text editor. Set the platform to iOS 11: `platform :ios, '11.0'`. Close the file and run `pod install` to update the project. Alternatively, to automate this step copy the **[hooks/podfilesetup.js](https://github.com/AppliedRecognition/Ver-ID-Person-Cordova-Plugin/blob/master/hooks/podfilesetup.js)** script from the plugin to your Cordova project and add it as a `before_build` [hook](https://cordova.apache.org/docs/en/latest/guide/appdev/hooks/).
     - Open Cordova app's iOS work space in Xcode.
-    - Ensure the project's deployment target is iOS 11 or newer.
+    - Ensure the project's deployment target is iOS 11 or newer. Alternatively, copy **[hooks/xcodeproject.js](https://github.com/AppliedRecognition/Ver-ID-Person-Cordova-Plugin/blob/master/hooks/xcodeproject.js)** and **[hooks/platformversion.js](https://github.com/AppliedRecognition/Ver-ID-Person-Cordova-Plugin/blob/master/hooks/platformversion.js)** from the plugin to your Cordova project and add **hooks/platformversion.js** as [hook](https://cordova.apache.org/docs/en/latest/guide/appdev/hooks/).
+    - In your Xcode project's build settings ensure `SWIFT_VERSION` is set to **Swift 4.2**. You can automate this setting by copying **[hooks/xcodeproject.js](https://github.com/AppliedRecognition/Ver-ID-Person-Cordova-Plugin/blob/master/hooks/xcodeproject.js)** and **[hooks/swiftversion.js](https://github.com/AppliedRecognition/Ver-ID-Person-Cordova-Plugin/blob/master/hooks/swiftversion.js)** from the plugin to your Cordova project and add **swiftversion.js** as [hook](https://cordova.apache.org/docs/en/latest/guide/appdev/hooks/).
     - Open your app's **Info.plist** file and and ensure it contains an entry for `NSCameraUsageDescription`.
     - Still in the **Info.plist** file add the following entry, substituting `[your API secret]` for the API secret obtained after registration in step 1:
 
@@ -31,7 +30,6 @@ Ver-ID gives your users the ability to authenticate using their face.
         <string>[your API secret]</string>
         ~~~
     - Select your app target and click on the **Build Settings** tab. Under **Build Options** ensure **Enable Bitcode** is set to **No**.
-    - Under **Build Settings** set **Swift Language Version** to **4.2**.
 4. If your app includes Android platform:
     - Ensure your app targets Android API level 14 or newer.
     - Open your app's **AndroidManifest.xml** file and add the following tag in `<application>` replacing `[your API secret]` with the API secret your received in step 1:
