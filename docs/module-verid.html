@@ -367,7 +367,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Ver-ID.js.html">Ver-ID.js</a>, <a href="Ver-ID.js.html#line164">line 164</a>
+        <a href="Ver-ID.js.html">Ver-ID.js</a>, <a href="Ver-ID.js.html#line219">line 219</a>
     </li></ul></dd>
     
 
@@ -537,7 +537,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Ver-ID.js.html">Ver-ID.js</a>, <a href="Ver-ID.js.html#line189">line 189</a>
+        <a href="Ver-ID.js.html">Ver-ID.js</a>, <a href="Ver-ID.js.html#line244">line 244</a>
     </li></ul></dd>
     
 
@@ -845,7 +845,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Ver-ID.js.html">Ver-ID.js</a>, <a href="Ver-ID.js.html#line203">line 203</a>
+        <a href="Ver-ID.js.html">Ver-ID.js</a>, <a href="Ver-ID.js.html#line258">line 258</a>
     </li></ul></dd>
     
 
@@ -873,7 +873,7 @@
     
 
     
-    <h4 class="name" id=".authenticate"><span class="type-signature">(static) </span>authenticate<span class="signature">(settings<span class="signature-attributes">opt</span>, callback, errorCallback)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id=".authenticate"><span class="type-signature">(static) </span>authenticate<span class="signature">(settings<span class="signature-attributes">opt</span>, callback<span class="signature-attributes">opt</span>, errorCallback<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise.&lt;<a href="module-verid.SessionResult.html">module:verid.SessionResult</a>>}</span></h4>
     
 
     
@@ -967,6 +967,8 @@
             
                 <td class="attributes">
                 
+                    &lt;optional><br>
+                
 
                 
 
@@ -997,6 +999,8 @@
 
             
                 <td class="attributes">
+                
+                    &lt;optional><br>
                 
 
                 
@@ -1048,7 +1052,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Ver-ID.js.html">Ver-ID.js</a>, <a href="Ver-ID.js.html#line113">line 113</a>
+        <a href="Ver-ID.js.html">Ver-ID.js</a>, <a href="Ver-ID.js.html#line133">line 133</a>
     </li></ul></dd>
     
 
@@ -1071,6 +1075,28 @@
 
 
 
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    If callback is not specified returns a promise
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;<a href="module-verid.SessionResult.html">module:verid.SessionResult</a>></span>
+
+
+    </dd>
+</dl>
+
+    
 
 
 
@@ -1082,7 +1108,7 @@
     
 
     
-    <h4 class="name" id=".captureLiveFace"><span class="type-signature">(static) </span>captureLiveFace<span class="signature">(settings<span class="signature-attributes">opt</span>, callback, errorCallback)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id=".captureLiveFace"><span class="type-signature">(static) </span>captureLiveFace<span class="signature">(settings<span class="signature-attributes">opt</span>, callback<span class="signature-attributes">opt</span>, errorCallback<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise.&lt;<a href="module-verid.SessionResult.html">module:verid.SessionResult</a>>}</span></h4>
     
 
     
@@ -1176,6 +1202,8 @@
             
                 <td class="attributes">
                 
+                    &lt;optional><br>
+                
 
                 
 
@@ -1206,6 +1234,8 @@
 
             
                 <td class="attributes">
+                
+                    &lt;optional><br>
                 
 
                 
@@ -1257,7 +1287,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Ver-ID.js.html">Ver-ID.js</a>, <a href="Ver-ID.js.html#line129">line 129</a>
+        <a href="Ver-ID.js.html">Ver-ID.js</a>, <a href="Ver-ID.js.html#line160">line 160</a>
     </li></ul></dd>
     
 
@@ -1280,6 +1310,28 @@
 
 
 
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    If callback is not specified returns a promise
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;<a href="module-verid.SessionResult.html">module:verid.SessionResult</a>></span>
+
+
+    </dd>
+</dl>
+
+    
 
 
 
@@ -1291,7 +1343,7 @@
     
 
     
-    <h4 class="name" id=".compareFaceTemplates"><span class="type-signature">(static) </span>compareFaceTemplates<span class="signature">(template1, template2)</span><span class="type-signature"> &rarr; {number}</span></h4>
+    <h4 class="name" id=".compareFaceTemplates"><span class="type-signature">(static) </span>compareFaceTemplates<span class="signature">(template1, template2, callback, errorCallback)</span><span class="type-signature"></span></h4>
     
 
     
@@ -1378,6 +1430,52 @@
         </tr>
 
     
+
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="module-verid.html#~CompareFacesCallback">module:verid~CompareFacesCallback</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Called when the comparison succeeds</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>errorCallback</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Called if the comparison fails</td>
+        </tr>
+
+    
     </tbody>
 </table>
 
@@ -1415,7 +1513,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Ver-ID.js.html">Ver-ID.js</a>, <a href="Ver-ID.js.html#line399">line 399</a>
+        <a href="Ver-ID.js.html">Ver-ID.js</a>, <a href="Ver-ID.js.html#line461">line 461</a>
     </li></ul></dd>
     
 
@@ -1438,28 +1536,6 @@
 
 
 
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    Score between 0.0 and 1.0 indicating the similarity between the two templates: 0 = different, 1 = very similar
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">number</span>
-
-
-    </dd>
-</dl>
-
-    
 
 
 
@@ -1471,7 +1547,7 @@
     
 
     
-    <h4 class="name" id=".deleteUser"><span class="type-signature">(static) </span>deleteUser<span class="signature">(userId, callback, errorCallback)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id=".deleteUser"><span class="type-signature">(static) </span>deleteUser<span class="signature">(userId, callback<span class="signature-attributes">opt</span>, errorCallback<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
     
 
     
@@ -1503,6 +1579,8 @@
         <th>Type</th>
 
         
+        <th>Attributes</th>
+        
 
         
 
@@ -1528,6 +1606,14 @@
             </td>
 
             
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
 
             
 
@@ -1551,6 +1637,16 @@
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
 
             
 
@@ -1573,6 +1669,16 @@
             
             </td>
 
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
             
 
             
@@ -1618,7 +1724,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Ver-ID.js.html">Ver-ID.js</a>, <a href="Ver-ID.js.html#line155">line 155</a>
+        <a href="Ver-ID.js.html">Ver-ID.js</a>, <a href="Ver-ID.js.html#line204">line 204</a>
     </li></ul></dd>
     
 
@@ -1641,6 +1747,28 @@
 
 
 
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    If callback is not specified returns a promise
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise</span>
+
+
+    </dd>
+</dl>
+
+    
 
 
 
@@ -1799,7 +1927,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Ver-ID.js.html">Ver-ID.js</a>, <a href="Ver-ID.js.html#line418">line 418</a>
+        <a href="Ver-ID.js.html">Ver-ID.js</a>, <a href="Ver-ID.js.html#line482">line 482</a>
     </li></ul></dd>
     
 
@@ -1833,7 +1961,7 @@
     
 
     
-    <h4 class="name" id=".getRegisteredUsers"><span class="type-signature">(static) </span>getRegisteredUsers<span class="signature">(callback, errorCallback)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id=".getRegisteredUsers"><span class="type-signature">(static) </span>getRegisteredUsers<span class="signature">(callback<span class="signature-attributes">opt</span>, errorCallback<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise.&lt;Array.&lt;string>>}</span></h4>
     
 
     
@@ -1865,6 +1993,8 @@
         <th>Type</th>
 
         
+        <th>Attributes</th>
+        
 
         
 
@@ -1890,6 +2020,16 @@
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
 
             
 
@@ -1912,6 +2052,16 @@
             
             </td>
 
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
             
 
             
@@ -1957,7 +2107,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Ver-ID.js.html">Ver-ID.js</a>, <a href="Ver-ID.js.html#line144">line 144</a>
+        <a href="Ver-ID.js.html">Ver-ID.js</a>, <a href="Ver-ID.js.html#line186">line 186</a>
     </li></ul></dd>
     
 
@@ -1980,6 +2130,28 @@
 
 
 
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    If callback is not specified returns a promise
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;Array.&lt;string>></span>
+
+
+    </dd>
+</dl>
+
+    
 
 
 
@@ -1991,7 +2163,7 @@
     
 
     
-    <h4 class="name" id=".load"><span class="type-signature">(static) </span>load<span class="signature">(apiSecret<span class="signature-attributes">opt</span>, callback, errorCallback)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id=".load"><span class="type-signature">(static) </span>load<span class="signature">(apiSecret<span class="signature-attributes">opt</span>, callback<span class="signature-attributes">opt</span>, errorCallback<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
     
 
     
@@ -2085,6 +2257,8 @@
             
                 <td class="attributes">
                 
+                    &lt;optional><br>
+                
 
                 
 
@@ -2115,6 +2289,8 @@
 
             
                 <td class="attributes">
+                
+                    &lt;optional><br>
                 
 
                 
@@ -2166,7 +2342,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Ver-ID.js.html">Ver-ID.js</a>, <a href="Ver-ID.js.html#line72">line 72</a>
+        <a href="Ver-ID.js.html">Ver-ID.js</a>, <a href="Ver-ID.js.html#line73">line 73</a>
     </li></ul></dd>
     
 
@@ -2189,6 +2365,28 @@
 
 
 
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    If callback is not specified the function returns a promise
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise</span>
+
+
+    </dd>
+</dl>
+
+    
 
 
 
@@ -2200,7 +2398,7 @@
     
 
     
-    <h4 class="name" id=".register"><span class="type-signature">(static) </span>register<span class="signature">(settings<span class="signature-attributes">opt</span>, callback, errorCallback)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id=".register"><span class="type-signature">(static) </span>register<span class="signature">(settings<span class="signature-attributes">opt</span>, callback<span class="signature-attributes">opt</span>, errorCallback<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise.&lt;<a href="module-verid.SessionResult.html">module:verid.SessionResult</a>>}</span></h4>
     
 
     
@@ -2294,6 +2492,8 @@
             
                 <td class="attributes">
                 
+                    &lt;optional><br>
+                
 
                 
 
@@ -2324,6 +2524,8 @@
 
             
                 <td class="attributes">
+                
+                    &lt;optional><br>
                 
 
                 
@@ -2375,7 +2577,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Ver-ID.js.html">Ver-ID.js</a>, <a href="Ver-ID.js.html#line97">line 97</a>
+        <a href="Ver-ID.js.html">Ver-ID.js</a>, <a href="Ver-ID.js.html#line106">line 106</a>
     </li></ul></dd>
     
 
@@ -2398,6 +2600,28 @@
 
 
 
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    If callback is not specified returns a promise
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;<a href="module-verid.SessionResult.html">module:verid.SessionResult</a>></span>
+
+
+    </dd>
+</dl>
+
+    
 
 
 
@@ -2462,7 +2686,7 @@ Call this function to free resources when your app no longer requires Ver-ID
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Ver-ID.js.html">Ver-ID.js</a>, <a href="Ver-ID.js.html#line87">line 87</a>
+        <a href="Ver-ID.js.html">Ver-ID.js</a>, <a href="Ver-ID.js.html#line95">line 95</a>
     </li></ul></dd>
     
 
@@ -2497,6 +2721,141 @@ Call this function to free resources when your app no longer requires Ver-ID
         <h3 class="subsection-title">Type Definitions</h3>
 
         
+                
+
+    
+
+    
+    <h4 class="name" id="~CompareFacesCallback"><span class="type-signature"></span>CompareFacesCallback<span class="signature">(score)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Called after face template comparison
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>score</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Score between 0.0 and 1.0 indicating the similarity between the two templates: 0 = different, 1 = very similar</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Ver-ID.js.html">Ver-ID.js</a>, <a href="Ver-ID.js.html#line448">line 448</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            
                 
 
     
@@ -2603,7 +2962,7 @@ Call this function to free resources when your app no longer requires Ver-ID
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Ver-ID.js.html">Ver-ID.js</a>, <a href="Ver-ID.js.html#line406">line 406</a>
+        <a href="Ver-ID.js.html">Ver-ID.js</a>, <a href="Ver-ID.js.html#line470">line 470</a>
     </li></ul></dd>
     
 
@@ -3441,7 +3800,7 @@ Call this function to free resources when your app no longer requires Ver-ID
             <td class="type">
             
                 
-<span class="param-type">Array.&lt;<a href="module-verid.html#~User">module:verid~User</a>></span>
+<span class="param-type">Array.&lt;string></span>
 
 
             
@@ -3540,7 +3899,7 @@ Call this function to free resources when your app no longer requires Ver-ID
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Jan 23 2019 10:58:30 GMT+0000 (Greenwich Mean Time)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Thu Jan 24 2019 13:42:15 GMT+0000 (Greenwich Mean Time)
 </footer>
 
 <script> prettyPrint(); </script>

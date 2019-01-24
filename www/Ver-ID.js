@@ -60,24 +60,32 @@ function decodeSessionResultAndIssueCallback(callback) {
 
 /**
  * @callback UserCallback
- * @param {Array.<module:verid~User>} users - Registered users
+ * @param {Array.<string>} users - Registered users
  */
 
 /**
  * Load Ver-ID
  * @param {string} [apiSecret] API secret obtained at {@linkplain https://dev.ver-id.com/admin/register}. If you omit this parameter you must specify the API secret in your app's Info.plist file (iOS) or manifest.xml (Android).
- * @param {function} callback Function to be called when the Ver-ID load operation finishes
- * @param {function} errorCallback Function to be called if the load operation fails
+ * @param {function} [callback] Function to be called when the Ver-ID load operation finishes
+ * @param {function} [errorCallback] Function to be called if the load operation fails
+ * @returns {Promise} If callback is not specified the function returns a promise
  */
 module.exports.load = function(apiSecret, callback, errorCallback) {
     var options = [];
     if (apiSecret && (typeof apiSecret === "string")) {
         options.push({"apiSecret":apiSecret});
-    } else if (apiSecret && (typeof apiSecret === "function")) {
-        errorCallback = callback;
-        callback = apiSecret;
     }
-    exec(callback, errorCallback, PLUGIN_NAME, "load", options);
+    if (callback || (typeof apiSecret === "function")) {
+        if (apiSecret && (typeof apiSecret === "function")) {
+            exec(apiSecret, callback, PLUGIN_NAME, "load", options);
+        } else {
+            exec(callback, errorCallback, PLUGIN_NAME, "load", options);
+        }
+    } else {
+        return new Promise(function(resolve,reject) {
+            exec(resolve, reject, PLUGIN_NAME, "load", options);
+        });
+    }
 }
 
 /**
@@ -91,69 +99,116 @@ module.exports.unload = function() {
 /**
  * Register user
  * @param {module:verid.RegistrationSessionSettings} [settings] An instance of {@linkcode module:verid.RegistrationSessionSettings RegistrationSessionSettings}
- * @param {module:verid~SessionCallback} callback Function to be called if the registration session finishes
- * @param {function} errorCallback Function to be called if the registration session fails
+ * @param {module:verid~SessionCallback} [callback] Function to be called if the registration session finishes
+ * @param {function} [errorCallback] Function to be called if the registration session fails
+ * @returns {Promise<module:verid.SessionResult>} If callback is not specified returns a promise
  */
 module.exports.register = function(settings, callback, errorCallback) {
-    if (settings && (typeof settings === "function")) {
-        errorCallback = callback;
-        callback = settings;
-        settings = new module.exports.RegistrationSessionSettings();
+    var options = [{}];
+    if (settings && (typeof settings === "object")) {
+        options[0].settings = JSON.stringify(settings);
+    } else {
+        options[0].settings = JSON.stringify(new module.exports.RegistrationSessionSettings());
     }
-    settings = JSON.stringify(settings);
-    exec(decodeSessionResultAndIssueCallback(callback), errorCallback, PLUGIN_NAME, "registerUser", [{"settings":settings}]);
+    if (callback || (typeof settings === "function")) {
+        if (settings && (typeof settings === "function")) {
+            exec(decodeSessionResultAndIssueCallback(settings), callback, PLUGIN_NAME, "registerUser", options);
+        } else {
+            exec(decodeSessionResultAndIssueCallback(callback), errorCallback, PLUGIN_NAME, "registerUser", options);
+        }
+    } else {
+        return new Promise(function(resolve,reject) {
+            exec(decodeSessionResultAndIssueCallback(resolve), reject, PLUGIN_NAME, "registerUser", options);
+        });
+    }
 }
 
 /**
  * Authenticate user
  * @param {module:verid.AuthenticationSessionSettings} [settings] An instance of {@linkcode module:verid.AuthenticationSessionSettings AuthenticationSessionSettings}
- * @param {module:verid~SessionCallback} callback Function to be called if the authentication session completes
- * @param {function} errorCallback Function to be called if the session fails
+ * @param {module:verid~SessionCallback} [callback] Function to be called if the authentication session completes
+ * @param {function} [errorCallback] Function to be called if the session fails
+ * @returns {Promise<module:verid.SessionResult>} If callback is not specified returns a promise
  */
 module.exports.authenticate = function(settings, callback, errorCallback) {
-    if (settings && (typeof settings === "function")) {
-        errorCallback = callback;
-        callback = settings;
-        settings = new module.exports.AuthenticationSessionSettings();
+    var options = [{}];
+    if (settings && (typeof settings === "object")) {
+        options[0].settings = JSON.stringify(settings);
+    } else {
+        options[0].settings = JSON.stringify(new module.exports.AuthenticationSessionSettings());
     }
-    settings = JSON.stringify(settings);
-    exec(decodeSessionResultAndIssueCallback(callback), errorCallback, PLUGIN_NAME, "authenticate", [{"settings":settings}]);
+    if (callback || (typeof settings === "function")) {
+        if (typeof settings === "function") {
+            exec(decodeSessionResultAndIssueCallback(settings), callback, PLUGIN_NAME, "authenticate", options);
+        } else {
+            exec(decodeSessionResultAndIssueCallback(callback), errorCallback, PLUGIN_NAME, "authenticate", options);
+        }
+    } else {
+        return new Promise(function(resolve,reject) {
+            exec(decodeSessionResultAndIssueCallback(resolve), reject, PLUGIN_NAME, "authenticate", options);
+        });
+    }
 }
 
 /**
  * Capture live face
  * @param {module:verid.LivenessDetectionSessionSettings} [settings] An instance of {@linkcode module:verid.LivenessDetectionSessionSettings LivenessDetectionSessionSettings}
- * @param {module:verid~SessionCallback} callback Function to be called if the liveness detection session completes
- * @param {function} errorCallback Function to be called if the session fails
+ * @param {module:verid~SessionCallback} [callback] Function to be called if the liveness detection session completes
+ * @param {function} [errorCallback] Function to be called if the session fails
+ * @returns {Promise<module:verid.SessionResult>} If callback is not specified returns a promise
  */
 module.exports.captureLiveFace = function(settings, callback, errorCallback) {
-    if (settings && (typeof settings === "function")) {
-        errorCallback = callback;
-        callback = settings;
-        settings = new module.exports.LivenessDetectionSessionSettings();
+    var options = [{}];
+    if (settings && (typeof settings === "object")) {
+        options[0].settings = JSON.stringify(settings);
+    } else {
+        options[0].settings = JSON.stringify(new module.exports.LivenessDetectionSessionSettings());
     }
-    settings = JSON.stringify(settings);
-    exec(decodeSessionResultAndIssueCallback(callback), errorCallback, PLUGIN_NAME, "captureLiveFace", [{"settings":settings}]);
+    if (callback || (typeof settings === "function")) {
+        if (typeof settings === "function") {
+            exec(decodeSessionResultAndIssueCallback(settings), callback, PLUGIN_NAME, "captureLiveFace", options);
+        } else {
+            exec(decodeSessionResultAndIssueCallback(callback), errorCallback, PLUGIN_NAME, "captureLiveFace", options);
+        }
+    } else {
+        return new Promise(function(resolve,reject) {
+            exec(decodeSessionResultAndIssueCallback(resolve), reject, PLUGIN_NAME, "captureLiveFace", options);
+        });
+    }
 }
 
 /**
  * Retrieve a list of registered users
- * @param {module:verid~UserCallback} callback Function to be called if the opration succeeds. The response will be an array of objects with a string member "userId" and an array member "bearings" with int members corresponding to the user's registered bearings as defined by the Bearing constants.
- * @param {function} errorCallback Function to be called if the operation fails.
+ * @param {module:verid~UserCallback} [callback] Function to be called if the opration succeeds. The response will be an array of objects with a string member "userId" and an array member "bearings" with int members corresponding to the user's registered bearings as defined by the Bearing constants.
+ * @param {function} [errorCallback] Function to be called if the operation fails.
+ * @returns {Promise<Array.<string>>} If callback is not specified returns a promise
  */
 module.exports.getRegisteredUsers = function(callback, errorCallback) {
-    exec(decodeResultAndIssueCallback(callback), errorCallback, PLUGIN_NAME, "getRegisteredUsers", []);
+    if (callback) {
+        exec(decodeResultAndIssueCallback(callback), errorCallback, PLUGIN_NAME, "getRegisteredUsers", []);
+    } else {
+        return new Promise(function(resolve,reject) {
+            exec(decodeResultAndIssueCallback(resolve), reject, PLUGIN_NAME, "getRegisteredUsers", []);
+        });
+    }
 }
 
 /**
  * Delete a registered user
  * @function
  * @param {string} userId The id of the user to delete.
- * @param {function} callback Function to be called if the operation succeeds.
- * @param {function} errorCallback Function to be called if the operation fails.
+ * @param {function} [callback] Function to be called if the operation succeeds.
+ * @param {function} [errorCallback] Function to be called if the operation fails.
+ * @returns {Promise} If callback is not specified returns a promise
  */
 module.exports.deleteUser = function(userId, callback, errorCallback) {
-    exec(callback, errorCallback, PLUGIN_NAME, "deleteUser", [{"userId": userId}]);
+    if (callback) {
+        exec(callback, errorCallback, PLUGIN_NAME, "deleteUser", [{"userId": userId}]);
+    } else {
+        return new Promise(function(resolve,reject) {
+            exec(resolve, reject, PLUGIN_NAME, "deleteUser", [{"userId":userId}]);
+        });
+    }
 }
 
 /**

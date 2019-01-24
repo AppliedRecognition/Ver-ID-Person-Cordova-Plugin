@@ -48,10 +48,10 @@ Ver-ID must be loaded before you can run face detection sessions or compare face
 The load operation may take up to a few of seconds. Load Ver-ID using the `load` call:
 
 ~~~javascript
-verid.load(function() {
+verid.load().then(function() {
     // Ver-ID loaded successfully
     // You can now run registration, authentication or liveness detection
-}, function() {
+}).catch(function(error) {
     // Ver-ID failed to load
 });
 ~~~
@@ -60,10 +60,10 @@ If you prefer, you can to specify the API secret in your code instead of your ap
 ~~~javascript
 var apiSecret = "..."; // Alternative way to set your Ver-ID API secret
 
-verid.load(apiSecret, function(){
+verid.load(apiSecret).then(function(){
     // Ver-ID loaded successfully
     // You can now run registration, authentication or liveness detection
-}, function(){
+}).catch(function(error){
     // Ver-ID failed to load
 });
 ~~~
@@ -75,43 +75,33 @@ The Ver-ID Person plugin module will be available in your script as a global var
 ~~~javascript
 var userId = "myUserId"; // String with an identifier for the user
 
-// Registration
-function register() {
-    var settings = new verid.RegistrationSessionSettings(userId);
-    settings.showResult = true; // If you wish the plugin to show the result of the session to the user
-
-    verid.register(settings, function(response) {
-        if (response.outcome == verid.SessionOutcome.SUCCESS) {
-            // User registered
-            // Run an authentication session
-            authenticate();
-        }
-    }, function() {
-        // Handle the failure
-    });
-}
-
-// Authentication
-function authenticate() {
-    var settings = new verid.AuthenticationSessionSettings(userId);
-    settings.showResult = true; // If you wish the plugin to show the result of the session to the user
-    
-    verid.authenticate(settings, function(response) {
-        if (response.outcome == verid.SessionOutcome.SUCCESS) {
-            // User authenticated
-        }
-    }, function() {
-            // Handle the failure
-    });
-}
-
 // Load Ver-ID before running registration or authentication
-verid.load(function(){
+verid.load().then(function() {
     // Ver-ID loaded successfully
     // Run a registration session
-    register();  
-}, function(){
-    // Ver-ID failed to load
+    var settings = new verid.RegistrationSessionSettings(userId);
+    settings.showResult = true; // If you wish the plugin to show the result of the session to the user
+    return verid.register(settings)
+}).then(function(response) {
+    if (response.outcome == verid.SessionOutcome.SUCCESS) {
+        // User registered
+        // Run an authentication session
+        var settings = new verid.AuthenticationSessionSettings(userId);
+        settings.showResult = true; // If you wish the plugin to show the result of the session to the user    
+        return verid.authenticate(settings)
+    } else {
+        return response;
+    }
+}).then(function(response) {
+    if (response.outcome == verid.SessionOutcome.SUCCESS) {
+        // User authenticated
+    } else if (response.outcome == verid.SessionOutcome.CANCEL) {
+        // The user cancelled the session
+    } else {
+        // Session failed
+    }
+}).catch(function(error) {
+    // Handle the failure
 });
 ~~~
 
@@ -124,29 +114,29 @@ Liveness detection sessions follow he same format as registration and authentica
 ### Extracting face templates for face comparison
 ~~~javascript
 // Load Ver-ID before running liveness detection
-verid.load(function(){
+verid.load().then(function() {
     // Ver-ID loaded successfully  
     // Run a liveness detection session  
     var settings = verid.LivenessDetectionSessionSettings();
     settings.includeFaceTemplatesInResult = true;
-    verid.captureLiveFace(settings, function(response) {
-        // Session finished
-        if (response.outcome == verid.SessionOutcome.SUCCESS) {            
-            var faceTemplates = response.getFaceComparisonTemplates(verid.Bearing.STRAIGHT);
-            // You can use the above templates to compare the detected face to faces from other sessions (see Comparing Faces section below)
-        }
-    }, function() {
-        // Session failed
-    });
-}, function(){
-    // Ver-ID failed to load  
+    return verid.captureLiveFace(settings);
+}).then(function(response) {
+    // Session finished
+    if (response.outcome == verid.SessionOutcome.SUCCESS) {            
+        var faceTemplates = response.getFaces(verid.Bearing.STRAIGHT).map(function(face) {
+            return face.faceTemplate;
+        });
+        // You can use the above templates to compare the detected face to faces from other sessions (see Comparing Faces section below)
+    }
+}).catch(function(error) {
+    // Handle the failure
 });
 ~~~
 
 ### Face detection session without asking for poses
 ~~~javascript
 // Load Ver-ID before running liveness detection
-verid.load(function(){
+verid.load().then(function() {
     // Ver-ID loaded successfully  
     // Run a liveness detection session  
     var settings = verid.LivenessDetectionSessionSettings();
@@ -154,32 +144,28 @@ verid.load(function(){
     settings.numberOfResultsToCollect = 1;
     // Ask the user to assume only one bearing (straight)
     settings.bearings = [verid.Bearing.STRAIGHT];
-    verid.captureLiveFace(settings, function(response) {
-        // Session finished
-    }, function() {
-        // Session failed
-    });
-}, function(){
-    // Ver-ID failed to load  
+    return verid.captureLiveFace(settings);
+}).then(function(response) {
+    // Session finished
+}).catch(function(error){
+    // Handle the failure
 });
 ~~~
 
 ### Liveness detection session defining the bearings (poses) the user may be asked to assume
 ~~~javascript
 // Load Ver-ID before running liveness detection
-verid.load(function(){
+verid.load().then(function(){
     // Ver-ID loaded successfully  
     // Run a liveness detection session  
     var settings = verid.LivenessDetectionSessionSettings();
     // The user will be asked to look straight at the camera and then either left or right
     settings.bearings = [verid.Bearing.STRAIGHT, verid.Bearing.LEFT, verid.Bearing.RIGHT];
-    verid.captureLiveFace(settings, function(response) {
-        // Session finished
-    }, function() {
-        // Session failed
-    });
-}, function(){
-    // Ver-ID failed to load  
+    return verid.captureLiveFace(settings);
+}).then(function(response) {
+    // Session finished
+}).catch(function(error) {
+    // Handle the failure
 });
 ~~~
 
@@ -192,12 +178,14 @@ The callback of a successful session will contain [an object](https://appliedrec
 After collecting two templates as outlined in the Liveness Detection section above run:
 
 ~~~javascript
-verid.compareFaceTemplates(template1, template2, function(score) {
-	// score is a value between 0.0 and 1.0.
+verid.load().then(function() {
+    return verid.compareFaceTemplates(template1, template2);
+}).then(function(score) {
+    // score is a value between 0.0 and 1.0.
 	// 0.0 = the face templates are completely different
 	// 1.0 = the face templates are very similar
-}, function() {
-	// Face comparison failed
+}).catch(function(error) {
+    // Handle the failure
 });
 ~~~
 
@@ -223,13 +211,14 @@ image.onload = function() {
 	// Draw the image on the canvas
 	ctx.drawImage(image, 0, 0);
 	// Get the image data URI as JPEG at 0.95 quality
-	var uri = canvas.toDataURL("image/jpeg", 0.95);
-	// Use Ver-ID to detect a face in the image
-	verid.detectFaceInImage(uri, function(face) {
-	    // Face detected
-	}, function(error) {
-	    // Face detection failed
-});
+    var uri = canvas.toDataURL("image/jpeg", 0.95);
+    verid.load().then(function() {
+        return verid.detectFaceInImage(uri);
+    }).then(function(face) {
+        // Face detected
+    }).catch(function(error) {
+        // Face detection failed
+    });
 }
 // Set error callback
 image.onerror = function() {

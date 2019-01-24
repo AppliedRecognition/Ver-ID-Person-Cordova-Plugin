@@ -128,9 +128,9 @@ public class VerIDPlugin extends CordovaPlugin {
                         @Override
                         public void run() {
                             try {
-                                VerIDUser[] users = VerID.shared.getRegisteredVerIDUsers();
+                                String[] users = VerID.shared.getRegisteredUsers();
                                 Gson gson = new Gson();
-                                String jsonUsers = gson.toJson(users, VerIDUser[].class);
+                                String jsonUsers = gson.toJson(users, String[].class);
                                 cordova.getActivity().runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {

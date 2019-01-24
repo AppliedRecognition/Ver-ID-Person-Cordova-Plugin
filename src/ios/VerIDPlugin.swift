@@ -31,7 +31,13 @@ import VerID
     @objc public func getRegisteredUsers(_ command: CDVInvokedUrlCommand) {
         commandDelegate.run {
             do {
-                let users = try VerID.shared.registeredVerIDUsers()
+                let veridUsers = try VerID.shared.registeredVerIDUsers()
+                var users: [String] = []
+                for user in veridUsers {
+                    if !users.contains(user.userId) {
+                        users.append(user.userId)
+                    }
+                }
                 if let usersString = String(data: try JSONEncoder().encode(users), encoding: .utf8) {
                     DispatchQueue.main.async {
                         let result = CDVPluginResult(status: CDVCommandStatus_OK, messageAs: usersString)
