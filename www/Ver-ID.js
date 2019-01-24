@@ -391,16 +391,25 @@ module.exports.SessionResult.prototype.getFaceImages = function(bearing) {
 }
 
 /**
+ * Called after face template comparison
+ * @callback CompareFacesCallback
+ * @param {number} score Score between 0.0 and 1.0 indicating the similarity between the two templates: 0 = different, 1 = very similar
+ */
+
+/**
  * Compare face templates
  * @param {module:verid~FaceTemplate} template1 Face template to compare to the other template
  * @param {module:verid~FaceTemplate} template2 Face template to compare to the first template
- * @returns {number} Score between 0.0 and 1.0 indicating the similarity between the two templates: 0 = different, 1 = very similar
+ * @param {module:verid~CompareFacesCallback} callback Called when the comparison succeeds
+ * @param {function} errorCallback Called if the comparison fails
  */
 module.exports.compareFaceTemplates = function(template1, template2, callback, errorCallback) {
     var t1 = JSON.stringify(template1);
     var t2 = JSON.stringify(template2);
     var options = [{"template1":t1},{"template2":t2}];
-    exec(callback, errorCallback, PLUGIN_NAME, "compareFaceTemplates", options);
+    exec(function(result) {
+        callback(result.score);
+    }, errorCallback, PLUGIN_NAME, "compareFaceTemplates", options);
 }
 
 /**

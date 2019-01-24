@@ -42,12 +42,6 @@ Ver-ID gives your users the ability to authenticate using their face.
            android:value="[your API secret]" />
         ~~~
     - Your application must use **Theme.AppCompat** theme (or its descendant).
-    - Open your application's **build.gradle** file and under **android/defaultConfig** add:
-    	
-        ~~~groovy
-        renderscriptTargetApi 14
-        renderscriptSupportModeEnabled true
-        ~~~
 
 ## Loading Ver-ID
 
@@ -200,8 +194,7 @@ The callback of a successful session will contain [an object](https://appliedrec
 After collecting two templates as outlined in the Liveness Detection section above run:
 
 ~~~javascript
-verid.compareFaceTemplates(template1, template2, function(response) {
-	var score = response.score;
+verid.compareFaceTemplates(template1, template2, function(score) {
 	// score is a value between 0.0 and 1.0.
 	// 0.0 = the face templates are completely different
 	// 1.0 = the face templates are very similar
