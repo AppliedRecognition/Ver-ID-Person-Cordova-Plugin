@@ -3,3 +3,12 @@ repositories {
 	maven { url 'https://dev.ver-id.com/artifactory/gradle-release' }
 }
 
+allprojects {
+	android {
+		defaultConfig {
+			renderscriptTargetApi 19
+			renderscriptSupportModeEnabled true
+		}
+	}
+}
+
