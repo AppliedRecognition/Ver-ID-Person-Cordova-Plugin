@@ -130,14 +130,14 @@ public class VerIDPlugin extends CordovaPlugin {
                             try {
                                 String[] users = VerID.shared.getRegisteredUsers();
                                 Gson gson = new Gson();
-                                String jsonUsers = gson.toJson(users, String[].class);
+                                final String jsonUsers = gson.toJson(users, String[].class);
                                 cordova.getActivity().runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
                                         callbackContext.success(jsonUsers);
                                     }
                                 });
-                            } catch (Exception e) {
+                            } catch (final Exception e) {
                                 e.printStackTrace();
                                 cordova.getActivity().runOnUiThread(new Runnable() {
                                     @Override
@@ -168,7 +168,7 @@ public class VerIDPlugin extends CordovaPlugin {
                                             callbackContext.success();
                                         }
                                     });
-                                } catch (Exception e) {
+                                } catch (final Exception e) {
                                     e.printStackTrace();
                                     cordova.getActivity().runOnUiThread(new Runnable() {
                                         @Override
