@@ -30,6 +30,7 @@ import VerID
     
     @objc public func getRegisteredUsers(_ command: CDVInvokedUrlCommand) {
         commandDelegate.run {
+            var err: String = "Unknown error"
             do {
                 let veridUsers = try VerID.shared.registeredVerIDUsers()
                 var users: [String] = []
@@ -44,11 +45,14 @@ import VerID
                         self.commandDelegate.send(result, callbackId: command.callbackId)
                     }
                     return
+                } else {
+                    err = "Failed to encode JSON as UTF-8 string"
                 }
             } catch {
+                err = error.localizedDescription
             }
             DispatchQueue.main.async {
-                self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR), callbackId: command.callbackId)
+                self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: err), callbackId: command.callbackId)
             }
         }
     }
@@ -63,7 +67,7 @@ import VerID
                 }
             }
         } else {
-            self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR), callbackId: command.callbackId)
+            self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: "Unable to parse userId argument"), callbackId: command.callbackId)
         }
     }
 
@@ -80,13 +84,13 @@ import VerID
                     }
                 } catch {
                     DispatchQueue.main.async {
-                        self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR), callbackId: command.callbackId)
+                        self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: error.localizedDescription), callbackId: command.callbackId)
                     }
                 }
             }
         } else {
             DispatchQueue.main.async {
-                self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR), callbackId: command.callbackId)
+                self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: "Unable to parse template1 and/or template2 arguments"), callbackId: command.callbackId)
             }
         }
     }
@@ -135,17 +139,21 @@ import VerID
         }
         self.veridSessionCallbackId = nil
         self.commandDelegate.run {
+            var err = "Unknown error"
             do {
                 if let message = String(data: try JSONEncoder().encode(result), encoding: .utf8) {
                     DispatchQueue.main.async {
                         self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_OK, messageAs: message), callbackId: callbackId)
                     }
                     return
+                } else {
+                    err = "Unabe to encode JSON as UTF-8 string"
                 }
             } catch {
+                err = error.localizedDescription
             }
             DispatchQueue.main.async {
-                self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR), callbackId: callbackId)
+                self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: err), callbackId: callbackId)
             }
         }
     }
@@ -198,7 +206,7 @@ import VerID
                     veridSession = VerIDSession()
                 }
             } catch {
-                self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR), callbackId: command.callbackId)
+                self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: error.localizedDescription), callbackId: command.callbackId)
                 return
             }
             self.veridSessionCallbackId = command.callbackId
@@ -214,7 +222,8 @@ import VerID
                 if error == nil && success {
                     callback()
                 } else {
-                    self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR), callbackId: command.callbackId)
+                    let err = error?.localizedDescription ?? "Unknown error"
+                    self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: err), callbackId: command.callbackId)
                 }
             }
         } else {
