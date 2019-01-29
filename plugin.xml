@@ -11,16 +11,14 @@
                 <param name="android-package" value="com.appliedrec.plugin.VerIDPlugin" />
             </feature>
         </config-file>
-        <edit-config target="AndroidManifest.xml" parent="/manifest/uses-sdk" mode="overwrite">
+        <edit-config file="AndroidManifest.xml" target="/manifest/uses-sdk" mode="overwrite">
             <uses-sdk android:minSdkVersion="14" />
-        </edit-config>
-        <edit-config target="AndroidManifest.xml" parent="/manifest/uses-permission" mode="overwrite">
-            <uses-permission android:name="android.permission.CAMERA" />
         </edit-config>
         <source-file src="src/android/com/appliedrec/plugin/VerIDPlugin.java" target-dir="src/com/appliedrec/plugin" />
         <framework src="src/android/verid.gradle" custom="true" type="gradleReference" />
         <framework src="com.appliedrec:verid:4.8.4" />
         <resource-file src="VerIDModels" target="assets/VerIDModels" />
+        <uses-permission android:name="android.permission.CAMERA" />
     </platform>
 
     <platform name="ios">
