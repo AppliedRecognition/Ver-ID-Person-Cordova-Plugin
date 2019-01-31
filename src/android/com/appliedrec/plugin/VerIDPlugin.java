@@ -186,8 +186,8 @@ public class VerIDPlugin extends CordovaPlugin {
             }
             return true;
         } else if ("compareFaceTemplates".equals(action)) {
-            String t1 = getArg(args, "template1", String.class);
-            String t2 = getArg(args, "template2", String.class);
+            final String t1 = getArg(args, "template1", String.class);
+            final String t2 = getArg(args, "template2", String.class);
             loadVerIDAndRun(args, callbackContext, new Runnable() {
                 @Override
                 public void run() {
@@ -209,7 +209,7 @@ public class VerIDPlugin extends CordovaPlugin {
                                         callbackContext.success(response);
                                     }
                                 });
-                            } catch (Exception e) {
+                            } catch (final Exception e) {
                                 e.printStackTrace();
                                 cordova.getActivity().runOnUiThread(new Runnable() {
                                     @Override
@@ -224,7 +224,7 @@ public class VerIDPlugin extends CordovaPlugin {
             });
             return true;
         } else if ("detectFaceInImage".equals(action)) {
-            String image = getArg(args, "image", String.class);
+            final String image = getArg(args, "image", String.class);
             loadVerIDAndRun(args, callbackContext, new Runnable() {
                 @Override
                 public void run() {
@@ -279,7 +279,7 @@ public class VerIDPlugin extends CordovaPlugin {
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, final Intent intent) {
+    public void onActivityResult(int requestCode, final int resultCode, final Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
         if (mCallbackContext != null && (requestCode == REQUEST_CODE_REGISTER || requestCode == REQUEST_CODE_AUTHENTICATE || requestCode == REQUEST_CODE_DETECT_LIVENESS)) {
             cordova.getThreadPool().execute(new Runnable() {
