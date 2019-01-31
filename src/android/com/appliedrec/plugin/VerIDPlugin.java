@@ -81,6 +81,7 @@ public class VerIDPlugin extends CordovaPlugin {
                     callbackContext.success();
                 }
             });
+            return true;
         } else if ("unload".equals(action)) {
             VerID.shared.unload();
             return true;
@@ -96,6 +97,7 @@ public class VerIDPlugin extends CordovaPlugin {
             }
             settings.includeFaceTemplatesInResult = true;
             loadVerIDAndStartActivity(args, callbackContext, new VerIDRegistrationIntent(activity, settings), REQUEST_CODE_REGISTER);
+            return true;
         } else if ("authenticate".equals(action)) {
             String jsonSettings = getArg(args, "settings", String.class);
             final VerIDAuthenticationSessionSettings settings;
@@ -107,6 +109,7 @@ public class VerIDPlugin extends CordovaPlugin {
                 return false;
             }
             loadVerIDAndStartActivity(args, callbackContext, new VerIDAuthenticationIntent(activity, settings), REQUEST_CODE_AUTHENTICATE);
+            return true;
         } else if ("captureLiveFace".equals(action)) {
             String jsonSettings = getArg(args, "settings", String.class);
             final VerIDLivenessDetectionSessionSettings settings;
