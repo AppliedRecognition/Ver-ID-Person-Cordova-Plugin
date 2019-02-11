@@ -488,12 +488,21 @@ module.exports.compareFaceTemplates = function(template1, template2, callback, e
  * @param {function} errorCallback Error callback
  */
 module.exports.detectFaceInImage = function(image, callback, errorCallback) {
-    exec(function(encodedFace) {
-        if (encodedFace) {
-            var face = JSON.parse(encodedFace);
-            callback(face);
-        } else {
-            errorCallback("Received null face");
+    function cb(onSuccess,onFail) {
+        return function(encodedFace) {
+            if (encodedFace) {
+                var face = JSON.parse(encodedFace);
+                onSuccess(face);
+            } else {
+                onFail("Received null face");
+            }
         }
-    }, errorCallback, PLUGIN_NAME, "detectFaceInImage", [{"image":image}]);
+    }
+    if (callback) {
+        exec(cb(callback,errorCallback), errorCallback, PLUGIN_NAME, "detectFaceInImage", [{"image":image}]);
+    } else {
+        return new Promise(function(resolve,reject) {
+            exec(cb(resolve,reject), reject, PLUGIN_NAME, "detectFaceInImage", [{"image":image}]);
+        })
+    }
 }
