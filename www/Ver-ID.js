@@ -459,18 +459,19 @@ module.exports.SessionResult.prototype.getFaceImages = function(bearing) {
  * @param {function} errorCallback Called if the comparison fails
  */
 module.exports.compareFaceTemplates = function(template1, template2, callback, errorCallback) {
+    function cb(onSuccess) {
+        return function(result) {
+            onSuccess(result.score);
+        }
+    }
     var t1 = JSON.stringify(template1);
     var t2 = JSON.stringify(template2);
     var options = [{"template1":t1},{"template2":t2}];
     if (callback) {
-        exec(function(result) {
-            callback(result.score);
-        }, errorCallback, PLUGIN_NAME, "compareFaceTemplates", options);
+        exec(cb(callback), errorCallback, PLUGIN_NAME, "compareFaceTemplates", options);
     } else {
         return new Promise(function(resolve,reject) {
-            exec(function(result){
-                resolve(result.score);
-            }, reject, PLUGIN_NAME, "compareFaceTemplates", options);
+            exec(cb(resolve), reject, PLUGIN_NAME, "compareFaceTemplates", options);
         });
     }
 }
@@ -498,11 +499,12 @@ module.exports.detectFaceInImage = function(image, callback, errorCallback) {
             }
         }
     }
+    var args = [{"image":image}];
     if (callback) {
-        exec(cb(callback,errorCallback), errorCallback, PLUGIN_NAME, "detectFaceInImage", [{"image":image}]);
+        exec(cb(callback,errorCallback), errorCallback, PLUGIN_NAME, "detectFaceInImage", args);
     } else {
         return new Promise(function(resolve,reject) {
-            exec(cb(resolve,reject), reject, PLUGIN_NAME, "detectFaceInImage", [{"image":image}]);
-        })
+            exec(cb(resolve,reject), reject, PLUGIN_NAME, "detectFaceInImage", args);
+        });
     }
 }
