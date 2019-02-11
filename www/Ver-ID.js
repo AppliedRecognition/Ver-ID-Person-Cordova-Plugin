@@ -462,9 +462,17 @@ module.exports.compareFaceTemplates = function(template1, template2, callback, e
     var t1 = JSON.stringify(template1);
     var t2 = JSON.stringify(template2);
     var options = [{"template1":t1},{"template2":t2}];
-    exec(function(result) {
-        callback(result.score);
-    }, errorCallback, PLUGIN_NAME, "compareFaceTemplates", options);
+    if (callback) {
+        exec(function(result) {
+            callback(result.score);
+        }, errorCallback, PLUGIN_NAME, "compareFaceTemplates", options);
+    } else {
+        return new Promise(function(resolve,reject) {
+            exec(function(result){
+                resolve(result.score);
+            }, reject, PLUGIN_NAME, "compareFaceTemplates", options);
+        });
+    }
 }
 
 /**
