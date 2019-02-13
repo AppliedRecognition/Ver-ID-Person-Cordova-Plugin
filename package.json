@@ -1,6 +1,6 @@
 {
   "name": "ver-id-cordova-plugin",
-  "version": "4.2.2",
+  "version": "4.2.3",
   "description": "## Introduction",
   "cordova": {
     "id": "com-appliedrec-plugins-verid",
