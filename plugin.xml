@@ -29,7 +29,8 @@
             </feature>
         </config-file>
         <source-file src="src/ios/VerIDPlugin.swift" />
-        <resource-file src="VerIDModels"/>
-        <framework src="Ver-ID" type="podspec" spec="~> 3.5" />
+        <resource-file src="VerIDModels" />
+        <framework src="Ver-ID-Core" type="podspec" spec="~> 1.0" />
+        <framework src="Ver-ID-UI" type="podspec" spec="~> 1.0" />
     </platform>
 </plugin>
