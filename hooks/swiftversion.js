@@ -13,12 +13,12 @@ module.exports = function(context) {
                 var swift = match.match(swiftPattern);
                 var result = match;
                 if (swift) {
-                    if ((parseInt(swift[1]) < 4) || (swift[1] == "4" && swift[3] && parseInt(swift[3]) < 2)) {
-                        // result = match.replace(swiftPattern, "SWIFT_VERSION = 4.2;");
+                    if ((parseInt(swift[1]) < 5)) {
+                        // result = match.replace(swiftPattern, "SWIFT_VERSION = 5;");
                         incompatibleSwiftVersion = swift[1]+swift[2];
                     }
                 } else {
-                    result = match.replace(/\};$/, "SWIFT_VERSION = 4.2;\n\t\t\t};");
+                    result = match.replace(/\};$/, "SWIFT_VERSION = 5;\n\t\t\t};");
                 }
                 return result;
             });

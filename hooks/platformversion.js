@@ -11,8 +11,8 @@ module.exports = function(context) {
                 var targetPattern = /IPHONEOS_DEPLOYMENT_TARGET\s*=\s*(\d+)(\.\d+);/;
                 var result = match;
                 var target = result.match(targetPattern);
-                if (target && (parseInt(target[1]) < 11)) {
-                    result = result.replace(targetPattern, "IPHONEOS_DEPLOYMENT_TARGET = 11.0;");
+                if (target && (parseInt(target[1]) < 10)) {
+                    result = result.replace(targetPattern, "IPHONEOS_DEPLOYMENT_TARGET = 10.0;");
                 }
                 return result;
             });
