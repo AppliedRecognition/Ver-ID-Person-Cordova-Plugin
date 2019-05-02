@@ -18,10 +18,10 @@ Ver-ID gives your users the ability to authenticate using their face.
 	cordova plugin add path/to/plugin
 	~~~
 1. If your app includes iOS platform:
-    - Navigate to **platforms/ios** and open the **Podfile** in a text editor. Set the platform to iOS 11: `platform :ios, '11.0'`. Close the file and run `pod install` to update the project. Alternatively, to automate this step copy the **[hooks/podfilesetup.js](https://github.com/AppliedRecognition/Ver-ID-Person-Cordova-Plugin/blob/master/hooks/podfilesetup.js)** script from the plugin to your Cordova project and add it as a `before_build` [hook](https://cordova.apache.org/docs/en/latest/guide/appdev/hooks/).
+    - Navigate to **platforms/ios** and open the **Podfile** in a text editor. Set the platform to iOS 10: `platform :ios, '10.0'`. Close the file and run `pod install` to update the project. Alternatively, to automate this step copy the **[hooks/podfilesetup.js](https://github.com/AppliedRecognition/Ver-ID-Person-Cordova-Plugin/blob/master/hooks/podfilesetup.js)** script from the plugin to your Cordova project and add it as a `before_build` [hook](https://cordova.apache.org/docs/en/latest/guide/appdev/hooks/).
     - Open Cordova app's iOS work space in Xcode.
-    - Ensure the project's deployment target is iOS 11 or newer. Alternatively, copy **[hooks/xcodeproject.js](https://github.com/AppliedRecognition/Ver-ID-Person-Cordova-Plugin/blob/master/hooks/xcodeproject.js)** and **[hooks/platformversion.js](https://github.com/AppliedRecognition/Ver-ID-Person-Cordova-Plugin/blob/master/hooks/platformversion.js)** from the plugin to your Cordova project and add **hooks/platformversion.js** as [hook](https://cordova.apache.org/docs/en/latest/guide/appdev/hooks/).
-    - In your Xcode project's build settings ensure `SWIFT_VERSION` is set to **Swift 4.2**. You can automate this setting by copying **[hooks/xcodeproject.js](https://github.com/AppliedRecognition/Ver-ID-Person-Cordova-Plugin/blob/master/hooks/xcodeproject.js)** and **[hooks/swiftversion.js](https://github.com/AppliedRecognition/Ver-ID-Person-Cordova-Plugin/blob/master/hooks/swiftversion.js)** from the plugin to your Cordova project and add **swiftversion.js** as [hook](https://cordova.apache.org/docs/en/latest/guide/appdev/hooks/).
+    - Ensure the project's deployment target is iOS 10 or newer. Alternatively, copy **[hooks/xcodeproject.js](https://github.com/AppliedRecognition/Ver-ID-Person-Cordova-Plugin/blob/master/hooks/xcodeproject.js)** and **[hooks/platformversion.js](https://github.com/AppliedRecognition/Ver-ID-Person-Cordova-Plugin/blob/master/hooks/platformversion.js)** from the plugin to your Cordova project and add **hooks/platformversion.js** as [hook](https://cordova.apache.org/docs/en/latest/guide/appdev/hooks/).
+    - In your Xcode project's build settings ensure `SWIFT_VERSION` is set to **Swift 5**. You can automate this setting by copying **[hooks/xcodeproject.js](https://github.com/AppliedRecognition/Ver-ID-Person-Cordova-Plugin/blob/master/hooks/xcodeproject.js)** and **[hooks/swiftversion.js](https://github.com/AppliedRecognition/Ver-ID-Person-Cordova-Plugin/blob/master/hooks/swiftversion.js)** from the plugin to your Cordova project and add **swiftversion.js** as [hook](https://cordova.apache.org/docs/en/latest/guide/appdev/hooks/).
     - Open your app's **Info.plist** file and and ensure it contains an entry for `NSCameraUsageDescription`.
     - Still in the **Info.plist** file add the following entry, substituting `[your API secret]` for the API secret obtained after registration in step 1:
 
@@ -48,10 +48,10 @@ Ver-ID must be loaded before you can run face detection sessions or compare face
 The load operation may take up to a few of seconds. Load Ver-ID using the `load` call:
 
 ~~~javascript
-verid.load().then(function() {
+verid.load().then(verIDInstance => {
     // Ver-ID loaded successfully
-    // You can now run registration, authentication or liveness detection
-}).catch(function(error) {
+    // You can now run registration, authentication or liveness detection on verIDInstance
+}).catch(error => {
     // Ver-ID failed to load
 });
 ~~~
@@ -60,10 +60,10 @@ If you prefer, you can to specify the API secret in your code instead of your ap
 ~~~javascript
 var apiSecret = "..."; // Alternative way to set your Ver-ID API secret
 
-verid.load(apiSecret).then(function(){
+verid.load(apiSecret).then(verIDInstance => {
     // Ver-ID loaded successfully
     // You can now run registration, authentication or liveness detection
-}).catch(function(error){
+}).catch(error => {
     // Ver-ID failed to load
 });
 ~~~
@@ -74,34 +74,43 @@ The Ver-ID Person plugin module will be available in your script as a global var
 
 ~~~javascript
 var userId = "myUserId"; // String with an identifier for the user
+var verIDInstance;
 
 // Load Ver-ID before running registration or authentication
-verid.load().then(function() {
+verid.load().then(instance => {
     // Ver-ID loaded successfully
+    verIDInstance = instance;
     // Run a registration session
     var settings = new verid.RegistrationSessionSettings(userId);
     settings.showResult = true; // If you wish the plugin to show the result of the session to the user
-    return verid.register(settings)
-}).then(function(response) {
-    if (response.outcome == verid.SessionOutcome.SUCCESS) {
+    return verIDInstance.register(settings);
+}).then(response => {
+	 if (!response) {
+	 	// User cancelled the registration
+	 	return;
+	 }
+    if (!response.error) {
         // User registered
         // Run an authentication session
         var settings = new verid.AuthenticationSessionSettings(userId);
         settings.showResult = true; // If you wish the plugin to show the result of the session to the user    
-        return verid.authenticate(settings)
+        return verIDInstance.authenticate(settings);
     } else {
         return response;
     }
-}).then(function(response) {
-    if (response.outcome == verid.SessionOutcome.SUCCESS) {
+}).then(response => {
+	if (!response) {
+	 	// User cancelled the registration
+	} else if (!response.error) {
         // User authenticated
-    } else if (response.outcome == verid.SessionOutcome.CANCEL) {
-        // The user cancelled the session
     } else {
         // Session failed
     }
-}).catch(function(error) {
+}).catch(error => {
     // Handle the failure
+}).finally(() => {
+	// Optionally unload the library to release its resources
+	verid.unload();
 });
 ~~~
 
@@ -114,21 +123,26 @@ Liveness detection sessions follow he same format as registration and authentica
 ### Extracting face templates for face comparison
 ~~~javascript
 // Load Ver-ID before running liveness detection
-verid.load().then(function() {
+verid.load().then(verIDInstance => {
     // Ver-ID loaded successfully  
     // Run a liveness detection session  
     var settings = verid.LivenessDetectionSessionSettings();
-    settings.includeFaceTemplatesInResult = true;
-    return verid.captureLiveFace(settings);
-}).then(function(response) {
-    // Session finished
-    if (response.outcome == verid.SessionOutcome.SUCCESS) {            
-        var faceTemplates = response.getFaces(verid.Bearing.STRAIGHT).map(function(face) {
-            return face.faceTemplate;
-        });
-        // You can use the above templates to compare the detected face to faces from other sessions (see Comparing Faces section below)
+    return verIDInstance.captureLiveFace(settings);
+}).then(response => {
+	if (!response) {
+		// Session was cancelled
+	} else if (!response.error) {
+	    // Session finished
+	    var faceTemplates = response.attachments.filter(attachment => {
+	    	return attachment.bearing == verid.Bearing.STRAIGHT && attachment.face.recognitionData;
+	    }).map(face => {
+	        return attachment.face.recognitionData;
+	    });
+	    // You can use the above templates to compare the detected face to faces from other sessions (see Comparing Faces section below)
+    } else {
+    	// Session failed
     }
-}).catch(function(error) {
+}).catch(error => {
     // Handle the failure
 });
 ~~~
@@ -136,7 +150,7 @@ verid.load().then(function() {
 ### Face detection session without asking for poses
 ~~~javascript
 // Load Ver-ID before running liveness detection
-verid.load().then(function() {
+verid.load().then(verIDInstance => {
     // Ver-ID loaded successfully  
     // Run a liveness detection session  
     var settings = verid.LivenessDetectionSessionSettings();
@@ -144,10 +158,10 @@ verid.load().then(function() {
     settings.numberOfResultsToCollect = 1;
     // Ask the user to assume only one bearing (straight)
     settings.bearings = [verid.Bearing.STRAIGHT];
-    return verid.captureLiveFace(settings);
-}).then(function(response) {
+    return verIDInstance.captureLiveFace(settings);
+}).then(response => {
     // Session finished
-}).catch(function(error){
+}).catch(error => {
     // Handle the failure
 });
 ~~~
@@ -155,36 +169,36 @@ verid.load().then(function() {
 ### Liveness detection session defining the bearings (poses) the user may be asked to assume
 ~~~javascript
 // Load Ver-ID before running liveness detection
-verid.load().then(function(){
+verid.load().then(verIDInstance => {
     // Ver-ID loaded successfully  
     // Run a liveness detection session  
     var settings = verid.LivenessDetectionSessionSettings();
     // The user will be asked to look straight at the camera and then either left or right
     settings.bearings = [verid.Bearing.STRAIGHT, verid.Bearing.LEFT, verid.Bearing.RIGHT];
-    return verid.captureLiveFace(settings);
-}).then(function(response) {
+    return instance.captureLiveFace(settings);
+}).then(response => {
     // Session finished
-}).catch(function(error) {
+}).catch(error => {
     // Handle the failure
 });
 ~~~
 
 ## Session Response Format
 
-The callback of a successful session will contain [an object](https://appliedrecognition.github.io/Ver-ID-Person-Cordova-Plugin/module-verid.SessionResult.html) that represents the result of the session.
+The callback of a successful session will contain [an object](https://appliedrecognition.github.io/Ver-ID-Person-Cordova-Plugin/classes/_ver_id_.sessionresult.html) that represents the result of the session.
 
 ## Comparing Faces
 
 After collecting two templates as outlined in the Liveness Detection section above run:
 
 ~~~javascript
-verid.load().then(function() {
-    return verid.compareFaceTemplates(template1, template2);
-}).then(function(score) {
-    // score is a value between 0.0 and 1.0.
-	// 0.0 = the face templates are completely different
-	// 1.0 = the face templates are very similar
-}).catch(function(error) {
+verid.load().then(verIDInstance => {
+    return verIDInstance.compareFaces(faceRecognitionData1, faceRecognitionData1);
+}).then(result => {
+    // result.score = Similarity score between the two faces
+    // result.authenticationThreshold = Threshold beyond which faces may be considered similar enough for the user to be authenticated
+    // result.max = Maximum possible score
+}).catch(error => {
     // Handle the failure
 });
 ~~~
@@ -193,7 +207,7 @@ verid.load().then(function() {
 
 As of version 4.1.0 the API lets your app detect a face in an image it supplies. The image must be supplied using [data URI scheme](https://en.wikipedia.org/wiki/Data_URI_scheme).
 
-See the [`Face`](https://appliedrecognition.github.io/Ver-ID-Person-Cordova-Plugin/module-verid.html#~Face) type documentation for the properties of the returned face. You can pass the face's `faceTemplate` to the [`compareFaceTemplates `](https://appliedrecognition.github.io/Ver-ID-Person-Cordova-Plugin/module-verid.html#.compareFaceTemplates) function.
+See the [`Face`](https://appliedrecognition.github.io/Ver-ID-Person-Cordova-Plugin/classes/_ver_id_.face.html) type documentation for the properties of the returned face. You can pass the face's `recognitionData` to the [`compareFaces `](https://appliedrecognition.github.io/Ver-ID-Person-Cordova-Plugin/classes/_ver_id_.verid.html#comparefaces) function.
 
 ~~~javascript
 // Create an image object
@@ -212,11 +226,11 @@ image.onload = function() {
 	ctx.drawImage(image, 0, 0);
 	// Get the image data URI as JPEG at 0.95 quality
     var uri = canvas.toDataURL("image/jpeg", 0.95);
-    verid.load().then(function() {
-        return verid.detectFaceInImage(uri);
-    }).then(function(face) {
+    verid.load().then(verIDInstance => {
+        return verIDInstance.detectFaceInImage(uri);
+    }).then(face => {
         // Face detected
-    }).catch(function(error) {
+    }).catch(error => {
         // Face detection failed
     });
 }
@@ -230,5 +244,5 @@ image.src = "img/test.jpg";
 
 ## Module API Reference
 
- - [Ver-ID](https://appliedrecognition.github.io/Ver-ID-Person-Cordova-Plugin/module-verid.html)
+ - [Ver-ID](https://appliedrecognition.github.io/Ver-ID-Person-Cordova-Plugin/modules/_ver_id_.html)
  
