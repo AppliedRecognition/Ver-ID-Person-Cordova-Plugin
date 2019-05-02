@@ -120,7 +120,7 @@ In a liveness detection session the user is asked to asume a series of random po
 
 Liveness detection sessions follow he same format as registration and authentication.
 
-### Extracting face templates for face comparison
+### Extracting faces for face comparison
 ~~~javascript
 // Load Ver-ID before running liveness detection
 verid.load().then(verIDInstance => {
@@ -133,12 +133,13 @@ verid.load().then(verIDInstance => {
 		// Session was cancelled
 	} else if (!response.error) {
 	    // Session finished
-	    var faceTemplates = response.attachments.filter(attachment => {
+	    var faces = response.attachments.filter(attachment => {
+	    	// Only get faces that are looking straight at the camera and have recognition data
 	    	return attachment.bearing == verid.Bearing.STRAIGHT && attachment.face.recognitionData;
 	    }).map(face => {
-	        return attachment.face.recognitionData;
+	        return attachment.face;
 	    });
-	    // You can use the above templates to compare the detected face to faces from other sessions (see Comparing Faces section below)
+	    // You can use the above faces to compare the detected face to faces from other sessions (see Comparing Faces section below)
     } else {
     	// Session failed
     }
@@ -189,11 +190,11 @@ The callback of a successful session will contain [an object](https://appliedrec
 
 ## Comparing Faces
 
-After collecting two templates as outlined in the Liveness Detection section above run:
+After collecting two faces as outlined in the Liveness Detection section above run:
 
 ~~~javascript
 verid.load().then(verIDInstance => {
-    return verIDInstance.compareFaces(faceRecognitionData1, faceRecognitionData1);
+    return verIDInstance.compareFaces(face1, face2);
 }).then(result => {
     // result.score = Similarity score between the two faces
     // result.authenticationThreshold = Threshold beyond which faces may be considered similar enough for the user to be authenticated
@@ -207,7 +208,7 @@ verid.load().then(verIDInstance => {
 
 As of version 4.1.0 the API lets your app detect a face in an image it supplies. The image must be supplied using [data URI scheme](https://en.wikipedia.org/wiki/Data_URI_scheme).
 
-See the [`Face`](https://appliedrecognition.github.io/Ver-ID-Person-Cordova-Plugin/classes/_ver_id_.face.html) type documentation for the properties of the returned face. You can pass the face's `recognitionData` to the [`compareFaces `](https://appliedrecognition.github.io/Ver-ID-Person-Cordova-Plugin/classes/_ver_id_.verid.html#comparefaces) function.
+See the [`Face`](https://appliedrecognition.github.io/Ver-ID-Person-Cordova-Plugin/classes/_ver_id_.face.html) type documentation for the properties of the returned face. You can pass the faces to the [`compareFaces `](https://appliedrecognition.github.io/Ver-ID-Person-Cordova-Plugin/classes/_ver_id_.verid.html#comparefaces) function.
 
 ~~~javascript
 // Create an image object
@@ -225,9 +226,9 @@ image.onload = function() {
 	// Draw the image on the canvas
 	ctx.drawImage(image, 0, 0);
 	// Get the image data URI as JPEG at 0.95 quality
-    var uri = canvas.toDataURL("image/jpeg", 0.95);
+    var dataUri = canvas.toDataURL("image/jpeg", 0.95);
     verid.load().then(verIDInstance => {
-        return verIDInstance.detectFaceInImage(uri);
+        return verIDInstance.detectFaceInImage(dataUri);
     }).then(face => {
         // Face detected
     }).catch(error => {
