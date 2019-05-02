@@ -81,8 +81,8 @@ import VerIDUI
         }
     }
 
-    @objc public func compareFaceTemplates(_ command: CDVInvokedUrlCommand) {
-        if let t1 = command.arguments?.compactMap({ ($0 as? [String:String])?["template1"] }).first?.data(using: .utf8), let t2 = command.arguments?.compactMap({ ($0 as? [String:String])?["template2"] }).first?.data(using: .utf8) {
+    @objc public func compareFaces(_ command: CDVInvokedUrlCommand) {
+        if let t1 = command.arguments?.compactMap({ ($0 as? [String:String])?["face1"] }).first?.data(using: .utf8), let t2 = command.arguments?.compactMap({ ($0 as? [String:String])?["face2"] }).first?.data(using: .utf8) {
             self.loadVerID(command) { verid in
                 self.commandDelegate.run {
                     do {
@@ -90,7 +90,7 @@ import VerIDUI
                         let template2 = try JSONDecoder().decode(RecognitionFace.self, from: t2)
                         let score = try verid.faceRecognition.compareSubjectFaces([template1], toFaces: [template2]).floatValue
                         DispatchQueue.main.async {
-                            let message: [String:Any] = ["score":score,"threshold":verid.faceRecognition.authenticationScoreThreshold.floatValue];
+                            let message: [String:Any] = ["score":score,"threshold":verid.faceRecognition.authenticationScoreThreshold.floatValue,"max":verid.faceRecognition.maxAuthenticationScore.floatValue];
                             self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_OK, messageAs: message), callbackId: command.callbackId)
                         }
                     } catch {
