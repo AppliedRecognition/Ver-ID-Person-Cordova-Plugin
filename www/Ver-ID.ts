@@ -273,9 +273,9 @@ export class VerID {
      * @param face1 Face to compare to the other face
      * @param face2 Other face to compare to the first face
      */
-    compareFaces(face1: string, face2: string): Promise<FaceComparisonResult> {
+    compareFaces(face1: Face, face2: Face): Promise<FaceComparisonResult> {
         return new Promise<FaceComparisonResult>((resolve, reject) => {
-            cordova.exec(decodeResult(resolve), reject, PLUGIN_NAME, "compareFace", [{"face1":face1},{"face2":face2}]);
+            cordova.exec(decodeResult(resolve), reject, PLUGIN_NAME, "compareFaces", [{"face1":face1},{"face2":face2}]);
         });
     }
 
