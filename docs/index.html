@@ -1,65 +1,355 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html class="default no-js">
 <head>
-    <meta charset="utf-8">
-    <title>JSDoc: Home</title>
-
-    <script src="scripts/prettify/prettify.js"> </script>
-    <script src="scripts/prettify/lang-css.js"> </script>
-    <!--[if lt IE 9]>
-      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
-    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>com-appliedrec-plugins-verid</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="assets/css/main.css">
 </head>
-
 <body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="assets/js/search.js" data-base=".">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="index.html" class="title">com-appliedrec-plugins-verid</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="globals.html">Globals</a>
+				</li>
+			</ul>
+			<h1> com-appliedrec-plugins-verid</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<div class="tsd-panel tsd-typography">
+				<h1 id="ver-id-person-plugin-for-cordova">Ver-ID Person Plugin for Cordova</h1>
+				<h2 id="introduction">Introduction</h2>
+				<p>Ver-ID gives your users the ability to authenticate using their face.</p>
+				<h2 id="adding-ver-id-person-plugin-to-your-cordova-app">Adding Ver-ID Person Plugin to Your Cordova App</h2>
+				<ol>
+					<li><a href="https://dev.ver-id.com/admin/register">Request an API secret</a> for your app.</li>
+					<li><p>Clone the plugin Git repo into your file system:</p>
+						<pre><code class="language-bash"> git <span class="hljs-built_in">clone</span> --recurse-submodules https://github.com/AppliedRecognition/Ver-ID-Person-Cordova-Plugin.git</code></pre>
+					</li>
+					<li><p>Navigate to your Cordova project directory and install the plugin substituting <code>path/to/plugin</code> with the path of the plugin you checked out in the previous step:</p>
+						<pre><code class="language-bash"> cordova plugin add path/to/plugin</code></pre>
+					</li>
+					<li><p>If your app includes iOS platform:</p>
+						<ul>
+							<li>Navigate to <strong>platforms/ios</strong> and open the <strong>Podfile</strong> in a text editor. Set the platform to iOS 10: <code>platform :ios, &#39;10.0&#39;</code>. Close the file and run <code>pod install</code> to update the project. Alternatively, to automate this step copy the <strong><a href="https://github.com/AppliedRecognition/Ver-ID-Person-Cordova-Plugin/blob/master/hooks/podfilesetup.js">hooks/podfilesetup.js</a></strong> script from the plugin to your Cordova project and add it as a <code>before_build</code> <a href="https://cordova.apache.org/docs/en/latest/guide/appdev/hooks/">hook</a>.</li>
+							<li>Open Cordova app&#39;s iOS work space in Xcode.</li>
+							<li>Ensure the project&#39;s deployment target is iOS 10 or newer. Alternatively, copy <strong><a href="https://github.com/AppliedRecognition/Ver-ID-Person-Cordova-Plugin/blob/master/hooks/xcodeproject.js">hooks/xcodeproject.js</a></strong> and <strong><a href="https://github.com/AppliedRecognition/Ver-ID-Person-Cordova-Plugin/blob/master/hooks/platformversion.js">hooks/platformversion.js</a></strong> from the plugin to your Cordova project and add <strong>hooks/platformversion.js</strong> as <a href="https://cordova.apache.org/docs/en/latest/guide/appdev/hooks/">hook</a>.</li>
+							<li>In your Xcode project&#39;s build settings ensure <code>SWIFT_VERSION</code> is set to <strong>Swift 5</strong>. You can automate this setting by copying <strong><a href="https://github.com/AppliedRecognition/Ver-ID-Person-Cordova-Plugin/blob/master/hooks/xcodeproject.js">hooks/xcodeproject.js</a></strong> and <strong><a href="https://github.com/AppliedRecognition/Ver-ID-Person-Cordova-Plugin/blob/master/hooks/swiftversion.js">hooks/swiftversion.js</a></strong> from the plugin to your Cordova project and add <strong>swiftversion.js</strong> as <a href="https://cordova.apache.org/docs/en/latest/guide/appdev/hooks/">hook</a>.</li>
+							<li>Open your app&#39;s <strong>Info.plist</strong> file and and ensure it contains an entry for <code>NSCameraUsageDescription</code>.</li>
+							<li><p>Still in the <strong>Info.plist</strong> file add the following entry, substituting <code>[your API secret]</code> for the API secret obtained after registration in step 1:</p>
+								<pre><code class="language-xml">  <span class="hljs-tag">&lt;<span class="hljs-name">key</span>&gt;</span>com.appliedrec.verid.apiSecret<span class="hljs-tag">&lt;/<span class="hljs-name">key</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">string</span>&gt;</span>[your API secret]<span class="hljs-tag">&lt;/<span class="hljs-name">string</span>&gt;</span></code></pre>
+							</li>
+							<li>Select your app target and click on the <strong>Build Settings</strong> tab. Under <strong>Build Options</strong> ensure <strong>Enable Bitcode</strong> is set to <strong>No</strong>.</li>
+						</ul>
+					</li>
+					<li><p>If your app includes Android platform:</p>
+						<ul>
+							<li>Ensure your app targets Android API level 14 or newer.</li>
+							<li><p>Open your app&#39;s <strong>AndroidManifest.xml</strong> file and add the following tag in <code>&lt;application&gt;</code> replacing <code>[your API secret]</code> with the API secret your received in step 1:</p>
+								<pre><code class="language-xml">  <span class="hljs-tag">&lt;<span class="hljs-name">meta-data</span>
+     <span class="hljs-attr">android:name</span>=<span class="hljs-string">"com.appliedrec.verid.apiSecret"</span> 
+     <span class="hljs-attr">android:value</span>=<span class="hljs-string">"[your API secret]"</span> /&gt;</span></code></pre>
+							</li>
+							<li>Your application must use <strong>Theme.AppCompat</strong> theme (or its descendant).</li>
+						</ul>
+					</li>
+				</ol>
+				<h2 id="loading-ver-id">Loading Ver-ID</h2>
+				<p>Ver-ID must be loaded before you can run face detection sessions or compare faces.</p>
+				<p>The load operation may take up to a few of seconds. Load Ver-ID using the <code>load</code> call:</p>
+				<pre><code class="language-javascript">verid.load().then(<span class="hljs-function"><span class="hljs-params">verIDInstance</span> =&gt;</span> {
+    <span class="hljs-comment">// Ver-ID loaded successfully</span>
+    <span class="hljs-comment">// You can now run registration, authentication or liveness detection on verIDInstance</span>
+}).catch(<span class="hljs-function"><span class="hljs-params">error</span> =&gt;</span> {
+    <span class="hljs-comment">// Ver-ID failed to load</span>
+});</code></pre>
+				<p>If you prefer, you can to specify the API secret in your code instead of your app&#39;s manifest or plist:</p>
+				<pre><code class="language-javascript"><span class="hljs-keyword">var</span> apiSecret = <span class="hljs-string">"..."</span>; <span class="hljs-comment">// Alternative way to set your Ver-ID API secret</span>
 
-<div id="main">
+verid.load(apiSecret).then(<span class="hljs-function"><span class="hljs-params">verIDInstance</span> =&gt;</span> {
+    <span class="hljs-comment">// Ver-ID loaded successfully</span>
+    <span class="hljs-comment">// You can now run registration, authentication or liveness detection</span>
+}).catch(<span class="hljs-function"><span class="hljs-params">error</span> =&gt;</span> {
+    <span class="hljs-comment">// Ver-ID failed to load</span>
+});</code></pre>
+				<h2 id="register-and-authenticate-user-from-javascript">Register and Authenticate User From Javascript</h2>
+				<p>The Ver-ID Person plugin module will be available in your script as a global variable <code>verid</code>.</p>
+				<pre><code class="language-javascript"><span class="hljs-keyword">var</span> userId = <span class="hljs-string">"myUserId"</span>; <span class="hljs-comment">// String with an identifier for the user</span>
+<span class="hljs-keyword">var</span> verIDInstance;
 
-    <h1 class="page-title">Home</h1>
-
-    
-
-
-
-    
-
-
-    <h3> </h3>
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
-
-
-
-
+<span class="hljs-comment">// Load Ver-ID before running registration or authentication</span>
+verid.load().then(<span class="hljs-function"><span class="hljs-params">instance</span> =&gt;</span> {
+    <span class="hljs-comment">// Ver-ID loaded successfully</span>
+    verIDInstance = instance;
+    <span class="hljs-comment">// Run a registration session</span>
+    <span class="hljs-keyword">var</span> settings = <span class="hljs-keyword">new</span> verid.RegistrationSessionSettings(userId);
+    settings.showResult = <span class="hljs-literal">true</span>; <span class="hljs-comment">// If you wish the plugin to show the result of the session to the user</span>
+    <span class="hljs-keyword">return</span> verIDInstance.register(settings);
+}).then(<span class="hljs-function"><span class="hljs-params">response</span> =&gt;</span> {
+     <span class="hljs-keyword">if</span> (!response) {
+         <span class="hljs-comment">// User cancelled the registration</span>
+         <span class="hljs-keyword">return</span>;
+     }
+    <span class="hljs-keyword">if</span> (!response.error) {
+        <span class="hljs-comment">// User registered</span>
+        <span class="hljs-comment">// Run an authentication session</span>
+        <span class="hljs-keyword">var</span> settings = <span class="hljs-keyword">new</span> verid.AuthenticationSessionSettings(userId);
+        settings.showResult = <span class="hljs-literal">true</span>; <span class="hljs-comment">// If you wish the plugin to show the result of the session to the user    </span>
+        <span class="hljs-keyword">return</span> verIDInstance.authenticate(settings);
+    } <span class="hljs-keyword">else</span> {
+        <span class="hljs-keyword">return</span> response;
+    }
+}).then(<span class="hljs-function"><span class="hljs-params">response</span> =&gt;</span> {
+    <span class="hljs-keyword">if</span> (!response) {
+         <span class="hljs-comment">// User cancelled the registration</span>
+    } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (!response.error) {
+        <span class="hljs-comment">// User authenticated</span>
+    } <span class="hljs-keyword">else</span> {
+        <span class="hljs-comment">// Session failed</span>
+    }
+}).catch(<span class="hljs-function"><span class="hljs-params">error</span> =&gt;</span> {
+    <span class="hljs-comment">// Handle the failure</span>
+}).finally(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+    <span class="hljs-comment">// Optionally unload the library to release its resources</span>
+    verid.unload();
+});</code></pre>
+				<h2 id="liveness-detection">Liveness Detection</h2>
+				<p>In a liveness detection session the user is asked to asume a series of random poses in front of the camera.</p>
+				<p>Liveness detection sessions follow he same format as registration and authentication.</p>
+				<h3 id="extracting-face-templates-for-face-comparison">Extracting face templates for face comparison</h3>
+				<pre><code class="language-javascript"><span class="hljs-comment">// Load Ver-ID before running liveness detection</span>
+verid.load().then(<span class="hljs-function"><span class="hljs-params">verIDInstance</span> =&gt;</span> {
+    <span class="hljs-comment">// Ver-ID loaded successfully  </span>
+    <span class="hljs-comment">// Run a liveness detection session  </span>
+    <span class="hljs-keyword">var</span> settings = verid.LivenessDetectionSessionSettings();
+    <span class="hljs-keyword">return</span> verIDInstance.captureLiveFace(settings);
+}).then(<span class="hljs-function"><span class="hljs-params">response</span> =&gt;</span> {
+    <span class="hljs-keyword">if</span> (!response) {
+        <span class="hljs-comment">// Session was cancelled</span>
+    } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (!response.error) {
+        <span class="hljs-comment">// Session finished</span>
+        <span class="hljs-keyword">var</span> faceTemplates = response.attachments.filter(<span class="hljs-function"><span class="hljs-params">attachment</span> =&gt;</span> {
+            <span class="hljs-keyword">return</span> attachment.bearing == verid.Bearing.STRAIGHT &amp;&amp; attachment.face.recognitionData;
+        }).map(<span class="hljs-function"><span class="hljs-params">face</span> =&gt;</span> {
+            <span class="hljs-keyword">return</span> attachment.face.recognitionData;
+        });
+        <span class="hljs-comment">// You can use the above templates to compare the detected face to faces from other sessions (see Comparing Faces section below)</span>
+    } <span class="hljs-keyword">else</span> {
+        <span class="hljs-comment">// Session failed</span>
+    }
+}).catch(<span class="hljs-function"><span class="hljs-params">error</span> =&gt;</span> {
+    <span class="hljs-comment">// Handle the failure</span>
+});</code></pre>
+				<h3 id="face-detection-session-without-asking-for-poses">Face detection session without asking for poses</h3>
+				<pre><code class="language-javascript"><span class="hljs-comment">// Load Ver-ID before running liveness detection</span>
+verid.load().then(<span class="hljs-function"><span class="hljs-params">verIDInstance</span> =&gt;</span> {
+    <span class="hljs-comment">// Ver-ID loaded successfully  </span>
+    <span class="hljs-comment">// Run a liveness detection session  </span>
+    <span class="hljs-keyword">var</span> settings = verid.LivenessDetectionSessionSettings();
+    <span class="hljs-comment">// We only want to collect one result</span>
+    settings.numberOfResultsToCollect = <span class="hljs-number">1</span>;
+    <span class="hljs-comment">// Ask the user to assume only one bearing (straight)</span>
+    settings.bearings = [verid.Bearing.STRAIGHT];
+    <span class="hljs-keyword">return</span> verIDInstance.captureLiveFace(settings);
+}).then(<span class="hljs-function"><span class="hljs-params">response</span> =&gt;</span> {
+    <span class="hljs-comment">// Session finished</span>
+}).catch(<span class="hljs-function"><span class="hljs-params">error</span> =&gt;</span> {
+    <span class="hljs-comment">// Handle the failure</span>
+});</code></pre>
+				<h3 id="liveness-detection-session-defining-the-bearings-poses-the-user-may-be-asked-to-assume">Liveness detection session defining the bearings (poses) the user may be asked to assume</h3>
+				<pre><code class="language-javascript"><span class="hljs-comment">// Load Ver-ID before running liveness detection</span>
+verid.load().then(<span class="hljs-function"><span class="hljs-params">verIDInstance</span> =&gt;</span> {
+    <span class="hljs-comment">// Ver-ID loaded successfully  </span>
+    <span class="hljs-comment">// Run a liveness detection session  </span>
+    <span class="hljs-keyword">var</span> settings = verid.LivenessDetectionSessionSettings();
+    <span class="hljs-comment">// The user will be asked to look straight at the camera and then either left or right</span>
+    settings.bearings = [verid.Bearing.STRAIGHT, verid.Bearing.LEFT, verid.Bearing.RIGHT];
+    <span class="hljs-keyword">return</span> instance.captureLiveFace(settings);
+}).then(<span class="hljs-function"><span class="hljs-params">response</span> =&gt;</span> {
+    <span class="hljs-comment">// Session finished</span>
+}).catch(<span class="hljs-function"><span class="hljs-params">error</span> =&gt;</span> {
+    <span class="hljs-comment">// Handle the failure</span>
+});</code></pre>
+				<h2 id="session-response-format">Session Response Format</h2>
+				<p>The callback of a successful session will contain <a href="https://appliedrecognition.github.io/Ver-ID-Person-Cordova-Plugin/classes/_ver_id_.sessionresult.html">an object</a> that represents the result of the session.</p>
+				<h2 id="comparing-faces">Comparing Faces</h2>
+				<p>After collecting two templates as outlined in the Liveness Detection section above run:</p>
+				<pre><code class="language-javascript">verid.load().then(<span class="hljs-function"><span class="hljs-params">verIDInstance</span> =&gt;</span> {
+    <span class="hljs-keyword">return</span> verIDInstance.compareFaces(faceRecognitionData1, faceRecognitionData1);
+}).then(<span class="hljs-function"><span class="hljs-params">result</span> =&gt;</span> {
+    <span class="hljs-comment">// result.score = Similarity score between the two faces</span>
+    <span class="hljs-comment">// result.authenticationThreshold = Threshold beyond which faces may be considered similar enough for the user to be authenticated</span>
+    <span class="hljs-comment">// result.max = Maximum possible score</span>
+}).catch(<span class="hljs-function"><span class="hljs-params">error</span> =&gt;</span> {
+    <span class="hljs-comment">// Handle the failure</span>
+});</code></pre>
+				<h2 id="detecting-faces-in-images">Detecting Faces In Images</h2>
+				<p>As of version 4.1.0 the API lets your app detect a face in an image it supplies. The image must be supplied using <a href="https://en.wikipedia.org/wiki/Data_URI_scheme">data URI scheme</a>.</p>
+				<p>See the <a href="https://appliedrecognition.github.io/Ver-ID-Person-Cordova-Plugin/classes/_ver_id_.face.html"><code>Face</code></a> type documentation for the properties of the returned face. You can pass the face&#39;s <code>recognitionData</code> to the <a href="https://appliedrecognition.github.io/Ver-ID-Person-Cordova-Plugin/classes/_ver_id_.verid.html#comparefaces"><code>compareFaces</code></a> function.</p>
+				<pre><code class="language-javascript"><span class="hljs-comment">// Create an image object</span>
+<span class="hljs-keyword">var</span> image = <span class="hljs-keyword">new</span> Image();
+<span class="hljs-comment">// Set load callback</span>
+image.onload = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+    <span class="hljs-comment">// Create a canvas element</span>
+    <span class="hljs-keyword">var</span> canvas = <span class="hljs-built_in">document</span>.createElement(<span class="hljs-string">"canvas"</span>);
+    <span class="hljs-comment">// Set the canvas width to match the width of the image</span>
+    canvas.width = image.width;
+    <span class="hljs-comment">// Set the height width to match the height of the image</span>
+    canvas.height = image.height;
+    <span class="hljs-comment">// Get the canvas 2D context</span>
+    <span class="hljs-keyword">var</span> ctx = canvas.getContext(<span class="hljs-string">"2d"</span>);
+    <span class="hljs-comment">// Draw the image on the canvas</span>
+    ctx.drawImage(image, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>);
+    <span class="hljs-comment">// Get the image data URI as JPEG at 0.95 quality</span>
+    <span class="hljs-keyword">var</span> uri = canvas.toDataURL(<span class="hljs-string">"image/jpeg"</span>, <span class="hljs-number">0.95</span>);
+    verid.load().then(<span class="hljs-function"><span class="hljs-params">verIDInstance</span> =&gt;</span> {
+        <span class="hljs-keyword">return</span> verIDInstance.detectFaceInImage(uri);
+    }).then(<span class="hljs-function"><span class="hljs-params">face</span> =&gt;</span> {
+        <span class="hljs-comment">// Face detected</span>
+    }).catch(<span class="hljs-function"><span class="hljs-params">error</span> =&gt;</span> {
+        <span class="hljs-comment">// Face detection failed</span>
+    });
+}
+<span class="hljs-comment">// Set error callback</span>
+image.onerror = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Error loading image"</span>);
+}
+<span class="hljs-comment">// Set the image source (change img/test.jpg to your image location)</span>
+image.src = <span class="hljs-string">"img/test.jpg"</span>;</code></pre>
+				<h2 id="module-api-reference">Module API Reference</h2>
+				<ul>
+					<li><a href="https://appliedrecognition.github.io/Ver-ID-Person-Cordova-Plugin/modules/_ver_id_.html">Ver-ID</a></li>
+				</ul>
+			</div>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="globals.html"><em>Globals</em></a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_ver_id_.html">"<wbr>Ver-<wbr>ID"</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
 </div>
-
-<nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-verid.html">verid</a></li></ul><h3>Classes</h3><ul><li><a href="module-verid.AuthenticationSessionSettings.html">AuthenticationSessionSettings</a></li><li><a href="module-verid.LivenessDetectionSessionSettings.html">LivenessDetectionSessionSettings</a></li><li><a href="module-verid.RegistrationSessionSettings.html">RegistrationSessionSettings</a></li><li><a href="module-verid.SessionResult.html">SessionResult</a></li><li><a href="module-verid.SessionSettings.html">SessionSettings</a></li></ul>
-</nav>
-
-<br class="clear">
-
-<footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Thu Jan 24 2019 13:42:15 GMT+0000 (Greenwich Mean Time)
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-module"><span class="tsd-kind-icon">Module</span></li>
+				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
+				<li class="tsd-kind-index-signature"><span class="tsd-kind-icon">Index signature</span></li>
+				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
+				<li class="tsd-kind-enum-member"><span class="tsd-kind-icon">Enumeration member</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-enum"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-enum"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-interface"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-class"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-call-signature tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+		</div>
+	</div>
 </footer>
-
-<script> prettyPrint(); </script>
-<script src="scripts/linenumber.js"> </script>
+<div class="container tsd-generator">
+	<p>Generated using <a href="http://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="assets/js/main.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="assets/js/search.js"><' + '/script>');</script>
 </body>
 </html>
