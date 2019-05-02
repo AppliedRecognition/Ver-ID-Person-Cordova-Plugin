@@ -1,3 +1,5 @@
+![GitHub package.json version (branch)](https://img.shields.io/github/package-json/v/AppliedRecognition/Ver-ID-Person-Cordova-Plugin/new-ios-sdk.svg)
+
 # Ver-ID Person Plugin for Cordova
 
 ## Introduction
