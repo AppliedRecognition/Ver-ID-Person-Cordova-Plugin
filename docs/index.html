@@ -162,7 +162,7 @@ verid.load().then(<span class="hljs-function"><span class="hljs-params">instance
 				<h2 id="liveness-detection">Liveness Detection</h2>
 				<p>In a liveness detection session the user is asked to asume a series of random poses in front of the camera.</p>
 				<p>Liveness detection sessions follow he same format as registration and authentication.</p>
-				<h3 id="extracting-face-templates-for-face-comparison">Extracting face templates for face comparison</h3>
+				<h3 id="extracting-faces-for-face-comparison">Extracting faces for face comparison</h3>
 				<pre><code class="language-javascript"><span class="hljs-comment">// Load Ver-ID before running liveness detection</span>
 verid.load().then(<span class="hljs-function"><span class="hljs-params">verIDInstance</span> =&gt;</span> {
     <span class="hljs-comment">// Ver-ID loaded successfully  </span>
@@ -174,12 +174,13 @@ verid.load().then(<span class="hljs-function"><span class="hljs-params">verIDIns
         <span class="hljs-comment">// Session was cancelled</span>
     } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (!response.error) {
         <span class="hljs-comment">// Session finished</span>
-        <span class="hljs-keyword">var</span> faceTemplates = response.attachments.filter(<span class="hljs-function"><span class="hljs-params">attachment</span> =&gt;</span> {
+        <span class="hljs-keyword">var</span> faces = response.attachments.filter(<span class="hljs-function"><span class="hljs-params">attachment</span> =&gt;</span> {
+            <span class="hljs-comment">// Only get faces that are looking straight at the camera and have recognition data</span>
             <span class="hljs-keyword">return</span> attachment.bearing == verid.Bearing.STRAIGHT &amp;&amp; attachment.face.recognitionData;
         }).map(<span class="hljs-function"><span class="hljs-params">face</span> =&gt;</span> {
-            <span class="hljs-keyword">return</span> attachment.face.recognitionData;
+            <span class="hljs-keyword">return</span> attachment.face;
         });
-        <span class="hljs-comment">// You can use the above templates to compare the detected face to faces from other sessions (see Comparing Faces section below)</span>
+        <span class="hljs-comment">// You can use the above faces to compare the detected face to faces from other sessions (see Comparing Faces section below)</span>
     } <span class="hljs-keyword">else</span> {
         <span class="hljs-comment">// Session failed</span>
     }
@@ -219,9 +220,9 @@ verid.load().then(<span class="hljs-function"><span class="hljs-params">verIDIns
 				<h2 id="session-response-format">Session Response Format</h2>
 				<p>The callback of a successful session will contain <a href="https://appliedrecognition.github.io/Ver-ID-Person-Cordova-Plugin/classes/_ver_id_.sessionresult.html">an object</a> that represents the result of the session.</p>
 				<h2 id="comparing-faces">Comparing Faces</h2>
-				<p>After collecting two templates as outlined in the Liveness Detection section above run:</p>
+				<p>After collecting two faces as outlined in the Liveness Detection section above run:</p>
 				<pre><code class="language-javascript">verid.load().then(<span class="hljs-function"><span class="hljs-params">verIDInstance</span> =&gt;</span> {
-    <span class="hljs-keyword">return</span> verIDInstance.compareFaces(faceRecognitionData1, faceRecognitionData1);
+    <span class="hljs-keyword">return</span> verIDInstance.compareFaces(face1, face2);
 }).then(<span class="hljs-function"><span class="hljs-params">result</span> =&gt;</span> {
     <span class="hljs-comment">// result.score = Similarity score between the two faces</span>
     <span class="hljs-comment">// result.authenticationThreshold = Threshold beyond which faces may be considered similar enough for the user to be authenticated</span>
@@ -231,7 +232,7 @@ verid.load().then(<span class="hljs-function"><span class="hljs-params">verIDIns
 });</code></pre>
 				<h2 id="detecting-faces-in-images">Detecting Faces In Images</h2>
 				<p>As of version 4.1.0 the API lets your app detect a face in an image it supplies. The image must be supplied using <a href="https://en.wikipedia.org/wiki/Data_URI_scheme">data URI scheme</a>.</p>
-				<p>See the <a href="https://appliedrecognition.github.io/Ver-ID-Person-Cordova-Plugin/classes/_ver_id_.face.html"><code>Face</code></a> type documentation for the properties of the returned face. You can pass the face&#39;s <code>recognitionData</code> to the <a href="https://appliedrecognition.github.io/Ver-ID-Person-Cordova-Plugin/classes/_ver_id_.verid.html#comparefaces"><code>compareFaces</code></a> function.</p>
+				<p>See the <a href="https://appliedrecognition.github.io/Ver-ID-Person-Cordova-Plugin/classes/_ver_id_.face.html"><code>Face</code></a> type documentation for the properties of the returned face. You can pass the faces to the <a href="https://appliedrecognition.github.io/Ver-ID-Person-Cordova-Plugin/classes/_ver_id_.verid.html#comparefaces"><code>compareFaces</code></a> function.</p>
 				<pre><code class="language-javascript"><span class="hljs-comment">// Create an image object</span>
 <span class="hljs-keyword">var</span> image = <span class="hljs-keyword">new</span> Image();
 <span class="hljs-comment">// Set load callback</span>
@@ -247,9 +248,9 @@ image.onload = <span class="hljs-function"><span class="hljs-keyword">function</
     <span class="hljs-comment">// Draw the image on the canvas</span>
     ctx.drawImage(image, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>);
     <span class="hljs-comment">// Get the image data URI as JPEG at 0.95 quality</span>
-    <span class="hljs-keyword">var</span> uri = canvas.toDataURL(<span class="hljs-string">"image/jpeg"</span>, <span class="hljs-number">0.95</span>);
+    <span class="hljs-keyword">var</span> dataUri = canvas.toDataURL(<span class="hljs-string">"image/jpeg"</span>, <span class="hljs-number">0.95</span>);
     verid.load().then(<span class="hljs-function"><span class="hljs-params">verIDInstance</span> =&gt;</span> {
-        <span class="hljs-keyword">return</span> verIDInstance.detectFaceInImage(uri);
+        <span class="hljs-keyword">return</span> verIDInstance.detectFaceInImage(dataUri);
     }).then(<span class="hljs-function"><span class="hljs-params">face</span> =&gt;</span> {
         <span class="hljs-comment">// Face detected</span>
     }).catch(<span class="hljs-function"><span class="hljs-params">error</span> =&gt;</span> {
