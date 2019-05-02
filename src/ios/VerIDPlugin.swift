@@ -197,7 +197,11 @@ import VerIDUI
     }
     
     public func sessionWasCanceled(_ session: VerIDSession) {
+        guard let callbackId = self.veridSessionCallbackId else {
+            return
+        }
         self.veridSessionCallbackId = nil
+        self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_OK), callbackId: callbackId)
     }
     
     
@@ -208,7 +212,7 @@ import VerIDUI
             NSLog("Unable to parse settings")
             throw VerIDPluginError.parsingError
         }
-        let settings = try JSONDecoder().decode(T.self, from: data)
+        let settings: T = try JSONDecoder().decode(T.self, from: data)
         NSLog("Decoded settings %@ from %@", String(describing: T.self), string)
         return settings
     }
@@ -252,16 +256,17 @@ import VerIDUI
             veridFactory.faceRecognitionFactory = detRecLibFactory
         }
         veridFactory.delegate = self
-        veridFactory.createVerID { verid in
+        veridFactory.createVerID { instance in
             self.veridSessionCallbackId = nil
-            self.verid = verid
-            callback(verid)
+            self.verid = instance
+            callback(instance)
         }
     }
     
     public func veridFactory(_ factory: VerIDFactory, didFailWithError error: Error) {
         if let callbackId = self.veridSessionCallbackId {
             self.veridSessionCallbackId = nil
+            self.verid = nil
             self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: error.localizedDescription), callbackId: callbackId)
         }
     }
