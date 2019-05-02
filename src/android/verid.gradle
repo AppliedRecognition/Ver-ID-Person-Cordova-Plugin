@@ -6,7 +6,8 @@ repositories {
 allprojects {
 	android {
 		defaultConfig {
-			renderscriptTargetApi 14
+			minSdkVersion 19
+			renderscriptTargetApi 19
 			renderscriptSupportModeEnabled true
 		}
 	}
