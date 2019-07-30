@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<plugin id="com-appliedrec-plugins-verid" version="5.0.0" xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
+<plugin id="com-appliedrec-plugins-verid" version="5.0.0-swift4.2" xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
     <name>Ver-ID</name>
     <js-module name="Ver-ID" src="www/dist/Ver-ID.js">
         <clobbers target="window.verid" />
@@ -29,6 +29,6 @@
         </config-file>
         <source-file src="src/ios/VerIDPlugin.swift" />
         <resource-file src="VerIDModels"/>
-        <framework src="Ver-ID" type="podspec" spec="~> 3.5" />
+        <framework src="Ver-ID-Swift4.2" type="podspec" spec="~> 3.5" />
     </platform>
 </plugin>
