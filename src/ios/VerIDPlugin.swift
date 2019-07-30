@@ -70,13 +70,27 @@ import VerID
             self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: "Unable to parse userId argument"), callbackId: command.callbackId)
         }
     }
-
-    @objc public func compareFaceTemplates(_ command: CDVInvokedUrlCommand) {
-        if let t1 = command.arguments?.compactMap({ ($0 as? [String:String])?["template1"] }).first?.data(using: .utf8), let t2 = command.arguments?.compactMap({ ($0 as? [String:String])?["template2"] }).first?.data(using: .utf8) {
+    
+    @objc public func compareFaces(_ command: CDVInvokedUrlCommand) {
+        if let t1 = command.arguments?.compactMap({ ($0 as? [String:String])?["face1"] }).first?.data(using: .utf8), let t2 = command.arguments?.compactMap({ ($0 as? [String:String])?["face2"] }).first?.data(using: .utf8) {
             commandDelegate.run {
                 do {
-                    let template1 = try JSONDecoder().decode(FaceTemplate.self, from: t1)
-                    let template2 = try JSONDecoder().decode(FaceTemplate.self, from: t2)
+                    let template1: FaceTemplate
+                    if let template = try? JSONDecoder().decode(FaceTemplate.self, from: t1) {
+                        template1 = template
+                    } else if let face = try? JSONDecoder().decode(Face.self, from: t1), let template = face.face.faceTemplate {
+                        template1 = template
+                    } else {
+                        throw NSError(domain: "com.appliedrec.verid", code: 1, userInfo: [NSLocalizedDescriptionKey:"Invalid face template argument"])
+                    }
+                    let template2: FaceTemplate
+                    if let template = try? JSONDecoder().decode(FaceTemplate.self, from: t2) {
+                        template2 = template
+                    } else if let face = try? JSONDecoder().decode(Face.self, from: t2), let template = face.face.faceTemplate {
+                        template2 = template
+                    } else {
+                        throw NSError(domain: "com.appliedrec.verid", code: 1, userInfo: [NSLocalizedDescriptionKey:"Invalid face template argument"])
+                    }
                     let score = try FaceUtil.compareFaceTemplate(template1, to: template2).floatValue
                     DispatchQueue.main.async {
                         let message: [String:Any] = ["score":score,"authenticationThreshold":0.5,"max":1.0];
@@ -116,7 +130,7 @@ import VerID
                         throw VerIDPluginError.invalidArgument
                     }
                     let face = try VerID.shared.detectFaceInImage(image, keepForRecognition: true)
-                    guard let encodedFace = String(data: try JSONEncoder().encode(face), encoding: .utf8) else {
+                    guard let encodedFace = String(data: try JSONEncoder().encode(Face(face: face)), encoding: .utf8) else {
                         throw VerIDPluginError.encodingError
                     }
                     DispatchQueue.main.async {
@@ -173,6 +187,7 @@ import VerID
             throw VerIDPluginError.parsingError
         }
         let settings = try JSONDecoder().decode(T.self, from: data)
+        settings.includeFaceTemplatesInResult = true
         NSLog("Decoded settings %@ from %@", String(describing: T.self), string)
         return settings
     }
@@ -242,6 +257,38 @@ public enum VerIDPluginError: Int, Error {
     case parsingError, invalidArgument, encodingError
 }
 
+fileprivate class Face: Codable {
+    
+    enum FaceCodingKeys: String, CodingKey {
+        case x, y, width, height, yaw, pitch, roll, quality, faceTemplate
+    }
+    
+    let face: VerIDFace
+    
+    init(face: VerIDFace) {
+        self.face = face
+    }
+    
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: FaceCodingKeys.self)
+        let template = try container.decode(FaceTemplate.self, forKey: .faceTemplate)
+        self.face = try VerIDFace(faceTemplate: template)
+    }
+    
+    func encode(to encoder: Encoder) throws {
+        var faceContainer = encoder.container(keyedBy: FaceCodingKeys.self)
+        try faceContainer.encode(face.bounds.minX, forKey: .x)
+        try faceContainer.encode(face.bounds.minY, forKey: .y)
+        try faceContainer.encode(face.bounds.width, forKey: .width)
+        try faceContainer.encode(face.bounds.height, forKey: .height)
+        try faceContainer.encode(face.rotation.yaw, forKey: .yaw)
+        try faceContainer.encode(face.rotation.pitch, forKey: .pitch)
+        try faceContainer.encode(face.rotation.roll, forKey: .roll)
+        try faceContainer.encode(face.quality, forKey: .quality)
+        try faceContainer.encodeIfPresent(face.faceTemplate, forKey: .faceTemplate)
+    }
+}
+
 fileprivate class SessionResult: Encodable {
     
     enum SessionResultCodingKeys: String, CodingKey {
@@ -262,12 +309,12 @@ fileprivate class SessionResult: Encodable {
         self.result = result
     }
     
-    func encode(with encoder: Encoder) throws {
+    func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: SessionResultCodingKeys.self)
         var attachmentsContainer = container.nestedUnkeyedContainer(forKey: .attachments)
         for (face, imageUrl) in result.faceImages {
             var attachmentContainer = attachmentsContainer.nestedContainer(keyedBy: AttachmentCodingKeys.self)
-            try attachmentContainer.encode(face, forKey: .face)
+            try attachmentContainer.encode(Face(face: face), forKey: .face)
             let bearingString: String
             switch face.bearing {
             case .straight:
@@ -310,7 +357,26 @@ fileprivate class SessionResult: Encodable {
             var errorContainer = container.nestedContainer(keyedBy: ErrorCodingKeys.self, forKey: .error)
             try errorContainer.encode(result.outcome.rawValue, forKey: .code)
             try errorContainer.encode("com.appliedrec.verid", forKey: .domain)
-            try errorContainer.encode("\(result.outcome)", forKey: .description)
+            let errorDescription: String
+            switch result.outcome {
+            case .failNumberOfResults:
+                errorDescription = "Failed to collect requested number of results"
+            case .unknownFailure:
+                errorDescription = "Unknown failure"
+            case .failAntiSpoofingChallenge:
+                errorDescription = "Failed anti-spoofing challenge"
+            case .failNotLoaded:
+                errorDescription = "Ver-ID not loaded"
+            case .detRecLibFailure:
+                errorDescription = "Ver-ID face detection library error"
+            case .faceLost:
+                errorDescription = "Face lost"
+            case .notAuthenticated:
+                errorDescription = "Not authenticated"
+            default:
+                errorDescription = "Unknown error"
+            }
+            try errorContainer.encode(errorDescription, forKey: .description)
         }
     }
 }
