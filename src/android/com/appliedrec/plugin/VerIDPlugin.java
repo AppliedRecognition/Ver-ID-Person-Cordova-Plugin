@@ -162,9 +162,9 @@ public class VerIDPlugin extends CordovaPlugin {
                 callbackContext.error("User id must not be null");
             }
             return true;
-        } else if ("compareFaceTemplates".equals(action)) {
-            final String t1 = getArg(args, "template1", String.class);
-            final String t2 = getArg(args, "template2", String.class);
+        } else if ("compareFaces".equals(action)) {
+            final String t1 = getArg(args, "face1", String.class);
+            final String t2 = getArg(args, "face2", String.class);
             loadVerIDAndRun(args, callbackContext, new Runnable() {
                 @Override
                 public void run() {
@@ -173,11 +173,13 @@ public class VerIDPlugin extends CordovaPlugin {
                         public void run() {
                             try {
                                 Gson gson = new Gson();
-                                RecognizableFace faceTemplate1 = gson.fromJson(t1, RecognizableFace.class);
-                                RecognizableFace faceTemplate2 = gson.fromJson(t2, RecognizableFace.class);
-                                final float score = verID.getFaceRecognition().compareSubjectFacesToFaces(new RecognizableFace[]{faceTemplate1}, new RecognizableFace[]{faceTemplate2});
+                                RecognizableFace face1 = gson.fromJson(t1, RecognizableFace.class);
+                                RecognizableFace face2 = gson.fromJson(t2, RecognizableFace.class);
+                                final float score = verID.getFaceRecognition().compareSubjectFacesToFaces(new RecognizableFace[]{face1}, new RecognizableFace[]{face2});
                                 final JSONObject response = new JSONObject();
                                 response.put("score", score);
+                                response.put("authenticationThreshold", verID.getFaceRecognition().getAuthenticationThreshold());
+                                response.put("max", verID.getFaceRecognition().getMaxAuthenticationScore());
                                 cordova.getActivity().runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
