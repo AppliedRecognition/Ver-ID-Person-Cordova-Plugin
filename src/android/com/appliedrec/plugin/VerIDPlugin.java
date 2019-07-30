@@ -37,8 +37,7 @@ public class VerIDPlugin extends CordovaPlugin {
     protected static final int REQUEST_CODE_AUTHENTICATE = 2;
     protected static final int REQUEST_CODE_DETECT_LIVENESS = 3;
     protected CallbackContext mCallbackContext;
-
-    private VerID verID;
+    protected VerID verID;
 
     @Override
     public boolean execute(String action, final JSONArray args, final CallbackContext callbackContext) throws JSONException {
@@ -71,7 +70,12 @@ public class VerIDPlugin extends CordovaPlugin {
                 callbackContext.error("Unable to parse session settings");
                 return false;
             }
-            loadVerIDAndStartActivity(args, callbackContext, new VerIDSessionIntent<>(activity, verID, settings), REQUEST_CODE_REGISTER);
+            loadVerIDAndStartActivity(args, callbackContext, new IntentFactory() {
+                @Override
+                public Intent createIntent() {
+                    return new VerIDSessionIntent<>(activity, verID, settings);
+                }
+            }, REQUEST_CODE_REGISTER);
             return true;
         } else if ("authenticate".equals(action)) {
             String jsonSettings = getArg(args, "settings", String.class);
@@ -83,7 +87,12 @@ public class VerIDPlugin extends CordovaPlugin {
                 callbackContext.error("Unable to parse session settings");
                 return false;
             }
-            loadVerIDAndStartActivity(args, callbackContext, new VerIDSessionIntent<>(activity, verID, settings), REQUEST_CODE_AUTHENTICATE);
+            loadVerIDAndStartActivity(args, callbackContext, new IntentFactory() {
+                @Override
+                public Intent createIntent() {
+                    return new VerIDSessionIntent<>(activity, verID, settings);
+                }
+            }, REQUEST_CODE_AUTHENTICATE);
             return true;
         } else if ("captureLiveFace".equals(action)) {
             String jsonSettings = getArg(args, "settings", String.class);
@@ -95,7 +104,12 @@ public class VerIDPlugin extends CordovaPlugin {
                 callbackContext.error("Unable to parse session settings");
                 return false;
             }
-            loadVerIDAndStartActivity(args, callbackContext, new VerIDSessionIntent<>(activity, verID, settings), REQUEST_CODE_DETECT_LIVENESS);
+            loadVerIDAndStartActivity(args, callbackContext, new IntentFactory() {
+                @Override
+                public Intent createIntent() {
+                    return new VerIDSessionIntent<>(activity, verID, settings);
+                }
+            }, REQUEST_CODE_DETECT_LIVENESS);
             return true;
         } else if ("getRegisteredUsers".equals(action)) {
             loadVerIDAndRun(args, callbackContext, new Runnable() {
@@ -307,7 +321,11 @@ public class VerIDPlugin extends CordovaPlugin {
         mCallbackContext = callbackContext;
     }
 
-    protected void loadVerIDAndStartActivity(JSONArray args, final CallbackContext callbackContext, final Intent intent, final int requestCode) {
+    protected interface IntentFactory {
+        Intent createIntent();
+    }
+
+    protected void loadVerIDAndStartActivity(JSONArray args, final CallbackContext callbackContext, final IntentFactory intentFactory, final int requestCode) {
         cordova.setActivityResultCallback(this);
         loadVerIDAndRun(args, callbackContext, new Runnable() {
             @Override
@@ -322,7 +340,7 @@ public class VerIDPlugin extends CordovaPlugin {
                     return;
                 }
                 mCallbackContext = callbackContext;
-                activity.startActivityForResult(intent, requestCode);
+                activity.startActivityForResult(intentFactory.createIntent(), requestCode);
             }
         });
     }
