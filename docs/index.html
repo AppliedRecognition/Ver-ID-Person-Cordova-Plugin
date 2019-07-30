@@ -133,10 +133,10 @@ verid.load().then(<span class="hljs-function"><span class="hljs-params">instance
     settings.showResult = <span class="hljs-literal">true</span>; <span class="hljs-comment">// If you wish the plugin to show the result of the session to the user</span>
     <span class="hljs-keyword">return</span> verIDInstance.register(settings);
 }).then(<span class="hljs-function"><span class="hljs-params">response</span> =&gt;</span> {
-     <span class="hljs-keyword">if</span> (!response) {
-         <span class="hljs-comment">// User cancelled the registration</span>
-         <span class="hljs-keyword">return</span>;
-     }
+    <span class="hljs-keyword">if</span> (!response) {
+    <span class="hljs-comment">// User cancelled the registration</span>
+    <span class="hljs-keyword">return</span>;
+    }
     <span class="hljs-keyword">if</span> (!response.error) {
         <span class="hljs-comment">// User registered</span>
         <span class="hljs-comment">// Run an authentication session</span>
@@ -148,7 +148,7 @@ verid.load().then(<span class="hljs-function"><span class="hljs-params">instance
     }
 }).then(<span class="hljs-function"><span class="hljs-params">response</span> =&gt;</span> {
     <span class="hljs-keyword">if</span> (!response) {
-         <span class="hljs-comment">// User cancelled the registration</span>
+        <span class="hljs-comment">// User cancelled the registration</span>
     } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (!response.error) {
         <span class="hljs-comment">// User authenticated</span>
     } <span class="hljs-keyword">else</span> {
@@ -156,9 +156,6 @@ verid.load().then(<span class="hljs-function"><span class="hljs-params">instance
     }
 }).catch(<span class="hljs-function"><span class="hljs-params">error</span> =&gt;</span> {
     <span class="hljs-comment">// Handle the failure</span>
-}).finally(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
-    <span class="hljs-comment">// Optionally unload the library to release its resources</span>
-    verid.unload();
 });</code></pre>
 				<h2 id="liveness-detection">Liveness Detection</h2>
 				<p>In a liveness detection session the user is asked to asume a series of random poses in front of the camera.</p>
@@ -172,12 +169,12 @@ verid.load().then(<span class="hljs-function"><span class="hljs-params">verIDIns
     <span class="hljs-keyword">return</span> verIDInstance.captureLiveFace(settings);
 }).then(<span class="hljs-function"><span class="hljs-params">response</span> =&gt;</span> {
     <span class="hljs-keyword">if</span> (!response) {
-        <span class="hljs-comment">// Session was cancelled</span>
+    <span class="hljs-comment">// Session was cancelled</span>
     } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (!response.error) {
         <span class="hljs-comment">// Session finished</span>
         <span class="hljs-keyword">var</span> faces = response.attachments.filter(<span class="hljs-function"><span class="hljs-params">attachment</span> =&gt;</span> {
-            <span class="hljs-comment">// Only get faces that are looking straight at the camera and have recognition data</span>
-            <span class="hljs-keyword">return</span> attachment.bearing == verid.Bearing.STRAIGHT &amp;&amp; attachment.face.recognitionData;
+        <span class="hljs-comment">// Only get faces that are looking straight at the camera and have recognition data</span>
+        <span class="hljs-keyword">return</span> attachment.bearing == verid.Bearing.STRAIGHT &amp;&amp; attachment.face.faceTemplate;
         }).map(<span class="hljs-function"><span class="hljs-params">face</span> =&gt;</span> {
             <span class="hljs-keyword">return</span> attachment.face;
         });
@@ -212,7 +209,7 @@ verid.load().then(<span class="hljs-function"><span class="hljs-params">verIDIns
     <span class="hljs-keyword">var</span> settings = verid.LivenessDetectionSessionSettings();
     <span class="hljs-comment">// The user will be asked to look straight at the camera and then either left or right</span>
     settings.bearings = [verid.Bearing.STRAIGHT, verid.Bearing.LEFT, verid.Bearing.RIGHT];
-    <span class="hljs-keyword">return</span> instance.captureLiveFace(settings);
+    <span class="hljs-keyword">return</span> verIDInstance.captureLiveFace(settings);
 }).then(<span class="hljs-function"><span class="hljs-params">response</span> =&gt;</span> {
     <span class="hljs-comment">// Session finished</span>
 }).catch(<span class="hljs-function"><span class="hljs-params">error</span> =&gt;</span> {

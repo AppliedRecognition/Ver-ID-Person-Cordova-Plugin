@@ -309,7 +309,7 @@ export class VerID {
 /**
  * Load Ver-ID
  * @param apiSecret Ver-ID API secret (if omitted the library will look in the app's plist (iOS) or manifest (Android))
- * @returns Promise whose resolve function's argument contains the ID of the loaded Ver-ID instance
+ * @returns Promise whose resolve function's argument contains the loaded Ver-ID instance
  * @example
  * ```typescript
  * 
