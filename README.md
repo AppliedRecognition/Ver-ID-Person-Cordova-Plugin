@@ -87,10 +87,10 @@ verid.load().then(instance => {
     settings.showResult = true; // If you wish the plugin to show the result of the session to the user
     return verIDInstance.register(settings);
 }).then(response => {
-	 if (!response) {
-	 	// User cancelled the registration
-	 	return;
-	 }
+    if (!response) {
+	// User cancelled the registration
+	return;
+    }
     if (!response.error) {
         // User registered
         // Run an authentication session
@@ -101,18 +101,15 @@ verid.load().then(instance => {
         return response;
     }
 }).then(response => {
-	if (!response) {
-	 	// User cancelled the registration
-	} else if (!response.error) {
+    if (!response) {
+        // User cancelled the registration
+    } else if (!response.error) {
         // User authenticated
     } else {
         // Session failed
     }
 }).catch(error => {
     // Handle the failure
-}).finally(() => {
-	// Optionally unload the library to release its resources
-	verid.unload();
 });
 ~~~
 
@@ -131,17 +128,17 @@ verid.load().then(verIDInstance => {
     var settings = verid.LivenessDetectionSessionSettings();
     return verIDInstance.captureLiveFace(settings);
 }).then(response => {
-	if (!response) {
-		// Session was cancelled
-	} else if (!response.error) {
-	    // Session finished
-	    var faces = response.attachments.filter(attachment => {
-	    	// Only get faces that are looking straight at the camera and have recognition data
-	    	return attachment.bearing == verid.Bearing.STRAIGHT && attachment.face.recognitionData;
-	    }).map(face => {
-	        return attachment.face;
-	    });
-	    // You can use the above faces to compare the detected face to faces from other sessions (see Comparing Faces section below)
+    if (!response) {
+	// Session was cancelled
+    } else if (!response.error) {
+        // Session finished
+        var faces = response.attachments.filter(attachment => {
+	    // Only get faces that are looking straight at the camera and have recognition data
+	    return attachment.bearing == verid.Bearing.STRAIGHT && attachment.face.faceTemplate;
+        }).map(face => {
+            return attachment.face;
+        });
+        // You can use the above faces to compare the detected face to faces from other sessions (see Comparing Faces section below)
     } else {
     	// Session failed
     }
@@ -178,7 +175,7 @@ verid.load().then(verIDInstance => {
     var settings = verid.LivenessDetectionSessionSettings();
     // The user will be asked to look straight at the camera and then either left or right
     settings.bearings = [verid.Bearing.STRAIGHT, verid.Bearing.LEFT, verid.Bearing.RIGHT];
-    return instance.captureLiveFace(settings);
+    return verIDInstance.captureLiveFace(settings);
 }).then(response => {
     // Session finished
 }).catch(error => {
@@ -217,17 +214,17 @@ See the [`Face`](https://appliedrecognition.github.io/Ver-ID-Person-Cordova-Plug
 var image = new Image();
 // Set load callback
 image.onload = function() {
-	// Create a canvas element
-	var canvas = document.createElement("canvas");
-	// Set the canvas width to match the width of the image
-	canvas.width = image.width;
-	// Set the height width to match the height of the image
-	canvas.height = image.height;
-	// Get the canvas 2D context
-	var ctx = canvas.getContext("2d");
-	// Draw the image on the canvas
-	ctx.drawImage(image, 0, 0);
-	// Get the image data URI as JPEG at 0.95 quality
+    // Create a canvas element
+    var canvas = document.createElement("canvas");
+    // Set the canvas width to match the width of the image
+    canvas.width = image.width;
+    // Set the height width to match the height of the image
+    canvas.height = image.height;
+    // Get the canvas 2D context
+    var ctx = canvas.getContext("2d");
+    // Draw the image on the canvas
+    ctx.drawImage(image, 0, 0);
+    // Get the image data URI as JPEG at 0.95 quality
     var dataUri = canvas.toDataURL("image/jpeg", 0.95);
     verid.load().then(verIDInstance => {
         return verIDInstance.detectFaceInImage(dataUri);
