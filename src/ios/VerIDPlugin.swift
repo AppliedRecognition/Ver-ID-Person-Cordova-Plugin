@@ -79,7 +79,7 @@ import VerID
                     let template2 = try JSONDecoder().decode(FaceTemplate.self, from: t2)
                     let score = try FaceUtil.compareFaceTemplate(template1, to: template2).floatValue
                     DispatchQueue.main.async {
-                        let message: [String:Any] = ["score":score];
+                        let message: [String:Any] = ["score":score,"authenticationThreshold":0.5,"max":1.0];
                         self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_OK, messageAs: message), callbackId: command.callbackId)
                     }
                 } catch {
@@ -141,7 +141,13 @@ import VerID
         self.commandDelegate.run {
             var err = "Unknown error"
             do {
-                if let message = String(data: try JSONEncoder().encode(result), encoding: .utf8) {
+                if result.outcome == .cancel {
+                    DispatchQueue.main.async {
+                        self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_OK), callbackId: callbackId)
+                    }
+                    return
+                }
+                if let message = String(data: try JSONEncoder().encode(SessionResult(result: result)), encoding: .utf8) {
                     DispatchQueue.main.async {
                         self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_OK, messageAs: message), callbackId: callbackId)
                     }
@@ -234,4 +240,77 @@ import VerID
 
 public enum VerIDPluginError: Int, Error {
     case parsingError, invalidArgument, encodingError
+}
+
+fileprivate class SessionResult: Encodable {
+    
+    enum SessionResultCodingKeys: String, CodingKey {
+        case attachments, error
+    }
+    
+    enum AttachmentCodingKeys: String, CodingKey {
+        case face, image, bearing
+    }
+    
+    enum ErrorCodingKeys: String, CodingKey {
+        case code, domain, description
+    }
+    
+    let result: VerIDSessionResult
+    
+    init(result: VerIDSessionResult) {
+        self.result = result
+    }
+    
+    func encode(with encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: SessionResultCodingKeys.self)
+        var attachmentsContainer = container.nestedUnkeyedContainer(forKey: .attachments)
+        for (face, imageUrl) in result.faceImages {
+            var attachmentContainer = attachmentsContainer.nestedContainer(keyedBy: AttachmentCodingKeys.self)
+            try attachmentContainer.encode(face, forKey: .face)
+            let bearingString: String
+            switch face.bearing {
+            case .straight:
+                bearingString = "STRAIGHT"
+            case .up:
+                bearingString = "UP"
+            case .rightUp:
+                bearingString = "RIGHT_UP"
+            case .right:
+                bearingString = "RIGHT"
+            case .rightDown:
+                bearingString = "RIGHT_DOWN"
+            case .down:
+                bearingString = "DOWN"
+            case .leftDown:
+                bearingString = "LEFT_DOWN"
+            case .left:
+                bearingString = "LEFT"
+            case .leftUp:
+                bearingString = "LEFT_UP"
+            }
+            try attachmentContainer.encode(bearingString, forKey: .bearing)
+            if let imageData = (try? Data(contentsOf: imageUrl))?.base64EncodedString() {
+                let mimeType: String!
+                switch imageUrl.pathExtension {
+                case "jpg", "jpeg":
+                    mimeType = "image/jpeg"
+                case "png":
+                    mimeType = "image/png"
+                default:
+                    mimeType = nil
+                }
+                if mimeType != nil {
+                    let imageDataURI = String(format: "data:%@;base64,%@", mimeType, imageData)
+                    try attachmentContainer.encode(imageDataURI, forKey: .image)
+                }
+            }
+        }
+        if result.outcome != .success {
+            var errorContainer = container.nestedContainer(keyedBy: ErrorCodingKeys.self, forKey: .error)
+            try errorContainer.encode(result.outcome.rawValue, forKey: .code)
+            try errorContainer.encode("com.appliedrec.verid", forKey: .domain)
+            try errorContainer.encode("\(result.outcome)", forKey: .description)
+        }
+    }
 }

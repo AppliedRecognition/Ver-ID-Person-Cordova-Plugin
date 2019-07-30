@@ -31,7 +31,6 @@ var VerIDSessionSettings = (function () {
         this.expiryTime = 30.0;
         this.numberOfResultsToCollect = 2;
         this.showResult = false;
-        this.includeFaceTemplatesInResult = true;
     }
     return VerIDSessionSettings;
 }());
@@ -69,6 +68,12 @@ var RegistrationSessionSettings = (function (_super) {
     return RegistrationSessionSettings;
 }(VerIDSessionSettings));
 exports.RegistrationSessionSettings = RegistrationSessionSettings;
+var FaceTemplate = (function () {
+    function FaceTemplate() {
+    }
+    return FaceTemplate;
+}());
+exports.FaceTemplate = FaceTemplate;
 var Face = (function () {
     function Face() {
     }

@@ -34,10 +34,6 @@ export class VerIDSessionSettings {
      * Set to `true` to display the result of the session to the user
      */
     showResult: boolean = false;
-    /**
-     * If set to `false` the collected faces will not be available for face recognition
-     */
-    includeFaceTemplatesInResult: boolean = true;
 }
 
 /**
@@ -106,6 +102,20 @@ export class RegistrationSessionSettings extends VerIDSessionSettings {
 }
 
 /**
+ * Face recognition template
+ */
+export class FaceTemplate {
+    /**
+     * Data used for face recognition
+     */
+    data: string;
+    /**
+     * Template version
+     */
+    version: number;
+}
+
+/**
  * Represents a detected face
  */
 export class Face {
@@ -142,9 +152,9 @@ export class Face {
      */
     quality: number;
     /**
-     * Serialized data used for face recognition
+     * Face template used for face recognition
      */
-    data: string;
+    faceTemplate: FaceTemplate;
 }
 
 /**
