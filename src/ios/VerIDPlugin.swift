@@ -92,9 +92,12 @@ import VerID
                         throw NSError(domain: "com.appliedrec.verid", code: 1, userInfo: [NSLocalizedDescriptionKey:"Invalid face template argument"])
                     }
                     let score = try FaceUtil.compareFaceTemplate(template1, to: template2).floatValue
+                    let message: [String:Any] = ["score":score,"authenticationThreshold":0.5,"max":1.0];
+                    guard let jsonMessage = String(data: try JSONSerialization.data(withJSONObject: message, options: []), encoding: .utf8) else {
+                        throw VerIDPluginError.encodingError
+                    }
                     DispatchQueue.main.async {
-                        let message: [String:Any] = ["score":score,"authenticationThreshold":0.5,"max":1.0];
-                        self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_OK, messageAs: message), callbackId: command.callbackId)
+                        self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_OK, messageAs: jsonMessage), callbackId: command.callbackId)
                     }
                 } catch {
                     DispatchQueue.main.async {
