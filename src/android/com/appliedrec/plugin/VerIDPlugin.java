@@ -22,6 +22,7 @@ import com.appliedrec.verid.core.VerIDSessionResult;
 import com.appliedrec.verid.ui.VerIDSessionActivity;
 import com.appliedrec.verid.ui.VerIDSessionIntent;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
@@ -190,14 +191,15 @@ public class VerIDPlugin extends CordovaPlugin {
                                 RecognizableFace face1 = gson.fromJson(t1, RecognizableFace.class);
                                 RecognizableFace face2 = gson.fromJson(t2, RecognizableFace.class);
                                 final float score = verID.getFaceRecognition().compareSubjectFacesToFaces(new RecognizableFace[]{face1}, new RecognizableFace[]{face2});
-                                final JSONObject response = new JSONObject();
-                                response.put("score", score);
-                                response.put("authenticationThreshold", verID.getFaceRecognition().getAuthenticationThreshold());
-                                response.put("max", verID.getFaceRecognition().getMaxAuthenticationScore());
+                                final JsonObject response = new JsonObject();
+                                response.addProperty("score", score);
+                                response.addProperty("authenticationThreshold", verID.getFaceRecognition().getAuthenticationThreshold());
+                                response.addProperty("max", verID.getFaceRecognition().getMaxAuthenticationScore());
+                                final String jsonResponse = gson.toJson(response);
                                 cordova.getActivity().runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        callbackContext.success(response);
+                                        callbackContext.success(jsonResponse);
                                     }
                                 });
                             } catch (final Exception e) {

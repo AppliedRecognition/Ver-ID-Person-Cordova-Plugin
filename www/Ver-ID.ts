@@ -285,7 +285,7 @@ export class VerID {
      */
     compareFaces(face1: Face, face2: Face): Promise<FaceComparisonResult> {
         return new Promise<FaceComparisonResult>((resolve, reject) => {
-            cordova.exec(decodeResult(resolve), reject, PLUGIN_NAME, "compareFaces", [{"face1":face1},{"face2":face2}]);
+            cordova.exec(decodeResult(resolve), reject, PLUGIN_NAME, "compareFaces", [{"face1":JSON.stringify(face1)},{"face2":JSON.stringify(face2)}]);
         });
     }
 

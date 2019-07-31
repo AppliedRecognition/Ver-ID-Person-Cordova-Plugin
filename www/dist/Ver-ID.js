@@ -149,7 +149,7 @@ var VerID = (function () {
     };
     VerID.prototype.compareFaces = function (face1, face2) {
         return new Promise(function (resolve, reject) {
-            cordova.exec(decodeResult(resolve), reject, PLUGIN_NAME, "compareFaces", [{ "face1": face1 }, { "face2": face2 }]);
+            cordova.exec(decodeResult(resolve), reject, PLUGIN_NAME, "compareFaces", [{ "face1": JSON.stringify(face1) }, { "face2": JSON.stringify(face2) }]);
         });
     };
     VerID.prototype.detectFaceInImage = function (image) {
