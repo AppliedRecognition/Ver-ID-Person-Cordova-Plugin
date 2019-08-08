@@ -33,7 +33,7 @@ Ver-ID gives your users the ability to authenticate using their face.
         ~~~
     - Select your app target and click on the **Build Settings** tab. Under **Build Options** ensure **Enable Bitcode** is set to **No**.
 4. If your app includes Android platform:
-    - Ensure your app targets Android API level 14 or newer.
+    - Ensure your app targets Android API level 21 or newer.
     - Open your app's **AndroidManifest.xml** file and add the following tag in `<application>` replacing `[your API secret]` with the API secret your received in step 1:
 
         ~~~xml
