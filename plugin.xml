@@ -12,7 +12,7 @@
             </feature>
         </config-file>
         <edit-config file="AndroidManifest.xml" target="/manifest/uses-sdk" mode="overwrite">
-            <uses-sdk android:minSdkVersion="19" />
+            <uses-sdk android:minSdkVersion="21" />
         </edit-config>
         <source-file src="src/android/com/appliedrec/plugin/VerIDPlugin.java" target-dir="src/com/appliedrec/plugin" />
         <framework src="src/android/verid.gradle" custom="true" type="gradleReference" />
