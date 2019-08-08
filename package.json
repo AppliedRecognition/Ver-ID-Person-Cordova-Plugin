@@ -1,6 +1,6 @@
 {
   "name": "ver-id-cordova-plugin",
-  "version": "5.0.0-swift4.2",
+  "version": "5.0.1-swift4.2",
   "description": "## Introduction",
   "cordova": {
     "id": "com-appliedrec-plugins-verid",
