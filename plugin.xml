@@ -16,7 +16,7 @@
         </edit-config>
         <source-file src="src/android/com/appliedrec/plugin/VerIDPlugin.java" target-dir="src/com/appliedrec/plugin" />
         <framework src="src/android/verid.gradle" custom="true" type="gradleReference" />
-        <framework src="com.appliedrec.verid:ui:1.7.11" />
+        <framework src="com.appliedrec.verid:ui:1.14.2" />
         <uses-permission android:name="android.permission.CAMERA" />
     </platform>
 
@@ -28,7 +28,6 @@
             </feature>
         </config-file>
         <source-file src="src/ios/VerIDPlugin.swift" />
-        <resource-file src="VerIDModels"/>
-        <framework src="Ver-ID" type="podspec" spec="~> 3.5" />
+        <framework src="Ver-ID-UI" type="podspec" spec="~> 1.9" />
     </platform>
 </plugin>
