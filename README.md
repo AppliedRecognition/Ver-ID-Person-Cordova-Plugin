@@ -42,7 +42,21 @@ Ver-ID gives your users the ability to authenticate using their face.
            android:value="[your API secret]" />
         ~~~
     - Your application must use **Theme.AppCompat** theme (or its descendant).
-
+    
+ 6. Build errors that may occur on Android:
+ 	- **Error:** `ERROR: Could not find method leftShift() for arguments [build_2jwxldxc1vfcnoswux9rruw5k$_run_closure6@606af351] on task ':app:cdvPrintProps' of type org.gradle.api.DefaultTask.`
+	
+	- **Solution:** Project's root directory->platform->android->app->build.gradle: Left shift() argument error to remove from `task cdvPrintProps <<{}`. Remove `<<` and build the project.
+	
+	- **Error:** `ERROR: Manifest merger failed: uses-sdk:minSdkVersion 19 cannot be smaller than version 21 declared in library [com.appliedrec.verid:ui:1.14.2] /home/bee/.gradle/caches/transforms-2/files-2.1/7c738ca6a43c7d105c66313e7380c1d8/AndroidManifest.xml as the library might be using APIs not available in 19. Suggestion: use a compatible library with a minSdk of at most 19, or increase this project's minSdk version to at least 21, or use tools:overrideLibrary="com.appliedrec.verid.ui" to force usage (may lead to runtime failures)`
+	
+	- **Solution:**	
+		- **Step 1:** Remove `<uses-sdk android:minSdkVersion="21" />` in your project's root directory->platform->android->app->src->main->AndroidManifest.xml. In you case, `minSdkVersion` might be different.		
+		- **Step 2:** Remove `<uses-sdk android:minSdkVersion="19" />` in your project's root directory->platform->android->CordovaLib->AndroidManifest.xml. In you case, `minSdkVersion` might be different.		
+		- **Step 3:** Edit your project's root directory->platform->android->build.gradle:
+			1. In `dependencies {}`, make sure the classpath of tools gradle is as that of the Android Studio version. Currently, it's 3.5.2 hence the classpath looks like: `classpath 'com.android.tools.build:gradle:3.5.2'`
+			2. Under `project.ext {}`, change the `defaultBuildToolsVersion` to `28.0.0`, `defaultMinSdkVersion` to `21`, `defaultTargetSdkVersion` and `defaultCompileSdkVersion` to `28`. You can also try replacing these values with the latest version of the SDK. Mentioned values have been tested by us.
+   
 ## Loading Ver-ID
 
 Ver-ID must be loaded before you can run face detection sessions or compare faces.
