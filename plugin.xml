@@ -11,9 +11,9 @@
                 <param name="android-package" value="com.appliedrec.plugin.VerIDPlugin" />
             </feature>
         </config-file>
-        <edit-config file="AndroidManifest.xml" target="/manifest/uses-sdk" mode="overwrite">
+        <config-file target="AndroidManifest.xml" parent="/*">
             <uses-sdk android:minSdkVersion="21" />
-        </edit-config>
+        </config-file>
         <source-file src="src/android/com/appliedrec/plugin/VerIDPlugin.java" target-dir="src/com/appliedrec/plugin" />
         <framework src="src/android/verid.gradle" custom="true" type="gradleReference" />
         <framework src="com.appliedrec.verid:ui:1.14.2" />
