@@ -63,7 +63,34 @@ exports.defineAutoTests = function () {
                 expect(typeof instance.detectFaceInImage).toBe('function');
                 expect(typeof instance.getRegisteredUsers).toBe('function');
                 expect(typeof instance.register).toBe('function');
+            }).finally(() => {
                 window.verid.unload()
+                done();
+            });
+        });
+
+        it('instance exist after calling load without API', function (done) {
+            expect(window.verid.load).toBeDefined();
+            window.verid.load(API_KEY).then(instance => {
+                expect(typeof instance).toBe('object');
+                return verid.load()
+            }).then(instance => {
+                //instance should exist if unload was no called
+                expect(typeof instance).toBe('object');
+            }).finally(() => {
+                window.verid.unload()
+                done();
+            });
+        });
+
+        it('instance should not exist after calling unload', function (done) {
+            expect(window.verid.load).toBeDefined();
+            window.verid.load(API_KEY).then(instance => {
+                expect(typeof instance).toBe('object');
+                window.verid.unload()
+                return verid.load()
+            }).catch(err => {
+                expect(err).toBe('java.lang.Exception: Invalid API secret');
             }).finally(() => {
                 done();
             });
