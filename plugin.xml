@@ -4,7 +4,8 @@
     <js-module name="Ver-ID" src="www/dist/Ver-ID.js">
         <clobbers target="window.verid" />
     </js-module>
-
+    <js-module src="tests/tests.js" name="tests"></js-module>
+    <asset src="tests/assets" target="plugins/com-appliedrec-plugins-verid/tests/assets"/>
     <platform name="android">
         <config-file target="config.xml" parent="/*">
             <feature name="VerIDPlugin">
