@@ -37,6 +37,7 @@ public class VerIDPlugin extends CordovaPlugin {
     protected static final int REQUEST_CODE_REGISTER = 1;
     protected static final int REQUEST_CODE_AUTHENTICATE = 2;
     protected static final int REQUEST_CODE_DETECT_LIVENESS = 3;
+    protected static boolean TESTING_MODE = false;
     protected CallbackContext mCallbackContext;
     protected VerID verID;
 
@@ -49,8 +50,22 @@ public class VerIDPlugin extends CordovaPlugin {
             callbackContext.error("Activity is null");
             return false;
         }
-
-        if ("load".equals(action)) {
+        if ("setTestingMode".equals(action)) {
+            if (args != null && args.length() > 0) {
+                try {
+                    boolean testingMode = args.getBoolean(0);
+                    TESTING_MODE = testingMode;
+                    callbackContext.success();
+                } catch (final Exception e) {
+                    e.printStackTrace();
+                    callbackContext.error(e.getLocalizedMessage());
+                }
+               
+            } else {
+                callbackContext.error("Not Argutments passed");
+            }
+           return true;
+        } else if ("load".equals(action)) {
             loadVerIDAndRun(args, callbackContext, new Runnable() {
                 @Override
                 public void run() {
@@ -60,57 +75,70 @@ public class VerIDPlugin extends CordovaPlugin {
             return true;
         } else if ("unload".equals(action)) {
             verID = null;
+            callbackContext.success();
             return true;
         } else if ("registerUser".equals(action)) {
             final RegistrationSessionSettings settings;
             String jsonSettings = getArg(args, "settings", String.class);
-            if (jsonSettings != null) {
-                Gson gson = new Gson();
-                settings = gson.fromJson(jsonSettings, RegistrationSessionSettings.class);
+            if (TESTING_MODE) {
+                callbackContext.success(ATTACHMENT_MOCK);
             } else {
-                callbackContext.error("Unable to parse session settings");
-                return false;
-            }
-            loadVerIDAndStartActivity(args, callbackContext, new IntentFactory() {
-                @Override
-                public Intent createIntent() {
-                    return new VerIDSessionIntent<>(activity, verID, settings);
+                if (jsonSettings != null) {
+                    Gson gson = new Gson();
+                    settings = gson.fromJson(jsonSettings, RegistrationSessionSettings.class);
+                } else {
+                    callbackContext.error("Unable to parse session settings");
+                    return false;
                 }
-            }, REQUEST_CODE_REGISTER);
+                loadVerIDAndStartActivity(args, callbackContext, new IntentFactory() {
+                    @Override
+                    public Intent createIntent() {
+                        return new VerIDSessionIntent<>(activity, verID, settings);
+                    }
+                }, REQUEST_CODE_REGISTER);
+            }
             return true;
         } else if ("authenticate".equals(action)) {
             String jsonSettings = getArg(args, "settings", String.class);
             final AuthenticationSessionSettings settings;
-            if (jsonSettings != null) {
-                Gson gson = new Gson();
-                settings = gson.fromJson(jsonSettings, AuthenticationSessionSettings.class);
-            } else {
-                callbackContext.error("Unable to parse session settings");
-                return false;
-            }
-            loadVerIDAndStartActivity(args, callbackContext, new IntentFactory() {
-                @Override
-                public Intent createIntent() {
-                    return new VerIDSessionIntent<>(activity, verID, settings);
+            if (TESTING_MODE) {
+                callbackContext.success(ATTACHMENT_MOCK);
+            } else { 
+                if (jsonSettings != null) {
+                    Gson gson = new Gson();
+                    settings = gson.fromJson(jsonSettings, AuthenticationSessionSettings.class);
+                } else {
+                    callbackContext.error("Unable to parse session settings");
+                    return false;
                 }
-            }, REQUEST_CODE_AUTHENTICATE);
+                loadVerIDAndStartActivity(args, callbackContext, new IntentFactory() {
+                    @Override
+                    public Intent createIntent() {
+                        return new VerIDSessionIntent<>(activity, verID, settings);
+                    }
+                }, REQUEST_CODE_AUTHENTICATE);
+            }
             return true;
         } else if ("captureLiveFace".equals(action)) {
             String jsonSettings = getArg(args, "settings", String.class);
             final LivenessDetectionSessionSettings settings;
-            if (jsonSettings != null) {
-                Gson gson = new Gson();
-                settings = gson.fromJson(jsonSettings, LivenessDetectionSessionSettings.class);
-            } else {
-                callbackContext.error("Unable to parse session settings");
-                return false;
-            }
-            loadVerIDAndStartActivity(args, callbackContext, new IntentFactory() {
-                @Override
-                public Intent createIntent() {
-                    return new VerIDSessionIntent<>(activity, verID, settings);
+            if (TESTING_MODE) {
+                callbackContext.success(ATTACHMENT_MOCK);
+            } else  {
+                if (jsonSettings != null) {
+                    Gson gson = new Gson();
+                    settings = gson.fromJson(jsonSettings, LivenessDetectionSessionSettings.class);
+                } else {
+                    callbackContext.error("Unable to parse session settings");
+                    return false;
                 }
-            }, REQUEST_CODE_DETECT_LIVENESS);
+                loadVerIDAndStartActivity(args, callbackContext, new IntentFactory() {
+                    @Override
+                    public Intent createIntent() {
+                        return new VerIDSessionIntent<>(activity, verID, settings);
+                    }
+                }, REQUEST_CODE_DETECT_LIVENESS);
+            }
             return true;
         } else if ("getRegisteredUsers".equals(action)) {
             loadVerIDAndRun(args, callbackContext, new Runnable() {
@@ -122,7 +150,14 @@ public class VerIDPlugin extends CordovaPlugin {
                             try {
                                 String[] users = verID.getUserManagement().getUsers();
                                 Gson gson = new Gson();
-                                final String jsonUsers = gson.toJson(users, String[].class);
+                                String usersFound = "";
+                                if (TESTING_MODE) {
+                                    usersFound = "[\"user1\", \"user2\", \"user3\"]";
+                                } else {
+                                    usersFound = gson.toJson(users, String[].class);
+                                }
+                                final String jsonUsers = usersFound;
+                                
                                 cordova.getActivity().runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
@@ -400,4 +435,14 @@ public class VerIDPlugin extends CordovaPlugin {
         }
         return null;
     }
+
+    private final String FACE_MOCK = "{\"x\":-8.384888,\"y\":143.6514,\"width\":331.54974,\"height\":414.43723,\"yaw\":-0.07131743," +
+                                        "\"pitch\":-6.6307373,\"roll\":-2.5829313,\"quality\":9.658932," +
+                                       "\"leftEye\":[101,322.5],\"rightEye\":[213,321]," +
+                                        "\"data\":\"TESTING_DATA\"," +
+                                       "\"faceTemplate\":{\"data\":\"FACE_TEMPLATE_TEST_DATA\",\"version\":1}}";
+    private final String ATTACHMENT_MOCK = "{\"attachments\": ["+
+    "{\"face\": " + FACE_MOCK + ", \"image\": \"TESTING_IMAGE\", \"bearing\": \"STRAIGHT\"}" +
+    "]}";
+    
 }

@@ -185,4 +185,10 @@ function unload() {
     });
 }
 exports.unload = unload;
+function setTestingMode(mode) {
+    return new Promise(function (resolve, reject) {
+        cordova.exec(resolve, reject, PLUGIN_NAME, "setTestingMode", [mode]);
+    });
+}
+exports.setTestingMode = setTestingMode;
 //# sourceMappingURL=Ver-ID.js.map
