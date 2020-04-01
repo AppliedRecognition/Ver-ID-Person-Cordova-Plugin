@@ -15,7 +15,7 @@ import VerIDUI
     
     @objc public func unload(_ command: CDVInvokedUrlCommand) {
         self.verid = nil
-        self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_OK), callbackId: command.callbackId)
+        self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_OK, messageAs: "OK"), callbackId: command.callbackId)
     }
     
     @objc public func registerUser(_ command: CDVInvokedUrlCommand) {
