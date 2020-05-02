@@ -58,11 +58,11 @@ public class VerIDPlugin extends CordovaPlugin {
                     callbackContext.success();
                 } catch (final Exception e) {
                     e.printStackTrace();
-                    callbackContext.error(e.getLocalizedMessage());
+                    callbackContext.error("Not valid argument provided");
                 }
                
             } else {
-                callbackContext.error("Not Argutments passed");
+                callbackContext.error("Not valid argument provided");
             }
            return true;
         } else if ("load".equals(action)) {

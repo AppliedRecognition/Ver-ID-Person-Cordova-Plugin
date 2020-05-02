@@ -6,6 +6,7 @@ import VerIDUI
     
     private var veridSessionCallbackId: String?
     private var verid: VerID?
+    private var TESTING_MODE: Bool = false
     
     @objc public func load(_ command: CDVInvokedUrlCommand) {
         self.loadVerID(command) { _ in
@@ -19,29 +20,41 @@ import VerIDUI
     }
     
     @objc public func registerUser(_ command: CDVInvokedUrlCommand) {
-        do {
-            let settings: RegistrationSessionSettings = try self.createSettings(command.arguments)
-            self.startSession(command: command, settings: settings)
-        } catch {
-            self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: error.localizedDescription), callbackId: command.callbackId)
+        if self.TESTING_MODE {
+            self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_OK, messageAs: self.getAttachmentMockup()), callbackId: command.callbackId)
+        } else {
+            do {
+                let settings: RegistrationSessionSettings = try self.createSettings(command.arguments)
+                self.startSession(command: command, settings: settings)
+            } catch {
+                self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: error.localizedDescription), callbackId: command.callbackId)
+            }
         }
     }
     
     @objc public func authenticate(_ command: CDVInvokedUrlCommand) {
-        do {
-            let settings: AuthenticationSessionSettings = try self.createSettings(command.arguments)
-            self.startSession(command: command, settings: settings)
-        } catch {
-            self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: error.localizedDescription), callbackId: command.callbackId)
+        if self.TESTING_MODE {
+            self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_OK, messageAs: self.getAttachmentMockup()), callbackId: command.callbackId)
+        } else {
+            do {
+                let settings: AuthenticationSessionSettings = try self.createSettings(command.arguments)
+                self.startSession(command: command, settings: settings)
+            } catch {
+                self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: error.localizedDescription), callbackId: command.callbackId)
+            }
         }
     }
     
     @objc public func captureLiveFace(_ command: CDVInvokedUrlCommand) {
-        do {
-            let settings: LivenessDetectionSessionSettings = try self.createSettings(command.arguments)
-            self.startSession(command: command, settings: settings)
-        } catch {
-            self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: error.localizedDescription), callbackId: command.callbackId)
+        if self.TESTING_MODE {
+            self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_OK, messageAs: self.getAttachmentMockup()), callbackId: command.callbackId)
+        } else {
+            do {
+                let settings: LivenessDetectionSessionSettings = try self.createSettings(command.arguments)
+                self.startSession(command: command, settings: settings)
+            } catch {
+                self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: error.localizedDescription), callbackId: command.callbackId)
+            }
         }
     }
     
@@ -51,7 +64,8 @@ import VerIDUI
             do {
                 let users = try verid.userManagement.users()
                 if let usersString = String(data: try JSONEncoder().encode(users), encoding: .utf8) {
-                    let result = CDVPluginResult(status: CDVCommandStatus_OK, messageAs: usersString)
+                    let usersResult = self.TESTING_MODE ? "[\"user1\", \"user2\", \"user3\"]" : usersString;
+                    let result = CDVPluginResult(status: CDVCommandStatus_OK, messageAs: usersResult)
                     self.commandDelegate.send(result, callbackId: command.callbackId)
                     return
                 } else {
@@ -72,7 +86,7 @@ import VerIDUI
                         self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: err.localizedDescription), callbackId: command.callbackId)
                         return
                     }
-                    let result = CDVPluginResult(status: CDVCommandStatus_OK)
+                    let result = CDVPluginResult(status: CDVCommandStatus_OK, messageAs: "OK")
                     self.commandDelegate.send(result, callbackId: command.callbackId)
                 }
             }
@@ -256,10 +270,14 @@ import VerIDUI
             veridFactory.faceRecognitionFactory = detRecLibFactory
         }
         veridFactory.delegate = self
-        veridFactory.createVerID { instance in
+        veridFactory.createVerID()
+    }
+    
+    public func veridFactory(_ factory: VerIDFactory, didCreateVerID instance: VerID) {
+        if let callbackId = self.veridSessionCallbackId {
             self.veridSessionCallbackId = nil
             self.verid = instance
-            callback(instance)
+            self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_OK), callbackId: callbackId)
         }
     }
     
@@ -270,6 +288,40 @@ import VerIDUI
             self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: error.localizedDescription), callbackId: callbackId)
         }
     }
+    //Start Methods For Testing
+    
+    //Cordova action: setTestingMode
+    @objc public func setTestingMode(_ command: CDVInvokedUrlCommand) {
+        if let mode: Bool = command.arguments[0] as? Bool {
+            NSLog("SetTestingMode Called:" + mode.description)
+            self.TESTING_MODE = mode
+            self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_OK), callbackId: command.callbackId)
+        } else {
+            self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: "Not or Invalid Argutments provided"), callbackId: command.callbackId)
+        }
+    }
+    
+    //Functions to get Mockup data
+    
+    private func getAttachmentMockup() -> String {
+        let faceMockup : String = self.getFaceMockup()
+        var mockup = "{\"attachments\": [";
+        mockup += "{\"face\": " + faceMockup + ", \"image\": \"TESTING_IMAGE\", \"bearing\": \"STRAIGHT\"}";
+        mockup += "]}";
+        
+        return mockup
+    }
+    
+    private func getFaceMockup() -> String {
+        var faceMockup : String = "{\"x\":-8.384888,\"y\":143.6514,\"width\":331.54974,\"height\":414.43723,\"yaw\":-0.07131743,";
+        faceMockup += "\"pitch\":-6.6307373,\"roll\":-2.5829313,\"quality\":9.658932,";
+        faceMockup += "\"leftEye\":[101,322.5],\"rightEye\":[213,321],";
+        faceMockup += "\"data\":\"TESTING_DATA\",";
+        faceMockup += "\"faceTemplate\":{\"data\":\"FACE_TEMPLATE_TEST_DATA\",\"version\":1}}";
+        
+        return faceMockup;
+    }
+    //End Methods For Testing
 }
 
 public enum VerIDPluginError: Int, Error {
