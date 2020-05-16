@@ -29,12 +29,7 @@
             </feature>
         </config-file>
         <source-file src="src/ios/VerIDPlugin.swift" />
-        <podspec>
-            <config/>
-            <pods use-frameworks="true">
-                <pod name="Ver-ID-UI" spec="~> 1.12.1" />
-                <pod name="Ver-ID-SDK-Identity" spec="~> 3.0.1" />
-            </pods>
-         </podspec>
+        <framework src="Ver-ID-UI" type="podspec" spec="~> 1.12.1" />
+        <framework src="Ver-ID-SDK-Identity" type="podspec" spec="~> 3.0.1" />
     </platform>
 </plugin>
