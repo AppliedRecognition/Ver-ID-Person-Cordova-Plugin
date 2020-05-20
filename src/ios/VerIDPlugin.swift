@@ -153,8 +153,8 @@ import VerIDUI
                     guard let recognizableFace = try verid.faceRecognition.createRecognizableFacesFromFaces(faces, inImage: veridImage).first else {
                         throw VerIDPluginError.faceTemplateExtractionError
                     }
-                    let recognitionFace = RecognitionFace(recognitionData: recognizableFace.recognitionData)
-                    guard let encodedFace = String(data: try JSONEncoder().encode(recognitionFace), encoding: .utf8) else {
+                    let encodableFace = CodableFace(face: faces[0], recognizable: recognizableFace)
+                    guard let encodedFace = String(data: try JSONEncoder().encode(encodableFace), encoding: .utf8) else {
                         throw VerIDPluginError.encodingError
                     }
                     DispatchQueue.main.async {
@@ -274,4 +274,54 @@ import VerIDUI
 
 public enum VerIDPluginError: Int, Error {
     case parsingError, invalidArgument, encodingError, faceTemplateExtractionError
+}
+
+class CodableFace: NSObject, Codable {
+    
+    enum CodingKeys: String, CodingKey {
+        case data, faceTemplate, height, leftEye, pitch, quality, rightEye, roll, width, x, y, yaw
+    }
+    
+    enum FaceTemplateCodingKeys: String, CodingKey {
+        case data, version
+    }
+    
+    let face: Face
+    let recognizable: Recognizable
+    
+    init(face: Face, recognizable: Recognizable) {
+        self.face = face
+        self.recognizable = recognizable
+    }
+    
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.face = Face()
+        self.face.data = try container.decode(Data.self, forKey: .data)
+        self.face.leftEye = try container.decode(CGPoint.self, forKey: .leftEye)
+        self.face.rightEye = try container.decode(CGPoint.self, forKey: .rightEye)
+        self.face.bounds = CGRect(x: try container.decode(CGFloat.self, forKey: .x), y: try container.decode(CGFloat.self, forKey: .y), width: try container.decode(CGFloat.self, forKey: .width), height: try container.decode(CGFloat.self, forKey: .height))
+        self.face.angle = EulerAngle(yaw: try container.decode(CGFloat.self, forKey: .yaw), pitch: try container.decode(CGFloat.self, forKey: .pitch), roll: try container.decode(CGFloat.self, forKey: .roll))
+        self.face.quality = try container.decode(CGFloat.self, forKey: .quality)
+        let faceTemplateContainer = try container.nestedContainer(keyedBy: FaceTemplateCodingKeys.self, forKey: .faceTemplate)
+        self.recognizable = RecognitionFace(recognitionData: try faceTemplateContainer.decode(Data.self, forKey: .data))
+        self.recognizable.version = try faceTemplateContainer.decode(Int32.self, forKey: .version)
+    }
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(self.face.data, forKey: .data)
+        try container.encode(self.face.leftEye, forKey: .leftEye)
+        try container.encode(self.face.rightEye, forKey: .rightEye)
+        try container.encode(self.face.bounds.minX, forKey: .x)
+        try container.encode(self.face.bounds.minY, forKey: .y)
+        try container.encode(self.face.bounds.width, forKey: .width)
+        try container.encode(self.face.bounds.height, forKey: .height)
+        try container.encode(self.face.angle.yaw, forKey: .yaw)
+        try container.encode(self.face.angle.pitch, forKey: .pitch)
+        try container.encode(self.face.angle.roll, forKey: .roll)
+        var faceTemplateContainer = container.nestedContainer(keyedBy: FaceTemplateCodingKeys.self, forKey: .faceTemplate)
+        try faceTemplateContainer.encode(self.recognizable.recognitionData, forKey: .data)
+        try faceTemplateContainer.encode(self.recognizable.version, forKey: .version)
+    }
 }
