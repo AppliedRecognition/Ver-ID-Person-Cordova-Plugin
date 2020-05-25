@@ -313,6 +313,7 @@ class CodableFace: NSObject, Codable {
         try container.encode(self.face.data, forKey: .data)
         try container.encode(self.face.leftEye, forKey: .leftEye)
         try container.encode(self.face.rightEye, forKey: .rightEye)
+        try container.encode(self.face.quality, forKey: .quality)
         try container.encode(self.face.bounds.minX, forKey: .x)
         try container.encode(self.face.bounds.minY, forKey: .y)
         try container.encode(self.face.bounds.width, forKey: .width)
