@@ -216,8 +216,12 @@ export class FaceComparisonResult {
 function decodeResult<T>(callback: (result?: T) => void) {
     return function(encoded?: string) {
         if (encoded) {
-            var decoded = JSON.parse(encoded);
-            callback(decoded);
+            if (typeof encoded === 'string') {
+                var decoded = JSON.parse(encoded);
+                callback(decoded);
+            } else {            
+                callback(encoded);
+            }
         } else {
             callback();
         }
