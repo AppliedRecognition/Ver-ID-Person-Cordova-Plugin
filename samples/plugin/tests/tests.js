@@ -398,7 +398,7 @@ exports.defineAutoTests = function () {
         });
     });
     describe('Ver Id plugin, testing of getRegisteredUsers', function () {
-        it('22. test getRegisteredUsers without testing mode', function (done) {
+        it('23. test getRegisteredUsers without testing mode', function (done) {
             window.verid.load(API_KEY).then(instance => {
                 return instance.getRegisteredUsers()
             }).then(users => {
@@ -408,14 +408,14 @@ exports.defineAutoTests = function () {
             }).catch((error) => {
                 //force test to fail
                 //API key should be valid
-                console.error('Error on test #22:', error);
+                console.error('Error on test #23:', error);
                 expect('API KEY INVALID OR ERROR HAPPENED').toBe(false);
             }).finally(() => {
                 verid.unload();
                 done();
             });
         });
-        it('23. test getRegisteredUsers without testing mode on', function (done) {
+        it('24. test getRegisteredUsers without testing mode on', function (done) {
             window.verid.setTestingMode(true).then(() => {
                 return window.verid.load(API_KEY);
             }).then(instance => {
@@ -426,7 +426,7 @@ exports.defineAutoTests = function () {
             }).catch((error) => {
                 //force test to fail
                 //API key should be valid
-                console.error('Error on test #23:', error);
+                console.error('Error on test #24:', error);
                 expect('API KEY INVALID OR ERROR HAPPENED').toBe(false);
             }).finally(() => {
                 verid.setTestingMode(false)
