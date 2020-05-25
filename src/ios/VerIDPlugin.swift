@@ -86,8 +86,8 @@ import VerIDUI
             self.loadVerID(command) { verid in
                 self.commandDelegate.run {
                     do {
-                        let template1 = try JSONDecoder().decode(RecognitionFace.self, from: t1)
-                        let template2 = try JSONDecoder().decode(RecognitionFace.self, from: t2)
+                        let template1 = try JSONDecoder().decode(CodableFace.self, from: t1).recognizable
+                        let template2 = try JSONDecoder().decode(CodableFace.self, from: t2).recognizable
                         let score = try verid.faceRecognition.compareSubjectFaces([template1], toFaces: [template2]).floatValue
                         DispatchQueue.main.async {
                             let message: [String:Any] = ["score":score,"threshold":verid.faceRecognition.authenticationScoreThreshold.floatValue,"max":verid.faceRecognition.maxAuthenticationScore.floatValue];
