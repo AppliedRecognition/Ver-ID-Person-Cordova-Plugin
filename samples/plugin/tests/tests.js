@@ -6,11 +6,11 @@ const USER_ID = 'TESTING_USER_ID';
  */
 exports.defineAutoTests = function () {
     describe('Ver Id plugin (window.verid)', function () {
-        it('should exist', function () {
+        it('1. should exist', function () {
             expect(window.verid).toBeDefined();
         });
 
-        it('window.verid should contain the following functions: load, unload, AuthenticationSessionSettings' +
+        it('2. window.verid should contain the following functions: load, unload, AuthenticationSessionSettings' +
         'DetectedFace, Error, Face, FaceComparisonResult, FaceTemplate, LivenessDetectionSessionSettings' + 
         'RegistrationSessionSettings, SessionResult, VerIDSessionSettings' , function () {
             expect(window.verid.load).toBeDefined();
@@ -29,7 +29,7 @@ exports.defineAutoTests = function () {
         });
     });
     describe('Ver Id plugin, testing of load and unload functions', function () {
-        it('load function with invalid API parameter should fail', function (done) {
+        it('3. load function with invalid API parameter should fail', function (done) {
             window.verid.load('undefined').catch(err => {
                 expect(typeof err).toBe('string');
             }).finally(() => {
@@ -38,7 +38,7 @@ exports.defineAutoTests = function () {
             });
         });
 
-        it('load function with NULL parameter should fail', function (done) {
+        it('4. load function with NULL parameter should fail', function (done) {
             window.verid.load(null).catch(err => {
                 expect(typeof err).toBe('string');
             }).finally(() => {
@@ -47,7 +47,7 @@ exports.defineAutoTests = function () {
             });
         });
 
-        it('load function without API parameter should fail', function (done) {
+        it('5. load function without API parameter should fail', function (done) {
             window.verid.load().catch(err => {
                 expect(typeof err).toBe('string');
             }).finally(() => {
@@ -56,7 +56,7 @@ exports.defineAutoTests = function () {
             });
         });
 
-        it('load then function with correct API should return an object with the following functions =' +
+        it('6. load then function with correct API should return an object with the following functions =' +
         'authenticate, captureLiveFace, compareFaces, deleteRegisteredUser, detectFaceInImage, getRegisteredUsers, register', function (done) {
             window.verid.load(API_KEY).then(instance => {
                 expect(typeof instance).toBe('object');
@@ -67,33 +67,35 @@ exports.defineAutoTests = function () {
                 expect(typeof instance.detectFaceInImage).toBe('function');
                 expect(typeof instance.getRegisteredUsers).toBe('function');
                 expect(typeof instance.register).toBe('function');
-            }).catch(() => {
+            }).catch((error) => {
                 //force test to fail
                 //API key should be valid
-                expect('API KEY INVALID OR NOT PROVIDED').toBe(false);
+                console.error('Error on test #6:', error);
+                expect('API KEY INVALID OR ERROR HAPPENED').toBe(false);
             }).finally(() => {
                 window.verid.unload()
                 done();
             });
         });
 
-        it('instance exist after calling load without API', function (done) {
+        it('7. instance exist after calling load without API', function (done) {
             window.verid.load(API_KEY).then(instance => {
                 return verid.load()
             }).then(instance => {
                 //instance should exist if unload was no called
                 expect(typeof instance).toBe('object');
-            }).catch(() => {
+            }).catch((error) => {
                 //force test to fail
                 //API key should be valid
-                expect('API KEY INVALID OR NOT PROVIDED').toBe(false);
+                console.error('Error on test #7:', error);
+                expect('API KEY INVALID OR ERROR HAPPENED').toBe(false);
             }).finally(() => {
                 window.verid.unload()
                 done();
             });
         });
 
-        it('instance should not exist after calling unload', function (done) {
+        it('8. instance should not exist after calling unload', function (done) {
             window.verid.load(API_KEY).then(instance => {
                 window.verid.unload()
                 return verid.load()
@@ -104,16 +106,17 @@ exports.defineAutoTests = function () {
             });
         });
 
-        it('unload should return a promise', function (done) {
+        it('9. unload should return a promise', function (done) {
             window.verid.load(API_KEY).then(instance => {
                 return window.verid.unload()
             }).then(resp => {
                 expect(resp).toBeDefined();
                 expect(typeof resp).toBe('string');
-            }).catch(() => {
+            }).catch((error) => {
                 //force test to fail
                 //API key should be valid
-                expect('API KEY INVALID OR NOT PROVIDED').toBe(false);
+                console.error('Error on test #9:', error);
+                expect('API KEY INVALID OR ERROR HAPPENED').toBe(false);
             }).finally(() => {
                 done();
             });
@@ -121,7 +124,7 @@ exports.defineAutoTests = function () {
 
     });
     describe('Ver Id plugin, testing of settings', function () {
-        it('test LivenessDetectionSessionSettings', function () {
+        it('10. test LivenessDetectionSessionSettings', function () {
             var settings = new verid.LivenessDetectionSessionSettings();
             expect(typeof settings).toBe('object');
             expect(settings.bearings).toBeDefined();
@@ -134,7 +137,7 @@ exports.defineAutoTests = function () {
             expect(settings.showResult).toBeDefined();
             expect(settings.showResult).toBe(false);
         });
-        it('test AuthenticationSessionSettings', function () {
+        it('11. test AuthenticationSessionSettings', function () {
             var settings = new verid.AuthenticationSessionSettings(USER_ID);
             expect(typeof settings).toBe('object');
             expect(settings.bearings).toBeDefined();
@@ -149,7 +152,7 @@ exports.defineAutoTests = function () {
             expect(settings.userId).toBeDefined();
             expect(settings.userId).toBe(USER_ID);
         });
-        it('test RegistrationSessionSettings', function () {
+        it('12. test RegistrationSessionSettings', function () {
             var settings = new verid.RegistrationSessionSettings(USER_ID);
             expect(typeof settings).toBe('object');
             expect(settings.bearingsToRegister).toBeDefined();
@@ -165,7 +168,7 @@ exports.defineAutoTests = function () {
             expect(settings.userId).toBe(USER_ID);
         });
 
-        it('test VerIDSessionSettings', function () {
+        it('13. test VerIDSessionSettings', function () {
             var settings = new verid.VerIDSessionSettings(USER_ID);
             expect(typeof settings).toBe('object');
             expect(settings.expiryTime).toBeDefined();
@@ -177,7 +180,7 @@ exports.defineAutoTests = function () {
         });
     });
     describe('Ver Id plugin, testing of detectFaceInImage', function () {
-        it('test detectFaceInImage with image that has a face', function (done) {
+        it('14. test detectFaceInImage with image that has a face', function (done) {
             var image = new Image();
             image.onload = function() {
                 var canvas = document.createElement('canvas');
@@ -202,10 +205,11 @@ exports.defineAutoTests = function () {
                     expect(typeof face.x).toBe('number')
                     expect(typeof face.y).toBe('number')
                     expect(typeof face.yaw).toBe('number')
-                }).catch(() => {
+                }).catch((error) => {
                     //force test to fail
                     //API key should be valid
-                    expect('API KEY INVALID OR NOT PROVIDED').toBe(false);
+                    console.error('Error on test #14:', error);
+                    expect('API KEY INVALID OR ERROR HAPPENED').toBe(false);
                 }).finally(() => {
                     window.verid.unload()
                     done();
@@ -213,7 +217,7 @@ exports.defineAutoTests = function () {
             }
             image.src = '../plugins/com-appliedrec-plugins-verid/tests/assets/test-photo.jpg';
         });
-        it('test detectFaceInImage with image that does not have faces', function (done) {
+        it('15. test detectFaceInImage with image that does not have faces', function (done) {
             var image = new Image();
             image.onload = function() {
                 var canvas = document.createElement('canvas');
@@ -226,6 +230,7 @@ exports.defineAutoTests = function () {
                     return verIDInstance.detectFaceInImage(dataUri);
                 }).catch(error => {
                     //Not face detected or invalid API key
+                    console.log('Error expected on test #15:', error);
                     expect(error).toBeDefined()
                 }).finally(() => {
                     window.verid.unload()
@@ -236,7 +241,7 @@ exports.defineAutoTests = function () {
         });
     });
     describe('Ver Id plugin, testing of compareFaces', function () {
-        it('test compareFaces with face from image and mockup', function (done) {
+        it('16. test compareFaces with face from image and mockup', function (done) {
             var image = new Image();
             var instance = null;
             image.onload = function() {
@@ -256,10 +261,11 @@ exports.defineAutoTests = function () {
                     expect(typeof result.score).toBe('number');
                     expect(typeof result.authenticationThreshold).toBe('number');
                     expect(typeof result.max).toBe('number');
-                }).catch(() => {
+                }).catch((error) => {
                     //force test to fail
                     //API key should be valid
-                    expect('API KEY INVALID OR NOT PROVIDED').toBe(false);
+                    console.error('Error on test #16:', error);
+                    expect('API KEY INVALID OR ERROR HAPPENED').toBe(false);
                 }).finally(() => {
                     window.verid.unload()
                     done();
@@ -269,48 +275,51 @@ exports.defineAutoTests = function () {
         });
     });
     describe('Ver Id plugin, testing of deleteRegisterUser', function () {
-        it('test deleteRegisterUser without param value', function (done) {
+        it('17. test deleteRegisterUser without param value', function (done) {
             window.verid.load(API_KEY).then(instance => {
                 return instance.deleteRegisteredUser()
-            }).catch(err => {
+            }).catch(error => {
                 //API key invalid or deleteRegister fail case
-                expect(err).toBeDefined();
-                expect(typeof err).toBe('string');
+                console.log('Error expected on test #17:', error);
+                expect(error).toBeDefined();
+                expect(typeof error).toBe('string');
             }).finally(() => {
                 verid.unload();
                 done();
             });
         });
-        it('test deleteRegisterUser with null param value', function (done) {
+        it('18. test deleteRegisterUser with null param value', function (done) {
             window.verid.load(API_KEY).then(instance => {
                 return instance.deleteRegisteredUser(null)
-            }).catch(err => {
+            }).catch(error => {
                 //API key invalid or deleteRegister fail case
-                expect(err).toBeDefined();
-                expect(typeof err).toBe('string');
+                console.log('Error expected on test #18:', error);
+                expect(error).toBeDefined();
+                expect(typeof error).toBe('string');
             }).finally(() => {
                 verid.unload();
                 done();
             });
         });
-        it('test deleteRegisterUser with some param value', function (done) {
+        it('19. test deleteRegisterUser with some param value', function (done) {
             window.verid.load(API_KEY).then(instance => {
                 return instance.deleteRegisteredUser('test')
             }).then(resp => {
                 expect(typeof resp).toBe('string');
-            }).catch(() => {
+            }).catch((error) => {
                 //force test to fail
                 //API key should be valid
-                expect('API KEY INVALID OR NOT PROVIDED').toBe(false);
+                console.error('Error on test #19:', error);
+                expect('API KEY INVALID OR ERROR HAPPENED').toBe(false);
             }).finally(() => {
                 verid.unload();
                 done();
             });
         });
     });
-    //Android Only
+    
     describe('Ver Id plugin, testing of register using mocks', function () {
-        it('test register user', function (done) {
+        it('20. test register user', function (done) {
             var instance = null;
             window.verid.setTestingMode(true).then(() => {
                 window.verid.load(API_KEY).then(verIDInstance => {
@@ -323,10 +332,11 @@ exports.defineAutoTests = function () {
                     expect(typeof response.attachments[0].face).toBe('object')
                     expect(typeof response.attachments[0].bearing).toBe('string')
                     expect(typeof response.attachments[0].image).toBe('string')
-                }).catch(() => {
+                }).catch((error) => {
                     //force test to fail
                     //API key should be valid
-                    expect('API KEY INVALID OR NOT PROVIDED').toBe(false);
+                    console.error('Error on test #20:', error);
+                    expect('API KEY INVALID OR ERROR HAPPENED').toBe(false);
                 }).finally(() => {
                     window.verid.unload()
                     window.verid.setTestingMode(false)
@@ -336,7 +346,7 @@ exports.defineAutoTests = function () {
         });
     });
     describe('Ver Id plugin, testing of authenticate using mocks', function () {
-        it('test authenticate user', function (done) {
+        it('21. test authenticate user', function (done) {
             window.verid.setTestingMode(true).then(() => {
                 window.verid.load(API_KEY).then(verIDInstance => {
                     instance = verIDInstance;
@@ -348,10 +358,11 @@ exports.defineAutoTests = function () {
                     expect(typeof response.attachments[0].face).toBe('object')
                     expect(typeof response.attachments[0].bearing).toBe('string')
                     expect(typeof response.attachments[0].image).toBe('string')
-                }).catch(() => {
+                }).catch((error) => {
                     //force test to fail
                     //API key should be valid
-                    expect('API KEY INVALID OR NOT PROVIDED').toBe(false);
+                    console.error('Error on test #21:', error);
+                    expect('API KEY INVALID OR ERROR HAPPENED').toBe(false);
                 }).finally(() => {
                     window.verid.unload()
                     window.verid.setTestingMode(false)
@@ -361,7 +372,7 @@ exports.defineAutoTests = function () {
         });
     });
     describe('Ver Id plugin, testing of captureLiveFace using mocks', function () {
-        it('test captureLiveFace', function (done) {
+        it('22. test captureLiveFace', function (done) {
             window.verid.setTestingMode(true).then(() => {
                 window.verid.load(API_KEY).then(verIDInstance => {
                     instance = verIDInstance;
@@ -373,10 +384,11 @@ exports.defineAutoTests = function () {
                     expect(typeof response.attachments[0].face).toBe('object')
                     expect(typeof response.attachments[0].bearing).toBe('string')
                     expect(typeof response.attachments[0].image).toBe('string')
-                }).catch(() => {
+                }).catch((error) => {
                     //force test to fail
                     //API key should be valid
-                    expect('API KEY INVALID OR NOT PROVIDED').toBe(false);
+                    console.error('Error on test #22:', error);
+                    expect('API KEY INVALID OR ERROR HAPPENED').toBe(false);
                 }).finally(() => {
                     window.verid.unload()
                     window.verid.setTestingMode(false)
@@ -386,23 +398,24 @@ exports.defineAutoTests = function () {
         });
     });
     describe('Ver Id plugin, testing of getRegisteredUsers', function () {
-        it('test getRegisteredUsers without testing mode', function (done) {
+        it('22. test getRegisteredUsers without testing mode', function (done) {
             window.verid.load(API_KEY).then(instance => {
                 return instance.getRegisteredUsers()
             }).then(users => {
                 expect(users).toBeDefined();
                 expect(Array.isArray(users)).toBe(true);
                 expect(users.length).toBe(0);
-            }).catch(() => {
+            }).catch((error) => {
                 //force test to fail
                 //API key should be valid
-                expect('API KEY INVALID OR NOT PROVIDED').toBe(false);
+                console.error('Error on test #22:', error);
+                expect('API KEY INVALID OR ERROR HAPPENED').toBe(false);
             }).finally(() => {
                 verid.unload();
                 done();
             });
         });
-        it('test getRegisteredUsers without testing mode on', function (done) {
+        it('23. test getRegisteredUsers without testing mode on', function (done) {
             window.verid.setTestingMode(true).then(() => {
                 return window.verid.load(API_KEY);
             }).then(instance => {
@@ -410,10 +423,11 @@ exports.defineAutoTests = function () {
             }).then(users => {
                 expect(Array.isArray(users)).toBe(true);
                 expect(users.length).toBe(3);
-            }).catch(() => {
+            }).catch((error) => {
                 //force test to fail
                 //API key should be valid
-                expect('API KEY INVALID OR NOT PROVIDED').toBe(false);
+                console.error('Error on test #23:', error);
+                expect('API KEY INVALID OR ERROR HAPPENED').toBe(false);
             }).finally(() => {
                 verid.setTestingMode(false)
                 verid.unload();
