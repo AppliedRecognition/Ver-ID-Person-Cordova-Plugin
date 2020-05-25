@@ -90,7 +90,7 @@ import VerIDUI
                         let template2 = try JSONDecoder().decode(CodableFace.self, from: t2).recognizable
                         let score = try verid.faceRecognition.compareSubjectFaces([template1], toFaces: [template2]).floatValue
                         DispatchQueue.main.async {
-                            let message: [String:Any] = ["score":score,"threshold":verid.faceRecognition.authenticationScoreThreshold.floatValue,"max":verid.faceRecognition.maxAuthenticationScore.floatValue];
+                            let message: [String:Any] = ["score":score,"authenticationThreshold":verid.faceRecognition.authenticationScoreThreshold.floatValue,"max":verid.faceRecognition.maxAuthenticationScore.floatValue];
                             self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_OK, messageAs: message), callbackId: command.callbackId)
                         }
                     } catch {
