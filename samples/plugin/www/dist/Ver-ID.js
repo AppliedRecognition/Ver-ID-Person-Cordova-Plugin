@@ -13,6 +13,7 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 exports.__esModule = true;
+exports.setTestingMode = exports.unload = exports.load = exports.VerID = exports.FaceComparisonResult = exports.SessionResult = exports.Error = exports.DetectedFace = exports.Face = exports.FaceTemplate = exports.RegistrationSessionSettings = exports.AuthenticationSessionSettings = exports.LivenessDetectionSessionSettings = exports.VerIDSessionSettings = exports.Bearing = void 0;
 var PLUGIN_NAME = "VerIDPlugin";
 var Bearing;
 (function (Bearing) {
@@ -108,8 +109,13 @@ exports.FaceComparisonResult = FaceComparisonResult;
 function decodeResult(callback) {
     return function (encoded) {
         if (encoded) {
-            var decoded = JSON.parse(encoded);
-            callback(decoded);
+            if (typeof encoded === 'string') {
+                var decoded = JSON.parse(encoded);
+                callback(decoded);
+            }
+            else {
+                callback(encoded);
+            }
         }
         else {
             callback();
@@ -187,7 +193,12 @@ function unload() {
 exports.unload = unload;
 function setTestingMode(mode) {
     return new Promise(function (resolve, reject) {
-        cordova.exec(resolve, reject, PLUGIN_NAME, "setTestingMode", [mode]);
+        if (typeof mode === "boolean") {
+            cordova.exec(resolve, reject, PLUGIN_NAME, "setTestingMode", [mode]);
+        }
+        else {
+            reject('Invalid Parameter');
+        }
     });
 }
 exports.setTestingMode = setTestingMode;
