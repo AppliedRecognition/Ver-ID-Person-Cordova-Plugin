@@ -1,5 +1,9 @@
 const API_KEY = 'API_KEY_HERE'
 const USER_ID = 'TESTING_USER_ID';
+/**
+ * Auto tests will run automatically and will check that
+ * all is working as expected
+ */
 exports.defineAutoTests = function () {
     describe('Ver Id plugin (window.verid)', function () {
         it('should exist', function () {
@@ -417,7 +421,227 @@ exports.defineAutoTests = function () {
             });
         });
     });
-}
+};
+/**
+ * Manual tests requires user interaction to work
+ * This contains testing functions that require the camera
+ */
+exports.defineManualTests = function(contentEl, createActionButton) {
+
+    registerUser = (instance, showResult) => {
+        var settings = new verid.RegistrationSessionSettings(USER_ID);
+        settings.showResult = showResult ? showResult : false;
+        return instance.register(settings).then(response => {
+            if (!response) {
+                alert('Registration Canceled');
+                return;
+            }
+            if (!response.error) {
+                 alert('Registration Completed!');
+            } else {
+                console.error('Error on registration', response);
+                return response;
+            }
+        }).catch(error => {
+            alert('Error Encountered!');
+            console.error('General Error:', error);
+        });
+    }
+
+    captureLiveFace = (verIDInstance, singlePose) => {
+        var settings = verid.LivenessDetectionSessionSettings();
+
+        if (singlePose) {
+            settings.numberOfResultsToCollect = 1;
+            settings.bearings = [verid.Bearing.STRAIGHT];
+        }
+
+        return verIDInstance.captureLiveFace(settings)
+            .then(response => {
+                if (!response) {
+                    alert('session canceled!');
+                } else if (!response.error) {
+                    if (response.attachments.length > 0) {
+                        let faces = response.attachments.filter(attachment => {
+                            return attachment.bearing == verid.Bearing.STRAIGHT && attachment.face.faceTemplate;
+                        }).map(attachment => {
+                            return attachment.face;
+                        });
+
+                        return faces;
+                        
+                    } else {
+                        alert('Error retrieving the faces!')
+                        return;
+                    }
+                } else {
+                    alert('session Failed!');
+                }
+            }).catch(error => {
+                alert('Error Encountered!');
+                console.error('General Error:', error);
+            });
+    }
+
+    compareFaces = (verIDInstance, face1, face2) => {
+        return verIDInstance.compareFaces(face1, face2)
+        .then(result => {
+            if (!result) {
+                alert('session canceled!');
+                return
+            }
+            alert('result Obtained!');
+            console.log(result);
+            return result;
+        }).catch(error => {
+            alert('Error Encountered!');
+            console.error('General Error:', error);
+        });
+    }
+
+    detectFaceInImage = (verIDInstance) => {
+        return new Promise((resolve, reject) => {
+            var image = new Image();
+            image.onload = function() {
+                var canvas = document.createElement('canvas');
+                canvas.width = image.width;
+                canvas.height = image.height;
+                var ctx = canvas.getContext('2d');
+                ctx.drawImage(image, 0, 0);
+                var dataUri = canvas.toDataURL('image/jpeg', 0.95);
+                return verIDInstance.detectFaceInImage(dataUri)
+                    .then(face => {
+                        if (!face) {
+                            alert('Error Retrieving face!')
+                            resolve();
+                            return;
+                        }
+                        resolve(face)
+                    }).catch(error => {
+                        reject(error);
+                    })
+            }
+            image.src = '../plugins/com-appliedrec-plugins-verid/tests/assets/test-photo.jpg';
+        });
+        
+    }
+
+    createActionButton('Register user', function() {
+        let verIDInstance = null;
+        verid.load(API_KEY).then(instance => {
+            verIDInstance = instance;
+            return registerUser(instance);
+        }).then(() => {
+            verIDInstance.deleteRegisteredUser(USER_ID);
+        })
+        
+    });
+    
+    createActionButton('Register user Show result', function() {
+        let verIDInstance = null;
+        verid.load(API_KEY).then(instance => {
+            verIDInstance = instance;
+            return registerUser(instance, true);
+        }).then(() => {
+            verIDInstance.deleteRegisteredUser(USER_ID);
+        })
+    });
+
+    createActionButton('Register user and Authenticate', function() {
+        let verIDInstance = null;
+
+        verid.load(API_KEY).then(instance => {
+            verIDInstance = instance;
+            return registerUser(instance);
+        }).then(() => {
+            if (confirm('Registration completed, continue with authentication?')) {
+                var settings = new verid.AuthenticationSessionSettings(USER_ID);
+                return verIDInstance.authenticate(settings);
+            } else {
+                return;
+            }
+        }).then((response) => {
+            verIDInstance.deleteRegisteredUser(USER_ID);
+            if (!response) {
+                alert('session canceled!');
+                return;
+            } else if (!response.error) {
+                alert('authenticated!');
+            } else {
+                alert('session failed!', response);
+            }
+        }).catch(error => {
+            alert('Error Encountered!');
+            console.error('General Error:', error);
+        });
+    });
+
+    createActionButton('Capture Live Face and compare', function() {
+        let verIDInstance = null;
+        let faces = null;
+        verid.load(API_KEY).then(instance => {
+            verIDInstance = instance;
+            return captureLiveFace(instance);
+        }).then(facesResult => {
+            if (!facesResult) {
+                alert('session canceled!');
+                return;
+            }
+
+            faces = facesResult
+            if (confirm('Faces captured!, continue with single pose face capturing? ')) {
+                return captureLiveFace(verIDInstance, true);
+            }
+        }).then(facesResult => {
+            if (!facesResult) {
+                alert('session canceled!');
+                return
+            }
+        
+            if (confirm('Faces captured!, continue with faces comparison? ')) {
+                let face1 = faces[0];
+                let face2 = facesResult[0];
+                return compareFaces(verIDInstance, face1, face2);
+            }
+        }).catch(error => {
+            alert('Error Encountered!');
+            console.error('General Error:', error);
+        });
+    });
+
+    createActionButton('Detect Face in Sample Image and compare', function() {
+        let verIDInstance = null;
+        let faces = null;
+        verid.load(API_KEY).then(instance => {
+            verIDInstance = instance;
+            return captureLiveFace(instance);
+        }).then(facesResult => {
+            if (!facesResult) {
+                alert('session canceled!');
+                return;
+            }
+
+            faces = facesResult
+            if (confirm('Faces captured!, continue comparing with face in Image? ')) {
+                return detectFaceInImage(verIDInstance);
+            }
+        }).then(facesResult => {
+            if (!facesResult) {
+                alert('session canceled!');
+                return
+            }
+        
+            if (confirm('Faces captured!, continue with faces comparison? ')) {
+                let face1 = faces[0];
+                let face2 = facesResult;
+                return compareFaces(verIDInstance, face1, face2);
+            }
+        }).catch(error => {
+            alert('Error Encountered!');
+            console.error('General Error:', error);
+        });
+    });
+};
 
 //mocks
 const FACE_MOCK = `{"x":-8.384888,"y":143.6514,"width":331.54974,"height":414.43723,"yaw":-0.07131743,
