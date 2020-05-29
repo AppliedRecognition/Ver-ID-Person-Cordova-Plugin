@@ -346,3 +346,16 @@ export function unload(): Promise<void> {
         cordova.exec(resolve, reject, PLUGIN_NAME, "unload", []);
     });
 }
+/**
+ * Set testing mode
+ * @param mode used to set the testing mode on or off
+ */
+export function setTestingMode(mode: boolean): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+        if (typeof mode === "boolean") {
+            cordova.exec(resolve, reject, PLUGIN_NAME, "setTestingMode", [mode]);
+        } else {
+            reject('Invalid Parameter');
+        }
+    });
+}
