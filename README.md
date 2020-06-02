@@ -1,6 +1,6 @@
 ![GitHub package.json version](https://img.shields.io/github/package-json/v/AppliedRecognition/Ver-ID-Person-Cordova-Plugin.svg)
 
-![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)(https://opensource.org/licenses/ISC)
+[![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)
 
 ![Build Status](https://travis-ci.com/vsecades/Ver-ID-Person-Cordova-Plugin.svg?branch=unit-testing)(https://travis-ci.com/github/vsecades/Ver-ID-Person-Cordova-Plugin)
 
