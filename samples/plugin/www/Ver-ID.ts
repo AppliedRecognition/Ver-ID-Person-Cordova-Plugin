@@ -312,7 +312,7 @@ export class VerID {
 
 /**
  * Load Ver-ID
- * @param apiSecret Ver-ID API secret (if omitted the library will look in the app's plist (iOS) or manifest (Android))
+ * @param password Ver-ID API password (if omitted the library will look in the app's plist (iOS) or manifest (Android))
  * @returns Promise whose resolve function's argument contains the loaded Ver-ID instance
  * @example
  * ```typescript
@@ -324,11 +324,11 @@ export class VerID {
  * });
  * ```
  */
-export function load(apiSecret?: string): Promise<VerID> {
+export function load(password?: string): Promise<VerID> {
     return new Promise<VerID>((resolve, reject) => {
         var options = [];
-        if (apiSecret != undefined) {
-            options.push({"apiSecret": apiSecret});
+        if (password != undefined) {
+            options.push({"password": password});
         }
         cordova.exec(function(){
             var verid = new VerID();

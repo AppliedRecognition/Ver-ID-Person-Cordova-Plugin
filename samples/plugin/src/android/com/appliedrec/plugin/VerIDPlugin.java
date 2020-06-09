@@ -395,7 +395,7 @@ public class VerIDPlugin extends CordovaPlugin {
         if (verID != null) {
             runnable.run();
         } else {
-            String apiSecret = getArg(args, "apiSecret", String.class);
+            String password = getArg(args, "password", String.class);
             VerIDFactory verIDFactory = new VerIDFactory(activity, new VerIDFactoryDelegate() {
                 @Override
                 public void veridFactoryDidCreateEnvironment(VerIDFactory verIDFactory, VerID verID) {
@@ -408,10 +408,8 @@ public class VerIDPlugin extends CordovaPlugin {
                     callbackContext.error(e.getLocalizedMessage());
                 }
             });
-            if (apiSecret != null) {
-                FaceDetectionRecognitionFactory faceDetectionRecognitionFactory = new FaceDetectionRecognitionFactory(activity, apiSecret);
-                verIDFactory.setFaceRecognitionFactory(faceDetectionRecognitionFactory);
-                verIDFactory.setFaceDetectionFactory(faceDetectionRecognitionFactory);
+            if (password != null) {
+                verIDFactory.setVeridPassword(password);
             }
             verIDFactory.createVerID();
         }
