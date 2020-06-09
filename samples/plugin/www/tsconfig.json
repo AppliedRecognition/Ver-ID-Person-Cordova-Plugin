@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "noImplicitAny": true,
+        "removeComments": true,
+        "preserveConstEnums": true,
+        "sourceMap": true,
+        "outDir": "dist",
+        "lib": ["es5", "es2015", "dom", "scripthost"]
+    },
+    "files": [
+        "Ver-ID.ts"
+    ]
+}

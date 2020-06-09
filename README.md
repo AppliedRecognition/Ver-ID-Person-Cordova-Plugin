@@ -1,10 +1,26 @@
 ![GitHub package.json version](https://img.shields.io/github/package-json/v/AppliedRecognition/Ver-ID-Person-Cordova-Plugin.svg)
 
+[![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)
+
+[![Build Status](https://travis-ci.com/vsecades/Ver-ID-Person-Cordova-Plugin.svg?branch=unit-testing)](https://travis-ci.com/github/vsecades/Ver-ID-Person-Cordova-Plugin)
+
 # Ver-ID Person Plugin for Cordova
 
 ## Introduction
 
 Ver-ID gives your users the ability to authenticate using their face.
+
+## Compatibility 
+
+The Ver-ID plugin has been tested to work with Cordova against the following compatibility matrix for iOS and Android:
+
+| Cordova Version   | iOS       | Android   |
+|-----------------  |-------    |---------  |
+| 7.0               | 5.0.0     | 8.0.0     |
+| 8.0               | 5.0.0     | 8.0.0     |
+| 9.0               | 5.0.0     | 8.0.0     |
+
+Other combinations may work, but your mileage may vary.  Be sure to run the unit test suite against your Cordova and mobile OS platform combination to make sure all functionality works before proceeding.
 
 ## Adding Ver-ID Person Plugin to Your Cordova App
 
@@ -264,7 +280,12 @@ image.onerror = function() {
 // Set the image source (change img/test.jpg to your image location)
 image.src = "img/test.jpg";
 ~~~
+## Project Samples
 
+  The following [link](SAMPLES.md) provides instructions on how to run the
+  project samples in the samples branch.   This should provide some guidance as
+  to how to use the product.
+  
 ## Module API Reference
 
  - [Ver-ID](https://appliedrecognition.github.io/Ver-ID-Person-Cordova-Plugin/modules/_ver_id_.html)
