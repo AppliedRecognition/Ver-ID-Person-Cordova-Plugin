@@ -263,11 +263,11 @@ import VerIDUI
             return
         }
         self.veridSessionCallbackId = command.callbackId
-        let veridFactory = VerIDFactory()
-        if let apiSecret = command.arguments?.compactMap({ ($0 as? [String:String])?["apiSecret"] }).first {
-            let detRecLibFactory = VerIDFaceDetectionRecognitionFactory(apiSecret: apiSecret)
-            veridFactory.faceDetectionFactory = detRecLibFactory
-            veridFactory.faceRecognitionFactory = detRecLibFactory
+        let veridFactory: VerIDFactory
+        if let password = command.arguments?.compactMap({ ($0 as? [String:String])?["password"] }).first {
+            veridFactory = VerIDFactory(veridPassword: password)
+        } else {
+            veridFactory = VerIDFactory()
         }
         veridFactory.delegate = self
         veridFactory.createVerID()
