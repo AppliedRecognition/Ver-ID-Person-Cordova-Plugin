@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='utf-8'?>
+<plugin id="com-appliedrec-plugins-verid" version="5.0.1" xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
+    <name>Ver-ID</name>
+    <js-module name="Ver-ID" src="www/dist/Ver-ID.js">
+        <clobbers target="window.verid" />
+    </js-module>
+    <js-module src="tests/tests.js" name="tests"></js-module>
+    <asset src="tests/assets" target="plugins/com-appliedrec-plugins-verid/tests/assets"/>
+    <platform name="android">
+        <config-file target="config.xml" parent="/*">
+            <feature name="VerIDPlugin">
+                <param name="android-package" value="com.appliedrec.plugin.VerIDPlugin" />
+            </feature>
+        </config-file>
+        <config-file target="AndroidManifest.xml" parent="/*">
+            <uses-sdk android:minSdkVersion="21" />
+        </config-file>
+        <source-file src="src/android/com/appliedrec/plugin/VerIDPlugin.java" target-dir="src/com/appliedrec/plugin" />
+        <framework src="src/android/verid.gradle" custom="true" type="gradleReference" />
+        <framework src="com.appliedrec.verid:ui:1.14.2" />
+        <uses-permission android:name="android.permission.CAMERA" />
+    </platform>
+
+    <platform name="ios">
+        <config-file target="config.xml" parent="/*">
+            <feature name="VerIDPlugin">
+                <param name="ios-package" value="VerIDPlugin" />
+                <param name="onload" value="true" />
+            </feature>
+        </config-file>
+        <source-file src="src/ios/VerIDPlugin.swift" />
+        <framework src="Ver-ID-UI" type="podspec" spec="~> 1.12.1" />
+        <framework src="Ver-ID-SDK-Identity" type="podspec" spec="~> 3.0.1" />
+    </platform>
+</plugin>

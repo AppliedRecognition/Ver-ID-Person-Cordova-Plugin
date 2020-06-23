@@ -1,0 +1,13 @@
+repositories {
+	jcenter()
+	maven { url 'https://dev.ver-id.com/artifactory/gradle-release' }
+}
+
+allprojects {
+	android {
+		defaultConfig {
+			minSdkVersion 21
+		}
+	}
+}
+
