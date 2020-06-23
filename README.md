@@ -280,12 +280,7 @@ image.onerror = function() {
 // Set the image source (change img/test.jpg to your image location)
 image.src = "img/test.jpg";
 ~~~
-## Project Samples
 
-  The following [link](SAMPLES.md) provides instructions on how to run the
-  project samples in the samples branch.   This should provide some guidance as
-  to how to use the product.
-  
 ## Module API Reference
 
  - [Ver-ID](https://appliedrecognition.github.io/Ver-ID-Person-Cordova-Plugin/modules/_ver_id_.html)
