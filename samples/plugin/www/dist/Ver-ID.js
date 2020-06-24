@@ -172,11 +172,11 @@ var VerID = (function () {
     return VerID;
 }());
 exports.VerID = VerID;
-function load(apiSecret) {
+function load(password) {
     return new Promise(function (resolve, reject) {
         var options = [];
-        if (apiSecret != undefined) {
-            options.push({ "apiSecret": apiSecret });
+        if (password != undefined) {
+            options.push({ "password": password });
         }
         cordova.exec(function () {
             var verid = new VerID();

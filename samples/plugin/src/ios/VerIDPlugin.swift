@@ -263,11 +263,11 @@ import VerIDUI
             return
         }
         self.veridSessionCallbackId = command.callbackId
-        let veridFactory = VerIDFactory()
-        if let apiSecret = command.arguments?.compactMap({ ($0 as? [String:String])?["apiSecret"] }).first {
-            let detRecLibFactory = VerIDFaceDetectionRecognitionFactory(apiSecret: apiSecret)
-            veridFactory.faceDetectionFactory = detRecLibFactory
-            veridFactory.faceRecognitionFactory = detRecLibFactory
+        let veridFactory: VerIDFactory
+        if let password = command.arguments?.compactMap({ ($0 as? [String:String])?["password"] }).first {
+            veridFactory = VerIDFactory(veridPassword: password)
+        } else {
+            veridFactory = VerIDFactory()
         }
         veridFactory.delegate = self
         veridFactory.createVerID()
@@ -340,12 +340,12 @@ class CodableFace: NSObject, Codable {
 
     let face: Face
     let recognizable: Recognizable
-
+  
     init(face: Face, recognizable: Recognizable) {
         self.face = face
         self.recognizable = recognizable
     }
-
+  
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.face = Face()
@@ -359,7 +359,7 @@ class CodableFace: NSObject, Codable {
         self.recognizable = RecognitionFace(recognitionData: try faceTemplateContainer.decode(Data.self, forKey: .data))
         self.recognizable.version = try faceTemplateContainer.decode(Int32.self, forKey: .version)
     }
-
+  
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(self.face.data, forKey: .data)
