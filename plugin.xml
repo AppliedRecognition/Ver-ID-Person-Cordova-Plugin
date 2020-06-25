@@ -6,7 +6,10 @@
     </js-module>
     <js-module src="tests/tests.js" name="tests"></js-module>
     <asset src="tests/assets" target="plugins/com-appliedrec-plugins-verid/tests/assets"/>
+    <hook src="scripts/remove_configuration.js" type="before_plugin_uninstall"/>
+    <hook src="scripts/addLicenseFile.js" type="before_plugin_install" />
     <platform name="android">
+        <hook src="scripts/addPasswordAndroid.js" type="before_plugin_install"/>
         <config-file target="config.xml" parent="/*">
             <feature name="VerIDPlugin">
                 <param name="android-package" value="com.appliedrec.plugin.VerIDPlugin" />
@@ -20,8 +23,8 @@
         <framework src="com.appliedrec.verid:ui:1.21.2" />
         <uses-permission android:name="android.permission.CAMERA" />
     </platform>
-
     <platform name="ios">
+        <hook src="scripts/addPasswordIOS.js" type="before_plugin_install" />
         <config-file target="config.xml" parent="/*">
             <feature name="VerIDPlugin">
                 <param name="ios-package" value="VerIDPlugin" />
