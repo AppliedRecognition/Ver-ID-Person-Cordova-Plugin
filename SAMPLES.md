@@ -11,14 +11,14 @@ samples provided.
 
 1. Clone the plugin Git repo into your file system:
 
-    ~~~bash
+    ```
     git clone --recurse-submodules https://github.com/AppliedRecognition/Ver-ID-Person-Cordova-Plugin.git
-    ~~~
+    ```
 1. Navigate to the plugin directory and change to the samples branch:
 
-	~~~bash
+	```
 	git checkout samples
-	~~~
+	```
 1. Navigate to the sample project that you want to test:
 
 	```
@@ -40,9 +40,9 @@ samples provided.
 
 1. Install cordova testing framework using the next command:
 
-  ~~~bash
+  ```
 	cordova plugin add  cordova-plugin-test-framework
-	~~~
+	```
 
 1. For iOS platform:
    - Navigate to **platforms/ios** and open the **Podfile** in a text editor.
