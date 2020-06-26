@@ -31,8 +31,7 @@ samples provided.
     cordova platform add android@8.0.0 ios@5.0.0
 	  ```
 
-1. Now install verid plugin using the next command, note: the certificate is
-   locate inside samples/assets directory:
+1. Now install verid plugin using the next command, note: the certificate is inside samples/assets directory:
 
 	```
 	cordova plugin add  ../plugin --password=41475bf3-ca73-4579-b909-07228ed85b17 --certificate="path/to/certificate"
@@ -40,9 +39,9 @@ samples provided.
 
 1. Install cordova testing framework using the next command:
 
-  ```
-	cordova plugin add  cordova-plugin-test-framework
-	```
+    ```
+	  cordova plugin add  cordova-plugin-test-framework
+	  ```
 
 1. For iOS platform:
    - Navigate to **platforms/ios** and open the **Podfile** in a text editor.
