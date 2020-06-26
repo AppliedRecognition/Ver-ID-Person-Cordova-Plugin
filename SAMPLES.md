@@ -25,8 +25,7 @@ samples provided.
 	Example: cd samples/cordova7.0.0_sample
 	~~~
 
-4. From root sample directory, run the following command to add iOS and
-   Android platforms:
+4. From root sample directory, run the following command to add iOS and Android platforms:
     
   ~~~bash
 	cordova platform add android@8.0.0 ios@5.0.0
@@ -38,13 +37,14 @@ samples provided.
 	~~~bash
 	cordova plugin add  ../plugin --password=41475bf3-ca73-4579-b909-07228ed85b17 --certificate="path/to/certificate"
 	~~~
-5. Install cordova testing framework using the next command:
+  
+6. Install cordova testing framework using the next command:
 
   ~~~bash
 	cordova plugin add  cordova-plugin-test-framework
 	~~~
 
-6. For iOS platform:
+7. For iOS platform:
    - Navigate to **platforms/ios** and open the **Podfile** in a text editor.
      Add `use_frameworks!` after `platform :ios, '10.3'`. Close the file and run
      `pod install`
@@ -57,7 +57,7 @@ samples provided.
     - Select your app target and click on the **Build Settings** tab. Under
       **Build Options** ensure **Enable Bitcode** is set to **No**.
 
-7. For Android platform:
+8. For Android platform:
    - Open **platforms/android** with Android Studio.
    - If an alert shows up requiring to sync gradle tap on the **Okay** button.
 
