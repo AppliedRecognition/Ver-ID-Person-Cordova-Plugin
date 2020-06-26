@@ -41,12 +41,6 @@ Other combinations may work, but your mileage may vary.  Be sure to run the unit
     - Ensure the project's deployment target is iOS 10 or newer. Alternatively, copy **[hooks/xcodeproject.js](https://github.com/AppliedRecognition/Ver-ID-Person-Cordova-Plugin/blob/master/hooks/xcodeproject.js)** and **[hooks/platformversion.js](https://github.com/AppliedRecognition/Ver-ID-Person-Cordova-Plugin/blob/master/hooks/platformversion.js)** from the plugin to your Cordova project and add **hooks/platformversion.js** as [hook](https://cordova.apache.org/docs/en/latest/guide/appdev/hooks/).
     - In your Xcode project's build settings ensure `SWIFT_VERSION` is set to **Swift 5**. You can automate this setting by copying **[hooks/xcodeproject.js](https://github.com/AppliedRecognition/Ver-ID-Person-Cordova-Plugin/blob/master/hooks/xcodeproject.js)** and **[hooks/swiftversion.js](https://github.com/AppliedRecognition/Ver-ID-Person-Cordova-Plugin/blob/master/hooks/swiftversion.js)** from the plugin to your Cordova project and add **swiftversion.js** as [hook](https://cordova.apache.org/docs/en/latest/guide/appdev/hooks/).
     - Open your app's **Info.plist** file and and ensure it contains an entry for `NSCameraUsageDescription`.
-    - Still in the **Info.plist** file add the following entry if not present, substituting `[your password]` for the API password obtained after registration in step 1:
-
-        ~~~xml
-        <key>com.appliedrec.verid.password</key>
-        <string>[your password]</string>
-        ~~~
     - Select your app target and click on the **Build Settings** tab. Under **Build Options** ensure **Enable Bitcode** is set to **No**.
 4. If your app includes Android platform:
     - Ensure your app targets Android API level 21 or newer. Open your Cordova project's **config.xml** file and add the following entry:
@@ -58,16 +52,7 @@ Other combinations may work, but your mileage may vary.  Be sure to run the unit
             </platform>
         </widget>
         ~~~
-	
-    - Open your app's **AndroidManifest.xml** file and add the following tag if
-      not present in `<application>` replacing `[your password]` with the API password you
-      received in step 1:
 
-        ~~~xml
-        <meta-data 
-           android:name="com.appliedrec.verid.password" 
-           android:value="[your password]" />
-        ~~~
     - Your application must use **Theme.AppCompat** theme (or its descendant).
     
  6. Build errors that may occur on Android:
