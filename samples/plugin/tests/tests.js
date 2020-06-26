@@ -286,7 +286,7 @@ exports.defineAutoTests = function () {
                     expect(response).toBeDefined()
                     expect(Array.isArray(response.attachments)).toBe(true)
                     expect(response.attachments.length).toBe(1)
-                    expect(typeof response.attachments[0].face).toBe('object')
+                    expect(typeof response.attachments[0].recognizableFace).toBe('object')
                     expect(typeof response.attachments[0].bearing).toBe('string')
                     expect(typeof response.attachments[0].image).toBe('string')
                 }).catch((error) => {
@@ -311,7 +311,7 @@ exports.defineAutoTests = function () {
                     expect(response).toBeDefined()
                     expect(Array.isArray(response.attachments)).toBe(true)
                     expect(response.attachments.length).toBe(1)
-                    expect(typeof response.attachments[0].face).toBe('object')
+                    expect(typeof response.attachments[0].recognizableFace).toBe('object')
                     expect(typeof response.attachments[0].bearing).toBe('string')
                     expect(typeof response.attachments[0].image).toBe('string')
                 }).catch((error) => {
@@ -336,7 +336,7 @@ exports.defineAutoTests = function () {
                     expect(response).toBeDefined()
                     expect(Array.isArray(response.attachments)).toBe(true)
                     expect(response.attachments.length).toBe(1)
-                    expect(typeof response.attachments[0].face).toBe('object')
+                    expect(typeof response.attachments[0].recognizableFace).toBe('object')
                     expect(typeof response.attachments[0].bearing).toBe('string')
                     expect(typeof response.attachments[0].image).toBe('string')
                 }).catch((error) => {
@@ -429,9 +429,9 @@ exports.defineManualTests = function(contentEl, createActionButton) {
                 } else if (!response.error) {
                     if (response.attachments.length > 0) {
                         let faces = response.attachments.filter(attachment => {
-                            return attachment.bearing == verid.Bearing.STRAIGHT && attachment.face.faceTemplate;
+                            return attachment.bearing == verid.Bearing.STRAIGHT && attachment.recognizableFace.faceTemplate;
                         }).map(attachment => {
-                            return attachment.face;
+                            return attachment.recognizableFace;
                         });
 
                         return faces;
