@@ -14,37 +14,37 @@ samples provided.
     ~~~bash
     git clone --recurse-submodules https://github.com/AppliedRecognition/Ver-ID-Person-Cordova-Plugin.git
     ~~~
-2. Navigate to the plugin directory and change to the samples branch:
+1. Navigate to the plugin directory and change to the samples branch:
 
 	~~~bash
 	git checkout samples
 	~~~
-3. Navigate to the sample project that you want to test:
+1. Navigate to the sample project that you want to test:
 
-	~~~bash
+	```
 	Example: cd samples/cordova7.0.0_sample
-	~~~
+	```
 
-4. From root sample directory, run the following command to add iOS and Android platforms:
+1. From root sample directory, run the following command to add iOS and Android platforms:
     
-  ~~~bash
-	cordova platform add android@8.0.0 ios@5.0.0
-	~~~
+    ```
+    cordova platform add android@8.0.0 ios@5.0.0
+	  ```
 
-5. Now install verid plugin using the next command, note: the certificate is
+1. Now install verid plugin using the next command, note: the certificate is
    locate inside samples/assets directory:
 
-	~~~bash
+	```
 	cordova plugin add  ../plugin --password=41475bf3-ca73-4579-b909-07228ed85b17 --certificate="path/to/certificate"
-	~~~
-  
-6. Install cordova testing framework using the next command:
+	```
+
+1. Install cordova testing framework using the next command:
 
   ~~~bash
 	cordova plugin add  cordova-plugin-test-framework
 	~~~
 
-7. For iOS platform:
+1. For iOS platform:
    - Navigate to **platforms/ios** and open the **Podfile** in a text editor.
      Add `use_frameworks!` after `platform :ios, '10.3'`. Close the file and run
      `pod install`
@@ -57,7 +57,7 @@ samples provided.
     - Select your app target and click on the **Build Settings** tab. Under
       **Build Options** ensure **Enable Bitcode** is set to **No**.
 
-8. For Android platform:
+1. For Android platform:
    - Open **platforms/android** with Android Studio.
    - If an alert shows up requiring to sync gradle tap on the **Okay** button.
 
