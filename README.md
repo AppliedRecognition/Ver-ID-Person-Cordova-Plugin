@@ -24,7 +24,7 @@ Other combinations may work, but your mileage may vary.  Be sure to run the unit
 
 ## Adding Ver-ID Person Plugin to Your Cordova App
 
-1. [Request an API secret](https://dev.ver-id.com/admin/register) for your app.
+1. [Request a License File and password](https://dev.ver-id.com/admin/register) for your app.
 1. Clone the plugin Git repo into your file system:
 
     ~~~bash
@@ -33,19 +33,19 @@ Other combinations may work, but your mileage may vary.  Be sure to run the unit
 1. Navigate to your Cordova project directory and install the plugin substituting `path/to/plugin` with the path of the plugin you checked out in the previous step:
 
 	~~~bash
-	cordova plugin add path/to/plugin
+	cordova plugin add path/to/plugin --password=PROVIDED_PASSWORD --certificate="path/to/certificate"
 	~~~
 1. If your app includes iOS platform:
-    - Navigate to **platforms/ios** and open the **Podfile** in a text editor. Set the platform to iOS 10: `platform :ios, '10.0'`. Close the file and run `pod install` to update the project. Alternatively, to automate this step copy the **[hooks/podfilesetup.js](https://github.com/AppliedRecognition/Ver-ID-Person-Cordova-Plugin/blob/master/hooks/podfilesetup.js)** script from the plugin to your Cordova project and add it as a `before_build` [hook](https://cordova.apache.org/docs/en/latest/guide/appdev/hooks/).
+    - Navigate to **platforms/ios** and open the **Podfile** in a text editor. Set the platform to iOS 10.3: `platform :ios, '10.3'`. Close the file and run `pod install` to update the project. Alternatively, to automate this step copy the **[hooks/podfilesetup.js](https://github.com/AppliedRecognition/Ver-ID-Person-Cordova-Plugin/blob/master/hooks/podfilesetup.js)** script from the plugin to your Cordova project and add it as a `before_build` [hook](https://cordova.apache.org/docs/en/latest/guide/appdev/hooks/).
     - Open Cordova app's iOS work space in Xcode.
     - Ensure the project's deployment target is iOS 10 or newer. Alternatively, copy **[hooks/xcodeproject.js](https://github.com/AppliedRecognition/Ver-ID-Person-Cordova-Plugin/blob/master/hooks/xcodeproject.js)** and **[hooks/platformversion.js](https://github.com/AppliedRecognition/Ver-ID-Person-Cordova-Plugin/blob/master/hooks/platformversion.js)** from the plugin to your Cordova project and add **hooks/platformversion.js** as [hook](https://cordova.apache.org/docs/en/latest/guide/appdev/hooks/).
     - In your Xcode project's build settings ensure `SWIFT_VERSION` is set to **Swift 5**. You can automate this setting by copying **[hooks/xcodeproject.js](https://github.com/AppliedRecognition/Ver-ID-Person-Cordova-Plugin/blob/master/hooks/xcodeproject.js)** and **[hooks/swiftversion.js](https://github.com/AppliedRecognition/Ver-ID-Person-Cordova-Plugin/blob/master/hooks/swiftversion.js)** from the plugin to your Cordova project and add **swiftversion.js** as [hook](https://cordova.apache.org/docs/en/latest/guide/appdev/hooks/).
     - Open your app's **Info.plist** file and and ensure it contains an entry for `NSCameraUsageDescription`.
-    - Still in the **Info.plist** file add the following entry, substituting `[your API secret]` for the API secret obtained after registration in step 1:
+    - Still in the **Info.plist** file add the following entry if not present, substituting `[your password]` for the API password obtained after registration in step 1:
 
         ~~~xml
-        <key>com.appliedrec.verid.apiSecret</key>
-        <string>[your API secret]</string>
+        <key>com.appliedrec.verid.password</key>
+        <string>[your password]</string>
         ~~~
     - Select your app target and click on the **Build Settings** tab. Under **Build Options** ensure **Enable Bitcode** is set to **No**.
 4. If your app includes Android platform:
@@ -59,12 +59,14 @@ Other combinations may work, but your mileage may vary.  Be sure to run the unit
         </widget>
         ~~~
 	
-    - Open your app's **AndroidManifest.xml** file and add the following tag in `<application>` replacing `[your API secret]` with the API secret your received in step 1:
+    - Open your app's **AndroidManifest.xml** file and add the following tag if
+      not present in `<application>` replacing `[your password]` with the API password you
+      received in step 1:
 
         ~~~xml
         <meta-data 
-           android:name="com.appliedrec.verid.apiSecret" 
-           android:value="[your API secret]" />
+           android:name="com.appliedrec.verid.password" 
+           android:value="[your password]" />
         ~~~
     - Your application must use **Theme.AppCompat** theme (or its descendant).
     
@@ -96,12 +98,12 @@ verid.load().then(verIDInstance => {
     // Ver-ID failed to load
 });
 ~~~
-If you prefer, you can to specify the API secret in your code instead of your app's manifest or plist:
+If you prefer, you can to specify the API password in your code instead of your app's manifest or plist:
 
 ~~~javascript
-var apiSecret = "..."; // Alternative way to set your Ver-ID API secret
+var apiPassword = "..."; // Alternative way to set your Ver-ID API Password
 
-verid.load(apiSecret).then(verIDInstance => {
+verid.load(apiPassword).then(verIDInstance => {
     // Ver-ID loaded successfully
     // You can now run registration, authentication or liveness detection
 }).catch(error => {

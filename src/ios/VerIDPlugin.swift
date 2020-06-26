@@ -306,7 +306,7 @@ import VerIDUI
     private func getAttachmentMockup() -> String {
         let faceMockup : String = self.getFaceMockup()
         var mockup = "{\"attachments\": [";
-        mockup += "{\"face\": " + faceMockup + ", \"image\": \"TESTING_IMAGE\", \"bearing\": \"STRAIGHT\"}";
+        mockup += "{\"recognizableFace\": " + faceMockup + ", \"image\": \"TESTING_IMAGE\", \"bearing\": \"STRAIGHT\"}";
         mockup += "]}";
         
         return mockup
