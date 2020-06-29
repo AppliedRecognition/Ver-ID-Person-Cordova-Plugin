@@ -9,47 +9,46 @@ samples provided.
 
 ## Steps to run a cordova sample
 
-1. [Request an API secret](https://dev.ver-id.com/admin/register) for the
-   samples apps, you have to request the API secret for the
-   **com.test.verid** bundle identifier. In case of using another one please
-   request an API secret for the one you are using .
-2. Clone the plugin Git repo into your file system:
+1. Clone the plugin Git repo into your file system:
 
-    ~~~bash
+    ```
     git clone --recurse-submodules https://github.com/AppliedRecognition/Ver-ID-Person-Cordova-Plugin.git
-    ~~~
-3. Navigate to the plugin directory and change to the samples branch:
+    ```
+1. Navigate to the plugin directory and change to the samples branch:
 
-	~~~bash
+	```
 	git checkout samples
-	~~~
-4. Navigate to the sample project that you want to test:
+	```
+1. Navigate to the sample project that you want to test:
 
-	~~~bash
+	```
 	Example: cd samples/cordova7.0.0_sample
-	~~~
-5. Now install the verid plugin and the cordova testing framework using the next command:
+	```
 
-	~~~bash
-	cordova plugin add  ../plugin cordova-plugin-test-framework
-	~~~
-6. Navigate to the plugins folder then go to **com-appliedrec-plugins-verid**
-   directory and inside the tests directory open tests.js file and replace 
-   **API KEY HERE** with the API secret that you got at first step:
-
-7. From root sample directory, run the following command to add iOS and
-   Android platforms:
+1. From root sample directory, run the following command to add iOS and Android platforms:
     
-    ~~~bash
-	cordova platform add android@8.0.0 ios@5.0.0
-	~~~
-8. For iOS platform:
+    ```
+    cordova platform add android@8.0.0 ios@5.0.0
+	  ```
+
+1. Now install verid plugin using the next command, note: the certificate is inside samples/assets directory:
+
+	```
+	cordova plugin add  ../plugin --password=41475bf3-ca73-4579-b909-07228ed85b17 --certificate="path/to/certificate"
+	```
+
+1. Install cordova testing framework using the next command:
+
+    ```
+	  cordova plugin add  cordova-plugin-test-framework
+	  ```
+
+1. For iOS platform:
    - Navigate to **platforms/ios** and open the **Podfile** in a text editor.
-     Add `use_frameworks!` after `platform :ios, '10.0'`. Close the file and run
+     Add `use_frameworks!` after `platform :ios, '10.3'`. Close the file and run
      `pod install`
      to update the project.
 
-     ![PodFile in iOS](documentation/pod_file_ios.png)
     - Open Cordova app's iOS work space in Xcode.
     - Ensure the project's deployment target is iOS 10 or newer.
     - In your Xcode project's build settings ensure `SWIFT_VERSION` is set to **Swift 5**.
@@ -57,7 +56,7 @@ samples provided.
     - Select your app target and click on the **Build Settings** tab. Under
       **Build Options** ensure **Enable Bitcode** is set to **No**.
 
-9. For Android platform:
+1. For Android platform:
    - Open **platforms/android** with Android Studio.
    - If an alert shows up requiring to sync gradle tap on the **Okay** button.
 
