@@ -1,9 +1,9 @@
 {
-  "name": "ver-id-cordova-plugin",
+  "name": "@appliedrec/cordova-plugin-ver-id",
   "version": "5.0.1",
   "description": "## Introduction",
   "cordova": {
-    "id": "com-appliedrec-plugins-verid",
+    "id": "@appliedrec/cordova-plugin-ver-id",
     "platforms": [
       "android",
       "ios"
@@ -32,7 +32,7 @@
     "inherits": "^2.0.3",
     "minimatch": "^3.0.4",
     "minimist": "^1.2.5",
-    "mkdirp": "^0.5.1",
+    "mkdirp": "^1.0.4",
     "mocha": "^5.2.0",
     "ms": "^2.0.0",
     "once": "^1.4.0",
@@ -64,7 +64,6 @@
     "inflight": "^1.0.6",
     "inherits": "^2.0.3",
     "minimatch": "^3.0.4",
-    "mkdirp": "^0.5.1",
     "mocha": "^5.2.0",
     "ms": "^2.0.0",
     "once": "^1.4.0",
@@ -77,6 +76,9 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/AppliedRecognition/Ver-ID-Person-Cordova-Plugin.git"
+  },
+  "bugs": {
+    "url": "https://github.com/AppliedRecognition/Ver-ID-Person-Cordova-Plugin/issues"
   },
   "keywords": [
     "ecosystem:cordova",
