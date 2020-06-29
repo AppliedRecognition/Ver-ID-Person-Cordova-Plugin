@@ -440,7 +440,7 @@ public class VerIDPlugin extends CordovaPlugin {
                                         "\"data\":\"TESTING_DATA\"," +
                                        "\"faceTemplate\":{\"data\":\"FACE_TEMPLATE_TEST_DATA\",\"version\":1}}";
     private final String ATTACHMENT_MOCK = "{\"attachments\": ["+
-    "{\"face\": " + FACE_MOCK + ", \"image\": \"TESTING_IMAGE\", \"bearing\": \"STRAIGHT\"}" +
+    "{\"recognizableFace\": " + FACE_MOCK + ", \"image\": \"TESTING_IMAGE\", \"bearing\": \"STRAIGHT\"}" +
     "]}";
     
 }
