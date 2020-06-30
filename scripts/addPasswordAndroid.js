@@ -76,6 +76,13 @@ module.exports = function(context) {
               updateManifest(password);
             });
           });
+        } else if (existPasswordConfig && !existResourceFile) {
+          var resource = `\t<resource-file src="${LICENSE_COPY_PATH}" target="${ANDROID_LICENSE_PATH}" />`,
+            result = configData.replace('<platform name="android">', '<platform name="android">\n\t' + resource);
+            
+            writeFile(configFile, result).then(() => {
+              updateManifest(password);
+            });
         } else if (existPasswordConfig && existResourceFile) {
           updateManifest(password);
         }
