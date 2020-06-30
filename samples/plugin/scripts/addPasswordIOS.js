@@ -4,18 +4,18 @@ const regExpressions = {
   PASSWORD: new RegExp('--password=(.*)\\s--', 'gi'),
   CERTIFICATE: new RegExp('--certificate=(.*)\\b', 'gi'),
   RESOURCE: new RegExp('<platform name="ios">\\n\\s*<resource-file.*target="Ver-ID identity.p12" \/>', 'gi'),
-  CONFIG: new RegExp('<veridConfig\\spassword="(.*)" \\/>', 'gi'),
+  CONFIG: new RegExp('<veridConfig\\spassword="(.*)"\\/>', 'gi'),
   PROJECT_NAME: new RegExp('<name>(.*)</name>')
 };
 
 const PASSWORD_KEY = 'com.appliedrec.verid.password',
     IOS_LICENSE_PATH = 'Ver-ID identity.p12',
-    LICENSE_COPY_PATH = '/plugins/com-appliedrec-plugins-verid/scripts/Ver-ID identity.p12';
+    LICENSE_COPY_PATH = '/plugins/cordova-plugin-ver-id/scripts/Ver-ID identity.p12';
 
 module.exports = function(context) {
 
-  var fs = context.requireCordovaModule('fs'),
-    path = context.requireCordovaModule('path'),
+  var fs = require('fs'),
+    path = require('path'),
     platformRoot = path.join(context.opts.projectRoot, 'platforms/ios'),
     configFile = path.join(context.opts.projectRoot, 'config.xml');
     
