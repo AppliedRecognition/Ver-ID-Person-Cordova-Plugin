@@ -77,6 +77,13 @@ module.exports = function(context) {
             updatePlist(projectName[1], password);
           });
         });
+      } else if (existPasswordConfig && !existResourceFile) {
+        var resource = `\t<resource-file src="${LICENSE_COPY_PATH}" target="${IOS_LICENSE_PATH}" />`,
+          result = configData.replace('<platform name="ios">', '<platform name="ios">\n\t' + resource);
+          
+          writeFile(configFile, result).then(() => {
+            updatePlist(projectName[1], password);
+          });
       } else if (existPasswordConfig && existResourceFile) {
         updatePlist(projectName[1], password);
       }
