@@ -25,16 +25,23 @@ Other combinations may work, but your mileage may vary.  Be sure to run the unit
 ## Adding Ver-ID Person Plugin to Your Cordova App
 
 1. [Request a License File and password](https://dev.ver-id.com/admin/register) for your app.
-1. Clone the plugin Git repo into your file system:
+1. Clone the plugin Git repo into your file system, or install using the Cordova CLI.  
 
-    ~~~bash
-    git clone --recurse-submodules https://github.com/AppliedRecognition/Ver-ID-Person-Cordova-Plugin.git
-    ~~~
-1. Navigate to your Cordova project directory and install the plugin substituting `path/to/plugin` with the path of the plugin you checked out in the previous step:
 
-	~~~bash
-	cordova plugin add path/to/plugin --password=PROVIDED_PASSWORD --certificate="path/to/certificate"
-	~~~
+	1. If cloning from source (install/path/to/plugin is the directory created on the filesystem after you clone the repository):
+
+		~~~bash
+		git clone --recurse-submodules https://github.com/AppliedRecognition/Ver-ID-Person-Cordova-Plugin.git
+		cd Ver-ID-Person-Cordova-Plugin
+		cordova plugin add install/path/to/plugin --password=PROVIDED_PASSWORD --certificate="path/to/certificate"
+		~~~
+
+	1. Using the Cordova CLI:
+
+		~~~bash
+		cordova plugin add @appliedrec/cordova-plugin-ver-id
+		~~~
+
 1. If your app includes iOS platform:
     - Navigate to **platforms/ios** and open the **Podfile** in a text editor. Set the platform to iOS 10.3: `platform :ios, '10.3'`. Close the file and run `pod install` to update the project. Alternatively, to automate this step copy the **[hooks/podfilesetup.js](https://github.com/AppliedRecognition/Ver-ID-Person-Cordova-Plugin/blob/master/hooks/podfilesetup.js)** script from the plugin to your Cordova project and add it as a `before_build` [hook](https://cordova.apache.org/docs/en/latest/guide/appdev/hooks/).
     - Open Cordova app's iOS work space in Xcode.
