@@ -1,11 +1,11 @@
 <?xml version='1.0' encoding='utf-8'?>
-<plugin id="com-appliedrec-plugins-verid" version="5.0.1" xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
+<plugin id="cordova-plugin-ver-id" version="6.0.1" xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
     <name>Ver-ID</name>
     <js-module name="Ver-ID" src="www/dist/Ver-ID.js">
         <clobbers target="window.verid" />
     </js-module>
     <js-module src="tests/tests.js" name="tests"></js-module>
-    <asset src="tests/assets" target="plugins/com-appliedrec-plugins-verid/tests/assets"/>
+    <asset src="tests/assets" target="plugins/cordova-plugin-ver-id/tests/assets"/>
     <hook src="scripts/remove_configuration.js" type="before_plugin_uninstall"/>
     <hook src="scripts/addLicenseFile.js" type="before_plugin_install" />
     <platform name="android">

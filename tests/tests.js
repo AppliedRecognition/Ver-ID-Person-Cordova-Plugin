@@ -174,7 +174,7 @@ exports.defineAutoTests = function () {
                     done();
                 })
             }
-            image.src = '../plugins/com-appliedrec-plugins-verid/tests/assets/test-photo.jpg';
+            image.src = '../plugins/cordova-plugin-ver-id/tests/assets/test-photo.jpg';
         });
         it('11. test detectFaceInImage with image that does not have a face', function (done) {
             var image = new Image();
@@ -196,7 +196,7 @@ exports.defineAutoTests = function () {
                     done();
                 })
             }
-            image.src = '../plugins/com-appliedrec-plugins-verid/tests/assets/test-empty.jpg';
+            image.src = '../plugins/cordova-plugin-ver-id/tests/assets/test-empty.jpg';
         });
     });
     describe('Ver Id plugin, testing of compareFaces', function () {
@@ -229,7 +229,7 @@ exports.defineAutoTests = function () {
                     done();
                 })
             }
-            image.src = '../plugins/com-appliedrec-plugins-verid/tests/assets/test-photo.jpg';
+            image.src = '../plugins/cordova-plugin-ver-id/tests/assets/test-photo.jpg';
         });
     });
     describe('Ver Id plugin, testing of deleteRegisterUser', function () {
@@ -487,7 +487,7 @@ exports.defineManualTests = function(contentEl, createActionButton) {
                         reject(error);
                     })
             }
-            image.src = '../plugins/com-appliedrec-plugins-verid/tests/assets/test-photo.jpg';
+            image.src = '../plugins/cordova-plugin-ver-id/tests/assets/test-photo.jpg';
         });
         
     }

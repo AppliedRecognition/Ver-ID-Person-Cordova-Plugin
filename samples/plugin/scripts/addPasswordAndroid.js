@@ -4,18 +4,18 @@ const regExpressions = {
   PASSWORD: new RegExp('--password=(.*)\\s--', 'gi'),
   CERTIFICATE: new RegExp('--certificate=(.*)\\b', 'gi'),
   RESOURCE: new RegExp('<resource-file.*target="(.*assets..*)" \/>', 'gi'),
-  CONFIG: new RegExp('<veridConfig\\spassword="(.*)" \\/>', 'gi'),
+  CONFIG: new RegExp('<veridConfig\\spassword="(.*)"\\/>', 'gi'),
   PROJECT_NAME: new RegExp('<name>(.*)</name>')
 };
 
 const PASSWORD_KEY = 'com.appliedrec.verid.password',
     ANDROID_LICENSE_PATH = 'app/src/main/assets/Ver-ID identity.p12',
-    LICENSE_COPY_PATH = '/plugins/com-appliedrec-plugins-verid/scripts/Ver-ID identity.p12';
+    LICENSE_COPY_PATH = '/plugins/cordova-plugin-ver-id/scripts/Ver-ID identity.p12';
 
 module.exports = function(context) {
 
-    var fs = context.requireCordovaModule('fs'),
-      path = context.requireCordovaModule('path'),
+    var fs = require('fs'),
+      path = require('path'),
       platformRoot = path.join(context.opts.projectRoot, 'platforms/android'),
       manifestFile = path.join(platformRoot, 'app/src/main/AndroidManifest.xml'),
       configFile = path.join(context.opts.projectRoot, 'config.xml');
@@ -76,6 +76,13 @@ module.exports = function(context) {
               updateManifest(password);
             });
           });
+        } else if (existPasswordConfig && !existResourceFile) {
+          var resource = `\t<resource-file src="${LICENSE_COPY_PATH}" target="${ANDROID_LICENSE_PATH}" />`,
+            result = configData.replace('<platform name="android">', '<platform name="android">\n\t' + resource);
+            
+            writeFile(configFile, result).then(() => {
+              updateManifest(password);
+            });
         } else if (existPasswordConfig && existResourceFile) {
           updateManifest(password);
         }

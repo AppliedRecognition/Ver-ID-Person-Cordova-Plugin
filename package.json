@@ -1,9 +1,9 @@
 {
-  "name": "ver-id-cordova-plugin",
-  "version": "5.0.1",
+  "name": "@appliedrec/cordova-plugin-ver-id",
+  "version": "6.0.0",
   "description": "## Introduction",
   "cordova": {
-    "id": "com-appliedrec-plugins-verid",
+    "id": "@appliedrec/cordova-plugin-ver-id",
     "platforms": [
       "android",
       "ios"
@@ -76,6 +76,9 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/AppliedRecognition/Ver-ID-Person-Cordova-Plugin.git"
+  },
+  "bugs": {
+    "url": "https://github.com/AppliedRecognition/Ver-ID-Person-Cordova-Plugin/issues"
   },
   "keywords": [
     "ecosystem:cordova",
