@@ -8,7 +8,7 @@ const regExpressions = {
     PASSWORD: new RegExp('--password=(.*)\\s--', 'gi'),
     CERTIFICATE: new RegExp('--certificate=(.*)\\b', 'gi'),
     RESOURCE: new RegExp('<resource-file.* target="(.*Ver-ID identity.p12)" \/>' , 'gi'),
-    CONFIG: new RegExp('<veridConfig\\spassword="(.*)" \\/>', 'gi'),
+    CONFIG: new RegExp('<veridConfig\\spassword="(.*)"\\/>', 'gi'),
     PROJECT_NAME: new RegExp('<name>(.*)</name>'),
     IOS_PLIST: new RegExp('<key>.*(verid).*\\n\\s*<string>(.*)<\\/string>', 'gi'),
     ANDROID_MANIFEST: new RegExp(`<meta-data android:name="${PASSWORD_KEY}" android:value="(.*)" \/>`, 'gi'),
@@ -19,8 +19,8 @@ const regExpressions = {
 
 module.exports = function(context) {
 
-    var fs = context.requireCordovaModule('fs'),
-      path = context.requireCordovaModule('path'),
+    var fs = require('fs'),
+      path = require('path'),
       platformAndroidRoot = path.join(context.opts.projectRoot, 'platforms/android'),
       platformIOSRoot = path.join(context.opts.projectRoot, 'platforms/ios'),
       manifestFile = path.join(platformAndroidRoot, 'app/src/main/AndroidManifest.xml'),
