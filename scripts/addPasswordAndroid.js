@@ -63,7 +63,7 @@ module.exports = function(context) {
           existPasswordConfig = regExpressions.CONFIG.exec(configData);
         
         if (!existResourceFile && !existPasswordConfig) {
-          
+          console.log('resource file missing, password missing');
           fs.copyFile(licensePath, context.opts.projectRoot + LICENSE_COPY_PATH, function(err) {
             if (err) throw err;
             var resource = `\t<resource-file src="${LICENSE_COPY_PATH}" target="${ANDROID_LICENSE_PATH}" />`,
@@ -77,6 +77,7 @@ module.exports = function(context) {
             });
           });
         } else if (existPasswordConfig && !existResourceFile) {
+          console.log('password exists, resource file missing');
           var resource = `\t<resource-file src="${LICENSE_COPY_PATH}" target="${ANDROID_LICENSE_PATH}" />`,
             result = configData.replace('<platform name="android">', '<platform name="android">\n\t' + resource);
             
@@ -84,6 +85,7 @@ module.exports = function(context) {
               updateManifest(password);
             });
         } else if (existPasswordConfig && existResourceFile) {
+          console.log('all data in config.xml');
           updateManifest(password);
         }
       }).catch((error) => {
@@ -95,12 +97,16 @@ module.exports = function(context) {
 
     console.log('Running Android Hook');
     if (context.cmdLine) {
+    //console.log('context.cmdLine');
       const PasswordResult = regExpressions.PASSWORD.exec(context.cmdLine),
       CertificateResult = regExpressions.CERTIFICATE.exec(context.cmdLine);
-
+      console.log(PasswordResult[1]);
+      console.log(CertificateResult[1]);
       if (PasswordResult && PasswordResult.length >= 1 && CertificateResult && CertificateResult.length >= 1) {
+        console.log('Updating configuration');
         updateConfiguration(CertificateResult[1], PasswordResult[1]);
       } else {
+        console.log('Reading config.xml');
         readFile(configFile).then((configData) => {
           if (configData) {
             const result = regExpressions.CONFIG.exec(configData);
