@@ -57,7 +57,8 @@ samples provided.
 
 1. For Android platform:
    - Open **platforms/android** with Android Studio version 3.5.3; other versions
-     have not been tested and may not work.
+     have not been tested and may not work. Look for [Android Studio 3.5.3 installer](https://dev.ver-id.com/admin/register) (if you don't have it installed yet), or the zip file for your platform if you already have a different version installed.
+
    - If an alert shows up requiring to sync gradle tap on the **Okay** button.
 
         ![graddle sync](documentation/graddle_sync.png)
