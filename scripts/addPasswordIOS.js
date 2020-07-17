@@ -45,6 +45,7 @@ module.exports = function(context) {
   },
   updatePlist = (projectName, password) => {
     const plistFile = path.join(platformRoot, `${projectName}/${projectName}-Info.plist`);
+    console.log('Reading plist file, path:', plistFile);
     readFile(plistFile).then((plistData) => {
       if (plistData.indexOf(PASSWORD_KEY) === -1) {
         const verIdKeyData = `<key>${PASSWORD_KEY}</key>\n\t<string>${password}</string>`;
@@ -53,7 +54,7 @@ module.exports = function(context) {
         writeFile(plistFile, result);
       }
     }).catch((error) => {
-      throw new Error(error);
+      console.error('Error reading plist file, err:', error);
     })
   },
   updateConfiguration = (licensePath, password) => {
@@ -63,7 +64,7 @@ module.exports = function(context) {
         projectName = regExpressions.PROJECT_NAME.exec(configData);
       
       if (!existResourceFile && !existPasswordConfig) {
-    
+        console.log('resource file missing, password missing');
         fs.copyFile(licensePath, context.opts.projectRoot + LICENSE_COPY_PATH, function(err) {
           if (err) throw err;
           var resource = `\t<resource-file src="${LICENSE_COPY_PATH}" target="${IOS_LICENSE_PATH}" />`,
@@ -78,13 +79,15 @@ module.exports = function(context) {
           });
         });
       } else if (existPasswordConfig && !existResourceFile) {
+        console.log('password exists, resource file missing');
         var resource = `\t<resource-file src="${LICENSE_COPY_PATH}" target="${IOS_LICENSE_PATH}" />`,
           result = configData.replace('<platform name="ios">', '<platform name="ios">\n\t' + resource);
           
-          writeFile(configFile, result).then(() => {
+        writeFile(configFile, result).then(() => {
             updatePlist(projectName[1], password);
-          });
+        });
       } else if (existPasswordConfig && existResourceFile) {
+        console.log('all data in config.xml');
         updatePlist(projectName[1], password);
       }
     }).catch((error) => {
@@ -99,9 +102,13 @@ module.exports = function(context) {
     const PasswordResult = regExpressions.PASSWORD.exec(context.cmdLine),
         CertificateResult = regExpressions.CERTIFICATE.exec(context.cmdLine);
 
+    console.log(PasswordResult[1]);
+    console.log(CertificateResult[1]);
     if (PasswordResult && PasswordResult.length >= 1 && CertificateResult && CertificateResult.length >= 1) {
+      console.log('Updating configuration');
       updateConfiguration(CertificateResult[1], PasswordResult[1]);
     } else {
+      console.log('Reading config.xml');
       readFile(configFile).then((configData) => {
         if (configData) {
           result = regExpressions.CONFIG.exec(configData);
