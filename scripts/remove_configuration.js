@@ -59,7 +59,7 @@ module.exports = function(context) {
           writeFile(manifestFile, result);
         }
       }).catch((error) => {
-        throw new Error(error);
+        console.error(error);
       })
     },
     updatePlist = (projectName) => {
@@ -72,7 +72,7 @@ module.exports = function(context) {
           writeFile(plistFile, result);
         }
       }).catch((error) => {
-        throw new Error(error);
+        console.error(error);
       })
     },
     removeFile = (file) => {
@@ -91,8 +91,13 @@ module.exports = function(context) {
         result = result.replace(regExpressions.EMPTY_SPACES, '');
 
         writeFile(configFile, result).then(() => {
-              updateManifest();
-              updatePlist(projectName[1]);
+              if (fs.existsSync(platformAndroidRoot)) {
+                updateManifest();
+              }
+
+              if (fs.existsSync(platformIOSRoot)) {
+                updatePlist(projectName[1]);
+              }
         });
         removeFile(path.join(platformIOSRoot,`${projectName[1]}/Resources/${IOS_LICENSE_PATH}`));
         removeFile(path.join(platformAndroidRoot, ANDROID_LICENSE_PATH));
