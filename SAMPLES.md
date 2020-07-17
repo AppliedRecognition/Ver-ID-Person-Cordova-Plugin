@@ -34,7 +34,7 @@ samples provided.
 1. From the selected sample project directory, install the Ver-ID plugin using the following command (note: the certificate is inside samples/assets directory):
 
 	```
-	cordova plugin add  ../../ --password=41475bf3-ca73-4579-b909-07228ed85b17 --certificate="../assets/Ver-ID identity.p12"
+	cordova plugin add  @appliedrec/cordova-plugin-ver-id --password=41475bf3-ca73-4579-b909-07228ed85b17 --certificate="../assets/Ver-ID identity.p12"
 	```
 
 1. Install Cordova testing framework using the next command:
@@ -56,7 +56,8 @@ samples provided.
   
 
 1. For Android platform:
-   - Open **platforms/android** with Android Studio.
+   - Open **platforms/android** with Android Studio version 3.5.3; other versions
+     have not been tested and may not work.
    - If an alert shows up requiring to sync gradle tap on the **Okay** button.
 
         ![graddle sync](documentation/graddle_sync.png)
