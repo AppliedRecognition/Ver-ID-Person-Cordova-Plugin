@@ -9,10 +9,10 @@ samples provided.
 
 ## Steps to run a Cordova sample
 
-1. Clone the plugin Git repo into your file system:
+1. Clone the **samples** branch of the plugin Git repo into your file system:
 
     ```
-    git clone https://github.com/AppliedRecognition/Ver-ID-Person-Cordova-Plugin.git
+    git clone -b samples https://github.com/AppliedRecognition/Ver-ID-Person-Cordova-Plugin.git
     ```
 1. Check the Cordova version you are performing development with on your system:
 
@@ -29,19 +29,19 @@ samples provided.
     
     ```
     cordova platform add android@8.0.0 ios@5.0.0
-	  ```
+    ```
 
 1. From the selected sample project directory, install the Ver-ID plugin using the following command (note: the certificate is inside samples/assets directory):
 
 	```
-	cordova plugin add  ../../ --password=41475bf3-ca73-4579-b909-07228ed85b17 --certificate="../assets/Ver-ID identity.p12"
+	cordova plugin add @appliedrec/cordova-plugin-ver-id --password=41475bf3-ca73-4579-b909-07228ed85b17 --certificate="../assets/Ver-ID identity.p12"
 	```
 
 1. Install Cordova testing framework using the next command:
 
-    ```
-	  cordova plugin add  cordova-plugin-test-framework
-	  ```
+   ```
+	cordova plugin add cordova-plugin-test-framework
+	```
 
 1. For iOS platform:
    - Navigate to **platforms/ios** and open the **Podfile** in a text editor.
@@ -53,11 +53,14 @@ samples provided.
     - Ensure the project's deployment target is iOS 10 or newer.
     - In your Xcode project's build settings ensure `SWIFT_VERSION` is set to **Swift 5**.
     - Open your app's **Info.plist** file and and ensure it contains an entry for `NSCameraUsageDescription`.
+    - Select the **testingSample** app target and under **Signing & Capabilities**. Clear the **Automatically manage signing** checkbox. Select your team and set the provisioning profile to a wildcard development profile you created on the [Apple Developer website](https://developer.apple.com/account/).
   
 
 1. For Android platform:
-   - Open **platforms/android** with Android Studio.
-   - If an alert shows up requiring to sync gradle tap on the **Okay** button.
+   - Open **platforms/android** with Android Studio version 3.5.3; other versions
+     have not been tested and may not work. Look for [Android Studio 3.5.3 installer](https://developer.android.com/studio/archive) (if you don't have it installed yet), or the zip file for your platform if you already have a different version installed.
+
+   - If an alert shows up requiring to sync gradle tap on the **OK** button.
 
         ![graddle sync](documentation/graddle_sync.png)
    - After that you may see the following error `ERROR: The minSdk version should not be declared in the android manifest file. You can move the version from the manifest to the defaultConfig in the build.gradle file.`,
