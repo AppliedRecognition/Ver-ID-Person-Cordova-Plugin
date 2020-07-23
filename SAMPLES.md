@@ -56,9 +56,16 @@ samples provided.
     - Select the **testingSample** app target and under **Signing & Capabilities**. Clear the **Automatically manage signing** checkbox. Select your team and set the provisioning profile to a wildcard development profile you created on the [Apple Developer website](https://developer.apple.com/account/).
   
 
-1. For Android platform:
-   - Open **platforms/android** with Android Studio version 3.5.3; other versions
-     have not been tested and may not work. Look for [Android Studio 3.5.3 installer](https://developer.android.com/studio/archive) (if you don't have it installed yet), or the zip file for your platform if you already have a different version installed.
+1. For the Android platform, this has been tested to work on Android Studio (AS) version 4.0 (with a workaround for Gradle), and with version 3.5.3.  If working on version 4.0, follow these steps:
+   - Open the folder  for your project, allowing AS to perform the first attempt at a compilation run.  This process will fail but our main purpose is to have the IDE generate the **platforms/android/gradle** directory and supporting gradle wrapper files.  Once the directory has been created, please proceed to open up the file **platforms/android/gradle/gradle-wrapper.properties**.  Look for the line that starts with **distributionUrl** and modify the gradle version to 4.10.3, so that it looks like:
+
+   `distributionUrl=https\://services.gradle.org/distributions/gradle-4.10.3-all.zip`
+
+   - Save the file, let the Gradle wrapper dependencies update, and your project should compile now.
+
+1. If you are working on AS 3.5.3:
+
+   - Open **platforms/android** with Android Studio version 3.5.3. Look for the [Android Studio 3.5.3 installer](https://developer.android.com/studio/archive) (if you don't have it installed yet), or the zip file for your platform if you already have a different version installed.
 
    - If an alert shows up requiring to sync gradle tap on the **OK** button.
 
