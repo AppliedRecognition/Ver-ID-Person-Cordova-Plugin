@@ -415,7 +415,7 @@ exports.defineManualTests = function(contentEl, createActionButton) {
     }
 
     captureLiveFace = (verIDInstance, singlePose) => {
-        var settings = verid.LivenessDetectionSessionSettings();
+        var settings = new verid.LivenessDetectionSessionSettings();
 
         if (singlePose) {
             settings.numberOfResultsToCollect = 1;
