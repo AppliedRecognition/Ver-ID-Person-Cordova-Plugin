@@ -94,7 +94,7 @@ import VerIDUI
             self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_ERROR, messageAs: "Unable to parse userId argument"), callbackId: command.callbackId)
         }
     }
-
+    
     @objc public func compareFaces(_ command: CDVInvokedUrlCommand) {
         if let t1 = command.arguments?.compactMap({ ($0 as? [String:String])?["face1"] }).first?.data(using: .utf8), let t2 = command.arguments?.compactMap({ ($0 as? [String:String])?["face2"] }).first?.data(using: .utf8) {
             self.loadVerID(command) { verid in
@@ -193,7 +193,7 @@ import VerIDUI
         self.commandDelegate.run {
             var err = "Unknown error"
             do {
-                if let message = String(data: try JSONEncoder().encode(result), encoding: .utf8) {
+                if let message = String(data: try JSONEncoder().encode(CodableSessionResult(result)), encoding: .utf8) {
                     DispatchQueue.main.async {
                         self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_OK, messageAs: message), callbackId: callbackId)
                     }
@@ -328,24 +328,99 @@ public enum VerIDPluginError: Int, Error {
     case parsingError, invalidArgument, encodingError, faceTemplateExtractionError
 }
 
-class CodableFace: NSObject, Codable {
+class CodableSessionResult: Codable {
+    
+    enum CodingKeys: String, CodingKey {
+        case attachments, error
+    }
+    
+    enum AttachmentCodingKeys: String, CodingKey {
+        case face, bearing, image
+    }
+    
+    let original: VerIDSessionResult
+    
+    init(_ result: VerIDSessionResult) {
+        self.original = result
+    }
+    
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        if let error = try container.decodeIfPresent(String.self, forKey: .error) {
+            self.original = VerIDSessionResult(error: NSError(domain: kVerIDErrorDomain, code: -1, userInfo: [NSLocalizedDescriptionKey: error]))
+        } else {
+            var attachments: [DetectedFace] = []
+            var attachmentsContainer = try container.nestedUnkeyedContainer(forKey: .attachments)
+            while !attachmentsContainer.isAtEnd {
+                let attachmentContainer = try attachmentsContainer.nestedContainer(keyedBy: AttachmentCodingKeys.self)
+                let codableFace = try attachmentContainer.decode(CodableFace.self, forKey: .face)
+                let bearing = try attachmentContainer.decode(Bearing.self, forKey: .bearing)
+                let imageURL: URL?
+                if let imageString = try attachmentContainer.decodeIfPresent(String.self, forKey: .image) {
+                    let pattern = "^data:(.+?);base64,(.+)$"
+                    let regex = try NSRegularExpression(pattern: pattern, options: [])
+                    let all = NSMakeRange(0, imageString.utf16.count)
+                    guard let result = regex.firstMatch(in: imageString, options: [], range: all), result.numberOfRanges == 3 else {
+                        throw DecodingError.dataCorruptedError(forKey: AttachmentCodingKeys.image, in: attachmentContainer, debugDescription: "Failed to parse image")
+                    }
+                    let data = (imageString as NSString).substring(with: result.range(at: 2))
+                    guard let imageData = Data(base64Encoded: data) else {
+                        throw DecodingError.dataCorruptedError(forKey: AttachmentCodingKeys.image, in: attachmentContainer, debugDescription: "Failed to decode image data")
+                    }
+                    imageURL = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString).appendingPathExtension("jpg")
+                    try imageData.write(to: imageURL!)
+                } else {
+                    imageURL = nil
+                }
+                let attachment = DetectedFace(face: codableFace.recognizableFace ?? codableFace.face, bearing: bearing, imageURL: imageURL)
+                attachments.append(attachment)
+            }
+            self.original = VerIDSessionResult(attachments: attachments)
+        }
+    }
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        var attachmentsContainer = container.nestedUnkeyedContainer(forKey: .attachments)
+        try self.original.attachments.forEach({
+            var attachmentContainer = attachmentsContainer.nestedContainer(keyedBy: AttachmentCodingKeys.self)
+            try attachmentContainer.encode(CodableFace(face: $0.face, recognizable: $0.face as? Recognizable), forKey: .face)
+            try attachmentContainer.encode($0.bearing, forKey: .bearing)
+            if let imageURL = $0.imageURL, let data = try? Data(contentsOf: imageURL), let image = UIImage(data: data), let jpeg = image.jpegData(compressionQuality: 0.8)?.base64EncodedString() {
+                try attachmentContainer.encode(String(format: "data:image/jpeg;base64,%@", jpeg), forKey: .image)
+            }
+        })
+        if let error = original.error {
+            try container.encode(error.localizedDescription, forKey: .error)
+        }
+    }
+}
 
+class CodableFace: NSObject, Codable {
+    
     enum CodingKeys: String, CodingKey {
         case data, faceTemplate, height, leftEye, pitch, quality, rightEye, roll, width, x, y, yaw
     }
-
+    
     enum FaceTemplateCodingKeys: String, CodingKey {
         case data, version
     }
-
+    
     let face: Face
-    let recognizable: Recognizable
-  
-    init(face: Face, recognizable: Recognizable) {
+    let recognizable: Recognizable?
+    
+    lazy var recognizableFace: RecognizableFace? = {
+        guard let recognizable = self.recognizable else {
+            return nil
+        }
+        return RecognizableFace(face: self.face, recognitionData: recognizable.recognitionData, version: recognizable.version)
+    }()
+    
+    init(face: Face, recognizable: Recognizable?) {
         self.face = face
         self.recognizable = recognizable
     }
-  
+    
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.face = Face()
@@ -355,11 +430,13 @@ class CodableFace: NSObject, Codable {
         self.face.bounds = CGRect(x: try container.decode(CGFloat.self, forKey: .x), y: try container.decode(CGFloat.self, forKey: .y), width: try container.decode(CGFloat.self, forKey: .width), height: try container.decode(CGFloat.self, forKey: .height))
         self.face.angle = EulerAngle(yaw: try container.decode(CGFloat.self, forKey: .yaw), pitch: try container.decode(CGFloat.self, forKey: .pitch), roll: try container.decode(CGFloat.self, forKey: .roll))
         self.face.quality = try container.decode(CGFloat.self, forKey: .quality)
-        let faceTemplateContainer = try container.nestedContainer(keyedBy: FaceTemplateCodingKeys.self, forKey: .faceTemplate)
-        self.recognizable = RecognitionFace(recognitionData: try faceTemplateContainer.decode(Data.self, forKey: .data))
-        self.recognizable.version = try faceTemplateContainer.decode(Int32.self, forKey: .version)
+        if container.contains(.faceTemplate) {
+            let faceTemplateContainer = try container.nestedContainer(keyedBy: FaceTemplateCodingKeys.self, forKey: .faceTemplate)
+            self.recognizable = RecognitionFace(recognitionData: try faceTemplateContainer.decode(Data.self, forKey: .data))
+            self.recognizable?.version = try faceTemplateContainer.decode(Int32.self, forKey: .version)
+        }
     }
-  
+    
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(self.face.data, forKey: .data)
@@ -373,8 +450,10 @@ class CodableFace: NSObject, Codable {
         try container.encode(self.face.angle.yaw, forKey: .yaw)
         try container.encode(self.face.angle.pitch, forKey: .pitch)
         try container.encode(self.face.angle.roll, forKey: .roll)
-        var faceTemplateContainer = container.nestedContainer(keyedBy: FaceTemplateCodingKeys.self, forKey: .faceTemplate)
-        try faceTemplateContainer.encode(self.recognizable.recognitionData, forKey: .data)
-        try faceTemplateContainer.encode(self.recognizable.version, forKey: .version)
+        if let recognizable = self.recognizable {
+            var faceTemplateContainer = container.nestedContainer(keyedBy: FaceTemplateCodingKeys.self, forKey: .faceTemplate)
+            try faceTemplateContainer.encode(recognizable.recognitionData, forKey: .data)
+            try faceTemplateContainer.encode(recognizable.version, forKey: .version)
+        }
     }
 }
