@@ -44,10 +44,11 @@ samples provided.
 	```
 
 1. For iOS platform:
-   - Navigate to **platforms/ios** and open the **Podfile** in a text editor.
-     Add `use_frameworks!` after `platform :ios, '10.3'`. Close the file and run
-     `pod install`
-     to update the project.
+    - Make sure the Apple Developer account you are using XCode with, has a registered wildcard bundle ID of: com.appliedrec.*
+    - Navigate to **platforms/ios** and open the **Podfile** in a text editor.
+      Add `use_frameworks!` after `platform :ios, '10.3'`. Close the file and run
+      `pod install`
+      to update the project.
 
     - Open Cordova app's iOS work space in Xcode.
     - Ensure the project's deployment target is iOS 10 or newer.
