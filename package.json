@@ -10,6 +10,7 @@
     ]
   },
   "dependencies": {
+    "argparse": "^1.0.10",
     "assertion-error": "^1.1.0",
     "balanced-match": "^1.0.0",
     "brace-expansion": "^1.1.11",
@@ -38,9 +39,12 @@
     "once": "^1.4.0",
     "path-is-absolute": "^1.0.1",
     "pathval": "^1.1.0",
+    "plist": "^3.0.1",
     "supports-color": "^5.4.0",
     "type-detect": "^4.0.8",
-    "wrappy": "^1.0.2"
+    "wrappy": "^1.0.2",
+    "xcode": "^3.0.1",
+    "xml2js": "^0.4.23"
   },
   "devDependencies": {
     "assertion-error": "^1.1.0",

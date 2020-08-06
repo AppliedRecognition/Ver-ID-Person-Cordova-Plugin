@@ -7,7 +7,6 @@
     <js-module src="tests/tests.js" name="tests"></js-module>
     <asset src="tests/assets" target="plugins/cordova-plugin-ver-id/tests/assets"/>
     <hook src="scripts/remove_configuration.js" type="before_plugin_uninstall"/>
-    <hook src="scripts/addLicenseFile.js" type="before_plugin_install" />
     <platform name="android">
         <hook src="scripts/addPasswordAndroid.js" type="before_plugin_install"/>
         <config-file target="config.xml" parent="/*">

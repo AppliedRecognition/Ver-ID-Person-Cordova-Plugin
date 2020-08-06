@@ -399,11 +399,11 @@ exports.defineManualTests = function(contentEl, createActionButton) {
         settings.showResult = showResult ? showResult : false;
         return instance.register(settings).then(response => {
             if (!response) {
-                alert('Registration Canceled');
-                return;
+                return 'test canceled';
             }
             if (!response.error) {
                  alert('Registration Completed!');
+                 return response;
             } else {
                 console.error('Error on registration', response);
                 return response;
@@ -415,7 +415,7 @@ exports.defineManualTests = function(contentEl, createActionButton) {
     }
 
     captureLiveFace = (verIDInstance, singlePose) => {
-        var settings = verid.LivenessDetectionSessionSettings();
+        var settings = new verid.LivenessDetectionSessionSettings();
 
         if (singlePose) {
             settings.numberOfResultsToCollect = 1;
@@ -425,7 +425,7 @@ exports.defineManualTests = function(contentEl, createActionButton) {
         return verIDInstance.captureLiveFace(settings)
             .then(response => {
                 if (!response) {
-                    alert('session canceled!');
+                    return 'test canceled';
                 } else if (!response.error) {
                     if (response.attachments.length > 0) {
                         let faces = response.attachments.filter(attachment => {
@@ -441,7 +441,7 @@ exports.defineManualTests = function(contentEl, createActionButton) {
                         return;
                     }
                 } else {
-                    alert('session Failed!');
+                    alert('Session Error, error capturing face!' + response.error);
                 }
             }).catch(error => {
                 alert('Error Encountered!');
@@ -453,12 +453,15 @@ exports.defineManualTests = function(contentEl, createActionButton) {
         return verIDInstance.compareFaces(face1, face2)
         .then(result => {
             if (!result) {
-                alert('session canceled!');
-                return
+                return 'test canceled';
+            } else if (result.error) {
+                alert('Error comparing faces:' + result.error);
+                return;
+            } else {
+                alert('result Obtained!');
+                console.log(result);
+                return result;
             }
-            alert('result Obtained!');
-            console.log(result);
-            return result;
         }).catch(error => {
             alert('Error Encountered!');
             console.error('General Error:', error);
@@ -480,9 +483,10 @@ exports.defineManualTests = function(contentEl, createActionButton) {
                         if (!face) {
                             alert('Error Retrieving face!')
                             resolve();
-                            return;
+                        } else {
+                            resolve(face)
                         }
-                        resolve(face)
+                        return;
                     }).catch(error => {
                         reject(error);
                     })
@@ -519,17 +523,28 @@ exports.defineManualTests = function(contentEl, createActionButton) {
         verid.load().then(instance => {
             verIDInstance = instance;
             return registerUser(instance);
-        }).then(() => {
-            if (confirm('Registration completed, continue with authentication?')) {
-                var settings = new verid.AuthenticationSessionSettings(USER_ID);
-                return verIDInstance.authenticate(settings);
-            } else {
+        }).then((response) => {
+            if (response === 'test canceled') {
+                return response;
+            } else if (!response) {
+                alert('Session Error, error capturing face!');
                 return;
+            } else if (!response.error) {
+                if (confirm('Registration completed, continue with authentication?')) {
+                    var settings = new verid.AuthenticationSessionSettings(USER_ID);
+                    return verIDInstance.authenticate(settings);
+                } else {
+                    return 'test canceled';
+                }
+            } else {
+                alert('session failed!', response);
             }
         }).then((response) => {
             verIDInstance.deleteRegisteredUser(USER_ID);
-            if (!response) {
-                alert('session canceled!');
+            if (response === 'test canceled') {
+                return response;
+            } else if (!response) {
+                alert('Session Error, error capturing face!');
                 return;
             } else if (!response.error) {
                 alert('authenticated!');
@@ -549,25 +564,32 @@ exports.defineManualTests = function(contentEl, createActionButton) {
             verIDInstance = instance;
             return captureLiveFace(instance);
         }).then(facesResult => {
-            if (!facesResult) {
-                alert('session canceled!');
-                return;
+            if (facesResult === 'test canceled') {
+                return facesResult;
+            } else if (!facesResult) {
+                return 'test canceled';
             }
 
             faces = facesResult
             if (confirm('Faces captured!, continue with single pose face capturing? ')) {
                 return captureLiveFace(verIDInstance, true);
+            } else {
+                return 'test canceled';
             }
         }).then(facesResult => {
-            if (!facesResult) {
+            if (facesResult === 'test canceled') {
+                return;
+            } else if (!facesResult) {
                 alert('session canceled!');
-                return
+                return 'test canceled';
             }
         
             if (confirm('Faces captured!, continue with faces comparison? ')) {
                 let face1 = faces[0];
                 let face2 = facesResult[0];
                 return compareFaces(verIDInstance, face1, face2);
+            } else {
+                return 'test canceled';
             }
         }).catch(error => {
             alert('Error Encountered!');
@@ -582,17 +604,23 @@ exports.defineManualTests = function(contentEl, createActionButton) {
             verIDInstance = instance;
             return captureLiveFace(instance);
         }).then(facesResult => {
-            if (!facesResult) {
+            if (facesResult === 'test canceled') {
+                return facesResult;
+            } else if (!facesResult) {
                 alert('session canceled!');
-                return;
+                return
             }
 
             faces = facesResult
             if (confirm('Faces captured!, continue comparing with face in Image? ')) {
                 return detectFaceInImage(verIDInstance);
+            } else {
+                return 'test canceled';
             }
         }).then(facesResult => {
-            if (!facesResult) {
+            if (facesResult === 'test canceled') {
+                return facesResult;
+            } else if (!facesResult) {
                 alert('session canceled!');
                 return
             }
@@ -601,6 +629,8 @@ exports.defineManualTests = function(contentEl, createActionButton) {
                 let face1 = faces[0];
                 let face2 = facesResult;
                 return compareFaces(verIDInstance, face1, face2);
+            } else {
+                return 'test canceled';
             }
         }).catch(error => {
             alert('Error Encountered!');
