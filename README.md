@@ -62,6 +62,32 @@ Other combinations may work, but your mileage may vary.  Be sure to run the unit
 
     - Your application must use **Theme.AppCompat** theme (or its descendant).
     
+ 5. Manual installation:
+ 	If for whatever reason you are having issues with the automated installer, then it might be preferrable to make the changes to the project manually.  On Android, make sure the following 2 conditions are met when installing:
+ 	- Copy the "Ver-ID identity.p12" file into the platforms/android/app/src/main/assets directory.  Do not rename it as the library looks for this file name as is.  A screenshot of the same is shown here:
+	
+	![Alt text](scripts/android-screenshot.png?raw=true "Android screenshot of p12 file location")
+
+	- Create a child node under the application node in the AndroidManifest.xml file, that contains the password provided for your project: 
+	
+	~~~bash
+	
+		<meta-data android:name="com.appliedrec.verid.password" android:value="[YOUR PASSWORD VALUE HERE]" />
+	
+	~~~
+	
+	For the iOS portion of the installation procedure, make sure that the following 2 conditions are met:
+	- Copy the "Ver-ID identity.p12" file into the platforms/ios/[YOUR PROJECT NAME]/Resources directory.  Do not rename it as the library looks for this file name as is.  A screenshot of the same is shown here (testingSample is the main project's name):
+	
+	![Alt text](scripts/ios-screenshot.png?raw=true "iOS screenshot of p12 file location")
+
+	- On the project's main plist file, create an entry for the password provided to you in the following fashion:
+	
+	~~~bash
+		<key>com.appliedrec.verid.password</key>
+		<string>[YOUR PASSWORD VALUE HERE]</string>
+	~~~
+    
  6. Build errors that may occur on Android:
  	- **Error:** `ERROR: Could not find method leftShift() for arguments [build_2jwxldxc1vfcnoswux9rruw5k$_run_closure6@606af351] on task ':app:cdvPrintProps' of type org.gradle.api.DefaultTask.`
 	
