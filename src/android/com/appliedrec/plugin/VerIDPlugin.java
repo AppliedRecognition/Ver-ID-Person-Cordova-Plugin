@@ -1,26 +1,19 @@
 package com.appliedrec.plugin;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Bundle;
 import android.util.Base64;
 import android.util.Base64InputStream;
 
-import com.appliedrec.verid.core.AuthenticationSessionSettings;
-import com.appliedrec.verid.core.Face;
-import com.appliedrec.verid.core.FaceDetectionRecognitionFactory;
-import com.appliedrec.verid.core.LivenessDetectionSessionSettings;
-import com.appliedrec.verid.core.RecognizableFace;
-import com.appliedrec.verid.core.RegistrationSessionSettings;
-import com.appliedrec.verid.core.VerID;
-import com.appliedrec.verid.core.VerIDFactory;
-import com.appliedrec.verid.core.VerIDFactoryDelegate;
-import com.appliedrec.verid.core.VerIDImage;
-import com.appliedrec.verid.core.VerIDSessionResult;
-import com.appliedrec.verid.ui.VerIDSessionActivity;
-import com.appliedrec.verid.ui.VerIDSessionIntent;
+import androidx.exifinterface.media.ExifInterface;
+
+import com.appliedrec.verid.core2.*;
+import com.appliedrec.verid.core2.session.*;
+import com.appliedrec.verid.ui2.IVerIDSession;
+import com.appliedrec.verid.ui2.VerIDSession;
+import com.appliedrec.verid.ui2.VerIDSessionDelegate;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
@@ -31,12 +24,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayInputStream;
+import java.util.Date;
 
 public class VerIDPlugin extends CordovaPlugin {
 
-    protected static final int REQUEST_CODE_REGISTER = 1;
-    protected static final int REQUEST_CODE_AUTHENTICATE = 2;
-    protected static final int REQUEST_CODE_DETECT_LIVENESS = 3;
     protected static boolean TESTING_MODE = false;
     protected CallbackContext mCallbackContext;
     protected VerID verID;
@@ -53,18 +44,17 @@ public class VerIDPlugin extends CordovaPlugin {
         if ("setTestingMode".equals(action)) {
             if (args != null && args.length() > 0) {
                 try {
-                    boolean testingMode = args.getBoolean(0);
-                    TESTING_MODE = testingMode;
+                    TESTING_MODE = args.getBoolean(0);
                     callbackContext.success();
                 } catch (final Exception e) {
                     e.printStackTrace();
                     callbackContext.error("Not valid argument provided");
                 }
-               
+
             } else {
                 callbackContext.error("Not valid argument provided");
             }
-           return true;
+            return true;
         } else if ("load".equals(action)) {
             loadVerIDAndRun(args, callbackContext, new Runnable() {
                 @Override
@@ -90,12 +80,7 @@ public class VerIDPlugin extends CordovaPlugin {
                     callbackContext.error("Unable to parse session settings");
                     return false;
                 }
-                loadVerIDAndStartActivity(args, callbackContext, new IntentFactory() {
-                    @Override
-                    public Intent createIntent() {
-                        return new VerIDSessionIntent<>(activity, verID, settings);
-                    }
-                }, REQUEST_CODE_REGISTER);
+                loadVerIDAndStartSession(args, callbackContext, settings);
             }
             return true;
         } else if ("authenticate".equals(action)) {
@@ -103,7 +88,7 @@ public class VerIDPlugin extends CordovaPlugin {
             final AuthenticationSessionSettings settings;
             if (TESTING_MODE) {
                 callbackContext.success(ATTACHMENT_MOCK);
-            } else { 
+            } else {
                 if (jsonSettings != null) {
                     Gson gson = new Gson();
                     settings = gson.fromJson(jsonSettings, AuthenticationSessionSettings.class);
@@ -111,12 +96,7 @@ public class VerIDPlugin extends CordovaPlugin {
                     callbackContext.error("Unable to parse session settings");
                     return false;
                 }
-                loadVerIDAndStartActivity(args, callbackContext, new IntentFactory() {
-                    @Override
-                    public Intent createIntent() {
-                        return new VerIDSessionIntent<>(activity, verID, settings);
-                    }
-                }, REQUEST_CODE_AUTHENTICATE);
+                loadVerIDAndStartSession(args, callbackContext, settings);
             }
             return true;
         } else if ("captureLiveFace".equals(action)) {
@@ -132,12 +112,7 @@ public class VerIDPlugin extends CordovaPlugin {
                     callbackContext.error("Unable to parse session settings");
                     return false;
                 }
-                loadVerIDAndStartActivity(args, callbackContext, new IntentFactory() {
-                    @Override
-                    public Intent createIntent() {
-                        return new VerIDSessionIntent<>(activity, verID, settings);
-                    }
-                }, REQUEST_CODE_DETECT_LIVENESS);
+                loadVerIDAndStartSession(args, callbackContext, settings);
             }
             return true;
         } else if ("getRegisteredUsers".equals(action)) {
@@ -157,7 +132,7 @@ public class VerIDPlugin extends CordovaPlugin {
                                     usersFound = gson.toJson(users, String[].class);
                                 }
                                 final String jsonUsers = usersFound;
-                                
+
                                 cordova.getActivity().runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
@@ -227,9 +202,11 @@ public class VerIDPlugin extends CordovaPlugin {
                                 RecognizableFace face2 = gson.fromJson(t2, RecognizableFace.class);
                                 final float score = verID.getFaceRecognition().compareSubjectFacesToFaces(new RecognizableFace[]{face1}, new RecognizableFace[]{face2});
                                 final JsonObject response = new JsonObject();
+
                                 response.addProperty("score", score);
                                 response.addProperty("authenticationThreshold", verID.getFaceRecognition().getAuthenticationThreshold());
                                 response.addProperty("max", verID.getFaceRecognition().getMaxAuthenticationScore());
+
                                 final String jsonResponse = gson.toJson(response);
                                 cordova.getActivity().runOnUiThread(new Runnable() {
                                     @Override
@@ -280,8 +257,8 @@ public class VerIDPlugin extends CordovaPlugin {
                                 if (bitmap == null) {
                                     throw new Exception("Bitmap decoding error");
                                 }
-                                VerIDImage verIDImage = new VerIDImage(bitmap);
-                                Face[] faces = verID.getFaceDetection().detectFacesInImage(verIDImage, 1, 0);
+                                VerIDImageBitmap verIDImage = new VerIDImageBitmap(bitmap,  ExifInterface.ORIENTATION_NORMAL);
+                                Face[] faces = verID.getFaceDetection().detectFacesInImage(verIDImage.createFaceDetectionImage(), 1, 0);
                                 if (faces.length == 0) {
                                     throw new Exception("Face not found");
                                 }
@@ -311,58 +288,7 @@ public class VerIDPlugin extends CordovaPlugin {
         return false;
     }
 
-    @Override
-    public void onActivityResult(int requestCode, final int resultCode, final Intent intent) {
-        super.onActivityResult(requestCode, resultCode, intent);
-        if (mCallbackContext != null && (requestCode == REQUEST_CODE_REGISTER || requestCode == REQUEST_CODE_AUTHENTICATE || requestCode == REQUEST_CODE_DETECT_LIVENESS)) {
-            cordova.getThreadPool().execute(new Runnable() {
-                @Override
-                public void run() {
-                    VerIDSessionResult result;
-                    Gson gson = new Gson();
-                    if (resultCode == Activity.RESULT_OK && intent != null) {
-                        result = intent.getParcelableExtra(VerIDSessionActivity.EXTRA_RESULT);
-                    } else if (resultCode == Activity.RESULT_CANCELED) {
-                        result = null;
-                    } else {
-                        result = new VerIDSessionResult(new Exception("Unknown failure"));
-                    }
-                    final String response = gson.toJson(result, VerIDSessionResult.class);
-                    cordova.getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (mCallbackContext == null) {
-                                return;
-                            }
-                            final Activity activity = cordova.getActivity();
-                            if (activity == null) {
-                                mCallbackContext.error("Cordova activity is null");
-                                return;
-                            }
-                            if (activity.isDestroyed()) {
-                                mCallbackContext.error("Activity is destroyed");
-                                return;
-                            }
-                            mCallbackContext.success(response);
-                            mCallbackContext = null;
-                        }
-                    });
-                }
-            });
-        }
-    }
-
-    @Override
-    public void onRestoreStateForActivityResult(Bundle state, CallbackContext callbackContext) {
-        super.onRestoreStateForActivityResult(state, callbackContext);
-        mCallbackContext = callbackContext;
-    }
-
-    protected interface IntentFactory {
-        Intent createIntent();
-    }
-
-    protected void loadVerIDAndStartActivity(JSONArray args, final CallbackContext callbackContext, final IntentFactory intentFactory, final int requestCode) {
+    protected void loadVerIDAndStartSession(JSONArray args, final CallbackContext callbackContext, VerIDSessionSettings settings) {
         cordova.setActivityResultCallback(this);
         loadVerIDAndRun(args, callbackContext, new Runnable() {
             @Override
@@ -377,7 +303,9 @@ public class VerIDPlugin extends CordovaPlugin {
                     return;
                 }
                 mCallbackContext = callbackContext;
-                activity.startActivityForResult(intentFactory.createIntent(), requestCode);
+                VerIDSession session = new VerIDSession(verID, settings);
+                session.setDelegate(new SessionDelegate());
+                session.start();
             }
         });
     }
@@ -398,15 +326,16 @@ public class VerIDPlugin extends CordovaPlugin {
             String password = getArg(args, "password", String.class);
             VerIDFactory verIDFactory = new VerIDFactory(activity, new VerIDFactoryDelegate() {
                 @Override
-                public void veridFactoryDidCreateEnvironment(VerIDFactory verIDFactory, VerID verID) {
-                    VerIDPlugin.this.verID = verID;
+                public void onVerIDCreated(VerIDFactory verIDFactory, VerID verID) {
+                    com.appliedrec.plugin.VerIDPlugin.this.verID = verID;
                     runnable.run();
                 }
 
                 @Override
-                public void veridFactoryDidFailWithException(VerIDFactory verIDFactory, Exception e) {
+                public void onVerIDCreationFailed(VerIDFactory verIDFactory, Exception e) {
                     callbackContext.error(e.getLocalizedMessage());
                 }
+
             });
             if (password != null) {
                 verIDFactory.setVeridPassword(password);
@@ -435,12 +364,52 @@ public class VerIDPlugin extends CordovaPlugin {
     }
 
     private final String FACE_MOCK = "{\"x\":-8.384888,\"y\":143.6514,\"width\":331.54974,\"height\":414.43723,\"yaw\":-0.07131743," +
-                                        "\"pitch\":-6.6307373,\"roll\":-2.5829313,\"quality\":9.658932," +
-                                       "\"leftEye\":[101,322.5],\"rightEye\":[213,321]," +
-                                        "\"data\":\"TESTING_DATA\"," +
-                                       "\"faceTemplate\":{\"data\":\"FACE_TEMPLATE_TEST_DATA\",\"version\":1}}";
+            "\"pitch\":-6.6307373,\"roll\":-2.5829313,\"quality\":9.658932," +
+            "\"leftEye\":[101,322.5],\"rightEye\":[213,321]," +
+            "\"data\":\"TESTING_DATA\"," +
+            "\"faceTemplate\":{\"data\":\"FACE_TEMPLATE_TEST_DATA\",\"version\":1}}";
     private final String ATTACHMENT_MOCK = "{\"attachments\": ["+
-    "{\"recognizableFace\": " + FACE_MOCK + ", \"image\": \"TESTING_IMAGE\", \"bearing\": \"STRAIGHT\"}" +
-    "]}";
-    
+            "{\"recognizableFace\": " + FACE_MOCK + ", \"image\": \"TESTING_IMAGE\", \"bearing\": \"STRAIGHT\"}" +
+            "]}";
+
+    class SessionDelegate implements VerIDSessionDelegate {
+
+        @Override
+        public void onSessionFinished(IVerIDSession<?> session, VerIDSessionResult result) {
+            if (!result.getError().isPresent() && mCallbackContext != null) {
+                cordova.getThreadPool().execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        Gson gson = new Gson();
+                        VerIDSessionResult sessionResult = result;
+                        if (result == null) {
+                            Date date = new Date();
+                            sessionResult = new VerIDSessionResult(new VerIDSessionException(new Exception("Unknown failure")), date.getTime(), date.getTime(), null);
+                        }
+                        final String response = gson.toJson(result, VerIDSessionResult.class);
+                        cordova.getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (mCallbackContext == null) {
+                                    return;
+                                }
+                                final Activity activity = cordova.getActivity();
+                                if (activity == null) {
+                                    mCallbackContext.error("Cordova activity is null");
+                                    return;
+                                }
+                                if (activity.isDestroyed()) {
+                                    mCallbackContext.error("Activity is destroyed");
+                                    return;
+                                }
+                                mCallbackContext.success(response);
+                                mCallbackContext = null;
+                            }
+                        });
+                    }
+                });
+            }
+        }
+    }
+
 }
