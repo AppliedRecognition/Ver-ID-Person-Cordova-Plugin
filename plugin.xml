@@ -31,7 +31,6 @@
             </feature>
         </config-file>
         <source-file src="src/ios/VerIDPlugin.swift" />
-        <framework src="Ver-ID-UI" type="podspec" spec="~> 1.12.4" />
-        <framework src="Ver-ID-SDK-Identity" type="podspec" spec="~> 3.0.1" />
+        <framework src="Ver-ID" type="podspec" spec="~> 2.0.1" />
     </platform>
 </plugin>
