@@ -19,14 +19,14 @@ The Ver-ID plugin has been tested to work with Cordova against the following com
 | 7.0             | 5.0.0 | 8.0.0   |
 | 8.0             | 5.0.0 | 8.0.0   |
 | 9.0             | 5.0.0 | 8.0.0   |
-| 10.0            | 5.0.0 | 9.0.0   |
+| 10.0            | 6.0.0 | 9.0.0   |
 
 Other combinations may work, but your mileage may vary. Be sure to run the unit test suite against your Cordova and mobile OS platform combination to make sure all functionality works before proceeding.
 
 ## Adding Ver-ID Person Plugin to Your Cordova App
 
-1. [Request a License File and password](https://dev.ver-id.com/admin/register) for your app.
-2. Clone the plugin Git repo into your file system, or install using the Cordova CLI.
+1.  [Request a License File and password](https://dev.ver-id.com/admin/register) for your app.
+2.  Clone the plugin Git repo into your file system, or install using the Cordova CLI.
 
     1. If cloning from source (install/path/to/plugin is the directory created on the filesystem after you clone the repository):
 
@@ -36,26 +36,43 @@ Other combinations may work, but your mileage may vary. Be sure to run the unit 
         cordova plugin add install/path/to/plugin --password=PROVIDED_PASSWORD --certificate="path/to/certificate"
         ```
 
-<!-- 3. If your app includes iOS platform:
-    - Navigate to **platforms/ios** and open the **Podfile** in a text editor. Set the platform to iOS 10.3: `platform :ios, '10.3'`. Close the file and run `pod install` to update the project. Alternatively, to automate this step copy the **[hooks/podfilesetup.js](https://github.com/AppliedRecognition/Ver-ID-Person-Cordova-Plugin/blob/master/hooks/podfilesetup.js)** script from the plugin to your Cordova project and add it as a `before_build` [hook](https://cordova.apache.org/docs/en/latest/guide/appdev/hooks/).
-    - Open Cordova app's iOS work space in Xcode.
-    - Ensure the project's deployment target is iOS 10 or newer. Alternatively, copy **[hooks/xcodeproject.js](https://github.com/AppliedRecognition/Ver-ID-Person-Cordova-Plugin/blob/master/hooks/xcodeproject.js)** and **[hooks/platformversion.js](https://github.com/AppliedRecognition/Ver-ID-Person-Cordova-Plugin/blob/master/hooks/platformversion.js)** from the plugin to your Cordova project and add **hooks/platformversion.js** as [hook](https://cordova.apache.org/docs/en/latest/guide/appdev/hooks/).
-    - In your Xcode project's build settings ensure `SWIFT_VERSION` is set to **Swift 5**. You can automate this setting by copying **[hooks/xcodeproject.js](https://github.com/AppliedRecognition/Ver-ID-Person-Cordova-Plugin/blob/master/hooks/xcodeproject.js)** and **[hooks/swiftversion.js](https://github.com/AppliedRecognition/Ver-ID-Person-Cordova-Plugin/blob/master/hooks/swiftversion.js)** from the plugin to your Cordova project and add **swiftversion.js** as [hook](https://cordova.apache.org/docs/en/latest/guide/appdev/hooks/).
-    - Open your app's **Info.plist** file and and ensure it contains an entry for `NSCameraUsageDescription`.
-    - Select your app target and click on the **Build Settings** tab. Under **Build Options** ensure **Enable Bitcode** is set to **No**. -->
+3.  If your app includes iOS platform:
 
-3. If your app includes Android platform:
-    - Open platforms/android with Android Studio 4.X.X and edit the autogenered file gradle/wrapper/gradle-wrapper.properties and entry following code:
+    -   Navigate to **platforms/ios** and open the **Podfile** in a text editor. Set the platform to iOS 11: `platform :ios, '11'`. Add `use_frameworks!` after `platform :ios, '11'`. Add the follow code after `pod Ver-ID', '~> 2.0.1`
+
+        ```ruby
+        post_install do |installer|
+            installer.pods_project.build_configurations.each do |config|
+                config.build_settings['BUILD_LIBRARY_FOR_DISTRIBUTION'] = 'YES'
+            end
+            installer.pods_project.targets.each do |target|
+                target.build_configurations.each do |config|
+                    config.build_settings.delete 'BUILD_LIBRARY_FOR_DISTRIBUTION'
+                end
+            end
+        end
+        ```
+
+        Close the file and run `pod install` to update the project. Alternatively, to automate this step copy the **[hooks/podfilesetup.js](https://github.com/AppliedRecognition/Ver-ID-Person-Cordova-Plugin/blob/master/hooks/podfilesetup.js)** script from the plugin to your Cordova project and add it as a `before_build` [hook](https://cordova.apache.org/docs/en/latest/guide/appdev/hooks/).
+
+    -   Open Cordova app's iOS work space in Xcode.
+    -   Ensure the project's deployment target is iOS 10 or newer. Alternatively, copy **[hooks/xcodeproject.js](https://github.com/AppliedRecognition/Ver-ID-Person-Cordova-Plugin/blob/master/hooks/xcodeproject.js)** and **[hooks/platformversion.js](https://github.com/AppliedRecognition/Ver-ID-Person-Cordova-Plugin/blob/master/hooks/platformversion.js)** from the plugin to your Cordova project and add **hooks/platformversion.js** as [hook](https://cordova.apache.org/docs/en/latest/guide/appdev/hooks/).
+    -   In your Xcode project's build settings ensure `SWIFT_VERSION` is set to **Swift 5**. You can automate this setting by copying **[hooks/xcodeproject.js](https://github.com/AppliedRecognition/Ver-ID-Person-Cordova-Plugin/blob/master/hooks/xcodeproject.js)** and **[hooks/swiftversion.js](https://github.com/AppliedRecognition/Ver-ID-Person-Cordova-Plugin/blob/master/hooks/swiftversion.js)** from the plugin to your Cordova project and add **swiftversion.js** as [hook](https://cordova.apache.org/docs/en/latest/guide/appdev/hooks/).
+    -   Open your app's **Info.plist** file and and ensure it contains an entry for `NSCameraUsageDescription`.
+    -   Select your app target and click on the **Build Settings** tab. Under **Build Options** ensure **Enable Bitcode** is set to **No**.
+
+4.  If your app includes Android platform:
+    -   Open platforms/android with Android Studio 4.X.X and edit the autogenered file gradle/wrapper/gradle-wrapper.properties and entry following code:
         ```properties
         android.useAndroidX=true
         android.enableJetifier=true
         ```
-4. Build errors that may occur on Android:
+5.  Build errors that may occur on Android:
 
-    - **Error:** `AAPT: error: attribute android:forceQueryable not found.`
+    -   **Error:** `AAPT: error: attribute android:forceQueryable not found.`
 
-    - **Solution:**
-        - **Step 3:** Edit your project's root directory->platform->android->build.gradle:
+    -   **Solution:**
+        -   **Step 3:** Edit your project's root directory->platform->android->build.gradle:
             1. Under `project.ext {}`, change the `defaultBuildToolsVersion` to `30.0.1`, `defaultMinSdkVersion` to `30`, `defaultTargetSdkVersion` and `defaultCompileSdkVersion` to `30`. You can also try replacing these values with the latest version of the SDK. Mentioned values have been tested by us.
 
 ## Loading Ver-ID
