@@ -38,7 +38,7 @@ Other combinations may work, but your mileage may vary. Be sure to run the unit 
 
 3.  If your app includes iOS platform:
 
-    -   Navigate to **platforms/ios** and open the **Podfile** in a text editor. Set the platform to iOS 11: `platform :ios, '11'`. Add `use_frameworks!` after `platform :ios, '11'`. Add the follow code after `pod Ver-ID', '~> 2.0.1`
+    -   Navigate to **platforms/ios** and open the **Podfile** in a text editor. Set the platform to iOS 11: `platform :ios, '11'`. Add `use_frameworks!` after `platform :ios, '11'`. Add the follow code after `pod 'Ver-ID', '~> 2.0.1'`
 
         ```ruby
         post_install do |installer|

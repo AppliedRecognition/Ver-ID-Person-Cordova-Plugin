@@ -36,7 +36,7 @@ samples provided.
 1. From the selected sample project directory, run the following command to add iOS and Android platforms (these platform versions are the ones tested and supported in the current repository. The supported Cordova and Cordova platform combinations can be found [here](README.md) under the Compatibility section:
 
     ```bash
-    cordova platform add android@9.0.0 ios@5.0.0
+    cordova platform add android@9.0.0 ios@6.0.0
     ```
 
 1. From the selected sample project directory, install the Ver-ID plugin using the following command (note: the certificate is inside samples/assets directory):
@@ -55,12 +55,29 @@ samples provided.
 
     - Make sure the Apple Developer account you are using XCode with, has a registered wildcard bundle ID of: com.appliedrec.\*
     - Navigate to **platforms/ios** and open the **Podfile** in a text editor.
-      Add `use_frameworks!` after `platform :ios, '10.3'`. Close the file and run
-      `pod install`
-      to update the project.
+      Add `use_frameworks!` after `platform :ios, '11'` (In case the minimum version of ios required is 10.3 change `platform: ios, '10,3'`). Add the follow code after `pod 'Ver-ID', '~> 2.0.1'`
+
+        ```ruby
+        post_install do |installer|
+            installer.pods_project.build_configurations.each do |config|
+                config.build_settings['BUILD_LIBRARY_FOR_DISTRIBUTION'] = 'YES'
+            end
+            installer.pods_project.targets.each do |target|
+                target.build_configurations.each do |config|
+                    config.build_settings.delete 'BUILD_LIBRARY_FOR_DISTRIBUTION'
+                end
+            end
+        end
+        ```
+
+        Close the file and run `pod install` to update the project.
 
     - Open Cordova app's iOS work space in Xcode.
-    - Ensure the project's deployment target is iOS 10 or newer.
+    - For Codova iOS 6.X.X
+        - The minium version of iOS required is **11**, [Read this for more information](https://cordova.apache.org/announcements/2020/06/01/cordova-ios-release-6.0.0.html)
+        - Open platforms/ios/testingSample/CDVLaunchScreen.storyboard file with Xcode and change all the colors to default colors
+        - Only the cordova10.0.0_sample support Cordova iOS 6
+    - Ensure the project's deployment target is iOS 11 or newer.
     - In your Xcode project's build settings ensure `SWIFT_VERSION` is set to **Swift 5**.
     - Open your app's **Info.plist** file and and ensure it contains an entry for `NSCameraUsageDescription`.
     - Select the **testingSample** app target and under **Signing & Capabilities**. Clear the **Automatically manage signing** checkbox. Select your team and set the provisioning profile to a wildcard development profile you created on the [Apple Developer website](https://developer.apple.com/account/).
