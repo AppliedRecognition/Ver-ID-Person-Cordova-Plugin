@@ -15,11 +15,11 @@
             </feature>
         </config-file>
         <config-file target="AndroidManifest.xml" parent="/*">
-            <uses-sdk android:minSdkVersion="21" />
+            <uses-sdk android:minSdkVersion="30" />
         </config-file>
         <source-file src="src/android/com/appliedrec/plugin/VerIDPlugin.java" target-dir="src/com/appliedrec/plugin" />
         <framework src="src/android/verid.gradle" custom="true" type="gradleReference" />
-        <framework src="com.appliedrec.verid:ui:1.21.5" />
+        <framework src="com.appliedrec.verid:ui2:2.0.0" />
         <uses-permission android:name="android.permission.CAMERA" />
     </platform>
     <platform name="ios">
@@ -31,7 +31,6 @@
             </feature>
         </config-file>
         <source-file src="src/ios/VerIDPlugin.swift" />
-        <framework src="Ver-ID-UI" type="podspec" spec="~> 1.12.4" />
-        <framework src="Ver-ID-SDK-Identity" type="podspec" spec="~> 3.0.1" />
+        <framework src="Ver-ID" type="podspec" spec="~> 2.0.1" />
     </platform>
 </plugin>

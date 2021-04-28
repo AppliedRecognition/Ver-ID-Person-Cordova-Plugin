@@ -223,6 +223,13 @@ import VerIDUI
         self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_OK), callbackId: callbackId)
     }
     
+    public func didFinishSession(_ session: VerIDSession, withResult result: VerIDSessionResult) {
+        guard let callbackId = self.veridSessionCallbackId else {
+            return
+        }
+        self.veridSessionCallbackId = nil
+        self.commandDelegate.send(CDVPluginResult(status: CDVCommandStatus_OK), callbackId: callbackId)
+    }
     
     // MARK: - Session helpers
     
@@ -354,14 +361,15 @@ class CodableSessionResult: Codable {
         if let error = try container.decodeIfPresent(String.self, forKey: .error) {
             self.original = VerIDSessionResult(error: NSError(domain: kVerIDErrorDomain, code: -1, userInfo: [NSLocalizedDescriptionKey: error]))
         } else {
-            var attachments: [DetectedFace] = []
+            var attachments: [FaceCapture] = []
             var attachmentsContainer = try container.nestedUnkeyedContainer(forKey: .attachments)
             while !attachmentsContainer.isAtEnd {
                 let attachmentContainer = try attachmentsContainer.nestedContainer(keyedBy: AttachmentCodingKeys.self)
                 let codableFace = try attachmentContainer.decode(CodableFace.self, forKey: .recognizableFace)
                 let bearing = try attachmentContainer.decode(Bearing.self, forKey: .bearing)
-                let imageURL: URL?
+                let image: UIImage?
                 if let imageString = try attachmentContainer.decodeIfPresent(String.self, forKey: .image) {
+                    let imageURL: URL?
                     let pattern = "^data:(.+?);base64,(.+)$"
                     let regex = try NSRegularExpression(pattern: pattern, options: [])
                     let all = NSMakeRange(0, imageString.utf16.count)
@@ -374,24 +382,26 @@ class CodableSessionResult: Codable {
                     }
                     imageURL = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString).appendingPathExtension("jpg")
                     try imageData.write(to: imageURL!)
+                    image = UIImage(data: imageData)
                 } else {
-                    imageURL = nil
+                    image = nil
                 }
-                let attachment = DetectedFace(face: codableFace.recognizableFace ?? codableFace.face, bearing: bearing, imageURL: imageURL)
+                let attachment = FaceCapture(face: codableFace.recognizableFace ?? codableFace.face as! RecognizableFace, bearing: bearing, image: image!)
                 attachments.append(attachment)
             }
-            self.original = VerIDSessionResult(attachments: attachments)
+            self.original = VerIDSessionResult(faceCaptures: attachments)
         }
     }
     
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         var attachmentsContainer = container.nestedUnkeyedContainer(forKey: .attachments)
-        try self.original.attachments.forEach({
+        try self.original.faceCaptures.forEach({
             var attachmentContainer = attachmentsContainer.nestedContainer(keyedBy: AttachmentCodingKeys.self)
-            try attachmentContainer.encode(CodableFace(face: $0.face, recognizable: $0.face as? Recognizable), forKey: .recognizableFace)
+            try attachmentContainer.encode(CodableFace(face: $0.face, recognizable: $0.face as Recognizable), forKey: .recognizableFace)
             try attachmentContainer.encode($0.bearing, forKey: .bearing)
-            if let imageURL = $0.imageURL, let data = try? Data(contentsOf: imageURL), let image = UIImage(data: data), let jpeg = image.jpegData(compressionQuality: 0.8)?.base64EncodedString() {
+            let image = $0.image
+            if let jpeg = image.jpegData(compressionQuality: 0.8)?.base64EncodedString() {
                 try attachmentContainer.encode(String(format: "data:image/jpeg;base64,%@", jpeg), forKey: .image)
             }
         })
