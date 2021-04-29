@@ -17,6 +17,7 @@
     <allow-intent href="geo:*" />
     <platform name="android">
         <allow-intent href="market:*" />
+        <resource-file src="../assets/Ver-ID identity.p12" target="assets/Ver-ID identity.p12" />
     </platform>
     <platform name="ios">
         <allow-intent href="itms:*" />
